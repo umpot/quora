@@ -418,3 +418,9 @@ def submit_xgb(name):
 
 name='xgb_magic_1600_0.8_0.8_5'
 submit_xgb(name)
+
+
+print '============================'
+print 'DONE!'
+print '============================'
+
