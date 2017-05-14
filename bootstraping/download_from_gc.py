@@ -20,9 +20,9 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = sys.argv[1]
-zone=sys.argv[2]
-folder=sys.argv[3]
-files=sys.argv[4:]
+instance_name = 'kg2'
+zone='us-west1-b'
+folder='/home/dd_petrovskiy/kg/quora/src/submit'
+files=['xgb_magic_1600_0.8_0.8_5.csv']
 
 run(instance_name, zone, folder, files)

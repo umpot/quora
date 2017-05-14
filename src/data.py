@@ -105,6 +105,17 @@ def load_train_all():
         load_train_tfidf()
     ], axis=1)
 
+def load_train_nlp():
+    return pd.concat([
+        load_train(),
+        load_train_postag(),
+        load_train_lemmas(),
+        load_train_stems(),
+        load_train_tokens(),
+        load_train_ner()
+    ], axis=1)
+
+
 
 def load_test_all():
     return pd.concat([

@@ -293,8 +293,8 @@ def load_train_all_xgb():
         load_train_lengths(),
         load_train_common_words(),
         load__train_metrics(),
-        load_train_tfidf(),
-        load_train_magic()
+        load_train_tfidf()
+        # load_train_magic()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -308,8 +308,8 @@ def load_test_all_xgb():
         load_test_lengths(),
         load_test_common_words(),
         load__test_metrics(),
-        load_test_tfidf(),
-        load_test_magic()
+        load_test_tfidf()
+        # load_test_magic()
     ], axis=1)
 
 
@@ -392,7 +392,7 @@ def submit_xgb(name):
     print big.columns.values
     test_arr = small
 
-    estimator = xgb.XGBClassifier(n_estimators=1600,
+    estimator = xgb.XGBClassifier(n_estimators=3700,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=5)
@@ -416,7 +416,7 @@ def submit_xgb(name):
 
 
 
-name='xgb_magic_1600_0.8_0.8_5'
+name='xgb_no_magic_3700_0.8_0.8_5'
 submit_xgb(name)
 
 
