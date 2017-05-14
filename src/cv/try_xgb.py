@@ -223,6 +223,12 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 import json
+from time import sleep
+import traceback
+
+gc_host = '35.185.55.5'
+local_host = '10.20.0.144'
+
 
 def load_train_all_xgb():
     train_df = pd.concat([
@@ -271,15 +277,38 @@ def out_loss(loss):
     print '====================================='
     print '====================================='
 
-def perform_xgb_cv():
+
+def write_results(name,mongo_host, per_tree_res, losses, imp, features):
+    from pymongo import MongoClient
+
+    imp=[x.item() for x in imp]
+    features=list(features)
+
+    client = MongoClient(mongo_host, 27017)
+    db = client['xgb_cv']
+    collection = db[name]
+    try:
+        collection.insert_one({
+            'results': per_tree_res,
+            'losses': losses,
+            'importance':imp,
+            'features':features
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        raise
+        # sleep(20)
+
+
+
+def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
     folds =5
     seed = 42
 
     skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
     losses = []
-    stats = []
-    imp = []
     n_est=[]
     for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
         big = df.iloc[big_ind]
@@ -314,7 +343,7 @@ def perform_xgb_cv():
             eval_set=eval_set,
             eval_metric='logloss',
             verbose=True,
-            early_stopping_rounds=200
+            early_stopping_rounds=300
         )
 
         proba = estimator.predict_proba(test_arr)
@@ -322,19 +351,24 @@ def perform_xgb_cv():
         loss = log_loss(test_target, proba)
         out_loss(loss)
         losses.append(loss)
-        stats.append(xgboost_per_tree_results(estimator))
-        imp.append(estimator.feature_importances_)
+        per_tree_res = xgboost_per_tree_results(estimator)
+        ii = estimator.feature_importances_
         n_est.append(estimator.best_iteration)
+
         # xgb.plot_importance(estimator)
         # plot_errors(stats)
+
         json.dump(losses, open('res.json', 'w+'))
         json.dump(n_est, open('n_est.json', 'w+'))
 
+        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
 
-    print out_loss('avg = {}'.format(np.mean(losses)))
+
+    out_loss('avg = {}'.format(np.mean(losses)))
 
 
-perform_xgb_cv()
+name='xgb_10000_0.8_0.8_5'
+perform_xgb_cv(name, gc_host)
 
 
 
