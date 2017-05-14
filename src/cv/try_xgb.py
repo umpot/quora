@@ -333,7 +333,7 @@ def perform_xgb_cv(name, mongo_host):
         estimator = xgb.XGBClassifier(n_estimators=10000,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
-                                      max_depth=5)
+                                      max_depth=7)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr)
@@ -367,7 +367,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='xgb_10000_0.8_0.8_5'
+name='xgb_10000_0.8_0.8_7'
 perform_xgb_cv(name, gc_host)
 
 
