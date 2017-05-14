@@ -19,7 +19,7 @@ lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -157,14 +157,6 @@ def load_test_tokens():
     df = df.fillna('')
     return df
 
-def load_train_magic():
-    df = pd.read_csv(magic_train_fp, index_col='id')['freq_question1', 'freq_question2']
-    return df
-
-def load_test_magic():
-    df = pd.read_csv(magic_test_fp, index_col='test_id')['freq_question1', 'freq_question2']
-    return df
-
 
 def load_train_stems():
     df = pd.read_csv(stems_train_fp, index_col='id')
@@ -209,3 +201,46 @@ def load_test_lengths():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
+
+def perform_magic(train_df, test_df, col1, col2):
+    l = sum([list(x) for x in [train_df[col1], train_df[col2], test_df[col1], test_df[col2]]], [])
+    s=set(l)
+    s={k:0 for k in s}
+    for i in l:
+        s[i]+=1
+
+    new_cols=[]
+    for col in [col1, col2]:
+        new_col = 'freq_{}'.format(col)
+        new_cols.append(new_col)
+        for df in [train_df, test_df]:
+            df[new_col]=df[col].map(s)
+
+    return new_cols
+
+
+def write_magic():
+    train_df, test_df = load_train_all(), load_test_all()
+    # train_df, test_df = train_df.head(1000), test_df.head(1000)
+    new_cols=[]
+    print 'loaded'
+
+    cols=perform_magic(train_df, test_df, question1, question2)
+    new_cols+=cols
+    print 'done questions'
+
+    cols=perform_magic(train_df, test_df, tokens_q1, tokens_q2)
+    new_cols+=cols
+    print 'done tokens'
+
+    cols=perform_magic(train_df, test_df, lemmas_q1, lemmas_q2)
+    new_cols+=cols
+    print 'done lemmas'
+
+    train_df[new_cols].to_csv(magic_train_fp, index_label='id')
+    test_df[new_cols].to_csv(magic_test_fp, index_label='test_id')
+
+
+write_magic()
+

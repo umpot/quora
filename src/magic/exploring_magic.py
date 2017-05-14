@@ -11,14 +11,6 @@ pd.set_option('display.width', 5000)
 pd.set_option('display.max_rows', 5000)
 pd.set_option('display.max_colwidth', 100)
 
-TARGET = 'is_duplicate'
-qid1, qid2 = 'qid1', 'qid2'
-
-question1, question2 = 'question1', 'question2'
-lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
-stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
-tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
-
 data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
@@ -42,9 +34,6 @@ stems_test_fp = os.path.join(data_folder,'nlp','stems_test.csv')
 tfidf_with_stops_train_fp = os.path.join(data_folder,'tfidf','tokens_with_stop_words_tfidf_train.csv')
 tfidf_with_stops_test_fp = os.path.join(data_folder,'tfidf','tokens_with_stop_words_tfidf_test.csv')
 
-magic_train_fp=os.path.join(data_folder, 'magic', 'magic_train.csv')
-magic_test_fp=os.path.join(data_folder, 'magic', 'magic_test.csv')
-
 
 common_words_train_fp = os.path.join(data_folder, 'basic','common_words_train.csv')
 length_train_fp = os.path.join(data_folder, 'basic','lens_train.csv')
@@ -52,7 +41,7 @@ length_train_fp = os.path.join(data_folder, 'basic','lens_train.csv')
 common_words_test_fp = os.path.join(data_folder, 'basic','common_words_test.csv')
 length_test_fp = os.path.join(data_folder, 'basic','lens_test.csv')
 
-TRAIN_METRICS_FP = [
+METRICS_FP = [
     data_folder + 'distances/'+ 'train_metrics_bool_lemmas.csv',
     data_folder + 'distances/'+'train_metrics_bool_stems.csv',
     data_folder + 'distances/'+'train_metrics_bool_tokens.csv',
@@ -64,17 +53,13 @@ TRAIN_METRICS_FP = [
     data_folder + 'distances/'+'train_metrics_sequence_tokens.csv'
 ]
 
-TEST_METRICS_FP = [
-    data_folder + 'distances/'+ 'test_metrics_bool_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_bool_stems.csv',
-    data_folder + 'distances/'+'test_metrics_bool_tokens.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_stems.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_tokens.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_stems.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_tokens.csv'
-]
+TARGET = 'is_duplicate'
+qid1, qid2 = 'qid1', 'qid2'
+
+question1, question2 = 'question1', 'question2'
+lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
+stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
+tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 
 
 def load_train():
@@ -85,11 +70,7 @@ def load_test():
 
 
 def load__train_metrics():
-    dfs = [pd.read_csv(fp, index_col='id') for fp in TRAIN_METRICS_FP]
-    return pd.concat(dfs, axis=1)
-
-def load__test_metrics():
-    dfs = [pd.read_csv(fp, index_col='test_id') for fp in TEST_METRICS_FP]
+    dfs = [pd.read_csv(fp, index_col='id') for fp in METRICS_FP]
     return pd.concat(dfs, axis=1)
 
 
@@ -103,19 +84,6 @@ def load_train_all():
         load_train_common_words(),
         load__train_metrics(),
         load_train_tfidf()
-    ], axis=1)
-
-
-def load_test_all():
-    return pd.concat([
-        load_test(),
-        load_test_lemmas(),
-        load_test_stems(),
-        load_test_tokens(),
-        load_test_lengths(),
-        load_test_common_words(),
-        load__test_metrics(),
-        load_test_tfidf()
     ], axis=1)
 
 
@@ -157,14 +125,6 @@ def load_test_tokens():
     df = df.fillna('')
     return df
 
-def load_train_magic():
-    df = pd.read_csv(magic_train_fp, index_col='id')['freq_question1', 'freq_question2']
-    return df
-
-def load_test_magic():
-    df = pd.read_csv(magic_test_fp, index_col='test_id')['freq_question1', 'freq_question2']
-    return df
-
 
 def load_train_stems():
     df = pd.read_csv(stems_train_fp, index_col='id')
@@ -189,17 +149,9 @@ def load_train_common_words():
     df = pd.read_csv(common_words_train_fp, index_col='id')
     return df
 
-def load_test_common_words():
-    df = pd.read_csv(common_words_test_fp, index_col='test_id')
-    return df
-
 
 def load_train_lengths():
     df = pd.read_csv(length_train_fp, index_col='id')
-    return df
-
-def load_test_lengths():
-    df = pd.read_csv(length_test_fp, index_col='test_id')
     return df
 
 
@@ -209,3 +161,5 @@ def load_test_lengths():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
+
