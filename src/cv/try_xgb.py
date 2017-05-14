@@ -333,7 +333,7 @@ def perform_xgb_cv(name, mongo_host):
         estimator = xgb.XGBClassifier(n_estimators=10000,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
-                                      max_depth=7)
+                                      max_depth=6)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr)
