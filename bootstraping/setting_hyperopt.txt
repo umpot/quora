@@ -1,0 +1,39 @@
+
+
+
+
+
+mkdir kg
+cd kg
+git clone https://github.com/ubbikk/kaggle
+cd kaggle
+sudo bash install_environment.sh
+
+scp dpetrovskyi@10.20.0.144:/home/dpetrovskyi/PycharmProjects/kaggle/data/redhoop/train.json data/redhoop/
+scp dpetrovskyi@10.20.0.144:/home/dpetrovskyi/PycharmProjects/kaggle/data/redhoop/test.json data/redhoop/
+
+or
+
+wget https://www.dropbox.com/s/fs4wlw2k9xmbkvw/test.json.zip
+wget https://www.dropbox.com/s/z7ybcosh4ohbh27/train.json.zip
+
+unzip train.json.zip -d data/redhoop/
+unzip test.json.zip -d data/redhoop/
+
+
+
+
+
+cd ../
+mkdir trash
+
+sudo ln -s /home/dpetrovskyi/kg/kaggle/src/optimizer /usr/bin/
+sudo ln -s /home/dpetrovskyi/kg/kaggle/src/optimizer /usr/local/bin/
+
+hyperopt-mongo-worker --mongo=35.187.46.132:27017/expiriment_name --poll-interval=0.1 --workdir=
+
+
+home(new tab)
+
+cd src
+python -u runner.py /home/dpetrovskyi/kg/trash

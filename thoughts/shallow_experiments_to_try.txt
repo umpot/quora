@@ -1,0 +1,2 @@
+1)100K trigrams, SGD   (0.36629) norm
+2)plot and watch mean of probabilities for train\test in CV, fix if isn't equal???

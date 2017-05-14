@@ -1,0 +1,12 @@
+1)try this 0.29 FM benchmark, generate pred(submit few times, save for stacking), look at the code, extract features for xgboost
+2)try this ideas:
+Let's say we have 8 questions (A, B, C, D, E, F, G, H). The available data set reads that:
+A and B are the same.
+A and C are the same.
+B and D are different.
+
+https://www.kaggle.com/xingyang/show-me-more-samples-data-augmentation-trick
+
+3)Magic feature!!!!
+
+4)Previous competitions!!!

@@ -1,0 +1,81 @@
+1) Capital alphabet percentage does rank within my top 10 features on a GBM.
+2) median  3BR / 2BA apartments in Flatbush.
+3)manager_skill
+4)listing_id
+5)NER on desription
+6_Exclamation marks in description
+7)description: move-in? train\road
+8)mng num\avg price
+9) manager activity <24hour  DONE
+10)neighborhood map - strict label
+11)neighbourhoods median
+12) entity in description
+13)description freaquent tokens 'amazing, gorgeous'
+14)some NLP adj/adv/verb etc ???, sentiment, w2v clustering
+15)dayOfWeek  DONE
+16)managers activity normalized\beans
+17)number of listings in that hour\min etc
+18)medians in exact neibourhood DONE
+19)addr_has_number
+20)dummies for bath?
+21)floorplans?
+22)upper in descr + 0.002!
+23)month\months free
+24)html tags in descr?
+25)bathrooms is zero feature low=0.977636, or isolate?
+26)морды манагеров
+27)cumulative before!!!!!!!
+28)manager counts on nei!!!!!!
+29)sort bid on streats?
+30)1_month_free WHY??
+31)neis length!!! - DONE
+32)mngr_frequency in this nei123
+33)avg bid score, avg mngr_score
+34)special feature for the biggest MANAGER ?
+35)drop nei dummies
+36)hour_num   ????
+37)Normalize small Neis?
+38)plug into an ansemble descriptions NN or Word2Vec
+
+
+
+39)mngr+created hour hcc !Failed!
+40)
+Without stacking, I get 0.521. When I using different statistics for bedroom, price,
+ bathrooms and so on group by manager_id, it also gets 0.521 without improvement.
+  Finally I combine them without any model, and it gets 0.51711.
+
+41) 2+ hcc on ManagerId ?
+42)Mndr_id+Nei2 group hcc
+43)mngr group price\price-median beans
+44)streat\blvd\avenue
+45)tfidf = CountVectorizer(stop_words='english', max_features=200)
+46)manager profiles
+47)** in descr
+48)Street address starts not from digit
+49)NEI median ratios ===> nei\bed\bath ratios!!!!!
+50)very_high_price feature :
+high         0.00917431192661
+medium       0.0
+low          0.990825688073
+51)Price ends 999
+
+52)Load medians from Renthop by ListingId
+53) Load this data 1BR / 1BA apartments in Kips Bay with Doorman, Elevator from Renthop
+
+54)percintile for new features gr_by_mngr_ratio_mean etc
+
+55)hcc for nei+bed+bath !!!!!!!!!!!
+
+56)median_diff_nei1 + median_diff_nei2
+
+57)drop big prices :
+explore_target(df[df[BED_BATH_RATIO]>=1])
+high         0.00340715502555
+medium       0.0289608177172
+low          0.967632027257
+
+
+58)mngr works with low feature, num of <=0.3
+
+59)something like hcc for neis(percent of target=high etc)

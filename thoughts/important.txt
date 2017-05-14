@@ -1,0 +1,18 @@
+1)rare words
+2)upper words
+3)entities
+4)stop words
+5)remove PRON, PREP etc
+6)how\what\why features
+7)frequent words for questions 'difference', 'best way', 'how much', 'better' etc
+8)clusters for 'question type' ?
+9)Punctuations .,!
+10)Special things [math], http:// facebook youtube etc
+11)word_match_share/stem share/lemma share
+12)Pronoun feature (I you he she mine etc)
+13)Prep feature (of in )
+14)Conditional feature (if ) ????
+15)time related features nums 1900-2100, words like 'while', 'during', words like year, decade, century
+16)tfidf_word_match_share
+17)can have if could - features for this stopwords?!!!!
+18)word_share nouns\nouns not top\PN-s !!!! verbs\adj\adv
