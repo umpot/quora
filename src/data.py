@@ -18,6 +18,7 @@ question1, question2 = 'question1', 'question2'
 lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
+ner_q1, ner_q2='ner_q1', 'ner_q2'
 
 data_folder = '../../data/'
 
@@ -166,6 +167,22 @@ def load_train_tokens():
 def load_test_tokens():
     df = pd.read_csv(tokens_test_fp, index_col='test_id')
     df = df.fillna('')
+    return df
+
+def load_train_postag():
+    df = pd.read_csv(postag_train_fp, index_col='id')
+    return df
+
+def load_test_postag():
+    df = pd.read_csv(postag_test_fp, index_col='test_id')
+    return df
+
+def load_train_ner():
+    df = pd.read_csv(ner_train_fp, index_col='id')
+    return df
+
+def load_test_ner():
+    df = pd.read_csv(ner_test_fp, index_col='test_id')
     return df
 
 def load_train_magic():

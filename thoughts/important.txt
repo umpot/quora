@@ -16,3 +16,6 @@
 16)tfidf_word_match_share
 17)can have if could - features for this stopwords?!!!!
 18)word_share nouns\nouns not top\PN-s !!!! verbs\adj\adv
+
+19)tfidf features on Upper Tokens\Ner\Nouns-Adj-Verbs etc
+20)
