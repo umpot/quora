@@ -158,7 +158,7 @@ def load_test_tokens():
     return df
 
 def load_train_magic():
-    df = pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']]
+    df = pd.read_csv(magic_train_fp, index_col='id')
     return df
 
 def load_test_magic():
@@ -418,7 +418,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='xgb_magic_0.8_0.8_5'
+name='xgb_magic_different_0.8_0.8_5'
 perform_xgb_cv(name, gc_host)
 
 
