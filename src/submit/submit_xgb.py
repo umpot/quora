@@ -265,6 +265,11 @@ def oversample(train_df, test_df, random_state=42):
 
     return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
 
 
 ############################################################3
@@ -297,6 +302,18 @@ def load_train_all_xgb():
         del train_df[col]
 
     return train_df
+
+def load_test_all_xgb():
+    test_df = pd.concat([
+        load_test_lengths(),
+        load_test_common_words(),
+        load__test_metrics(),
+        load_test_tfidf(),
+        load_test_magic()
+    ], axis=1)
+
+
+    return test_df
 
 def plot_errors(imp):
     train_runs= [x['train'] for x in imp]
@@ -355,75 +372,49 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 
 
-def perform_xgb_cv(name, mongo_host):
-    df = load_train_all_xgb()
-    folds =5
-    seed = 42
+def submit_xgb(name):
+    seed=42
+    big = load_train_all_xgb()
+    small = load_test_all_xgb()
 
-    skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
-    losses = []
-    n_est=[]
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    big, small = oversample_submit(big, small, seed)
 
-        big, small = oversample(big, small, seed)
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    train_target = big[TARGET]
+    del big[TARGET]
+    train_arr = big
 
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
+    print big.columns.values
+    test_arr = small
 
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
+    estimator = xgb.XGBClassifier(n_estimators=1600,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
+                                  max_depth=5)
+    print test_arr.columns.values
+    print len(train_arr)
+    print len(test_arr)
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
 
-        estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5)
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr)
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
-        estimator.fit(
-            train_arr, train_target,
-            eval_set=eval_set,
-            eval_metric='logloss',
-            verbose=True,
-            early_stopping_rounds=300
-        )
+    proba = estimator.predict_proba(test_arr)
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    small[TARGET] = proba[:, 1]
 
-        proba = estimator.predict_proba(test_arr)
-
-        loss = log_loss(test_target, proba)
-        out_loss(loss)
-        losses.append(loss)
-        per_tree_res = xgboost_per_tree_results(estimator)
-        ii = estimator.feature_importances_
-        n_est.append(estimator.best_iteration)
-
-        # xgb.plot_importance(estimator)
-        # plot_errors(stats)
-
-
-        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
-
-
-    out_loss('avg = {}'.format(np.mean(losses)))
-
-
-name='xgb_magic_0.8_0.8_5'
-perform_xgb_cv(name, gc_host)
+    res = small[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
 
 
-
-
-
+name='xgb_magic_1600_0.8_0.8_5'
+submit_xgb(name)

@@ -50,3 +50,8 @@ def oversample(train_df, test_df, random_state=42):
     return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
