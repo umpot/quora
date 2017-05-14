@@ -158,11 +158,11 @@ def load_test_tokens():
     return df
 
 def load_train_magic():
-    df = pd.read_csv(magic_train_fp, index_col='id')['freq_question1', 'freq_question2']
+    df = pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']]
     return df
 
 def load_test_magic():
-    df = pd.read_csv(magic_test_fp, index_col='test_id')['freq_question1', 'freq_question2']
+    df = pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']]
     return df
 
 
