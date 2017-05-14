@@ -18,4 +18,7 @@
 18)word_share nouns\nouns not top\PN-s !!!! verbs\adj\adv
 
 19)tfidf features on Upper Tokens\Ner\Nouns-Adj-Verbs etc
-20)
+20)unique NER or Upper
+
+21)Fetaures like 'Quantity' '20mg three times' in question1 but not in q2, or similarity small, or there is no similar substring
+22)year in question 1999 or None

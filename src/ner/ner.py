@@ -68,6 +68,20 @@ def prepare_df(df):
         df[col] = df[col].apply(literal_eval)
 
 
+def get_persons(l):
+    res=[]
+    for t in l:
+        if 'PERSON'==t[0]:
+            res.append(t[1])
+
+    return res
+
+
+def add_persons_list(df):
+    for col in [ner_q1, ner_q2]:
+        df['persons_{}'.format(col)] = df[col].apply(get_persons)
+
+
 def all_tags(df):
     l = list(df[ner_q1])+list(df[ner_q2])
     tags = set()
@@ -85,3 +99,13 @@ def all_tags_counts(df):
             tags[t[0]]+=1
 
     return tags
+
+
+def entities_by_tags(df):
+    l = list(df[ner_q1])+list(df[ner_q2])
+    entities = {k:[] for k in TAGS}
+    for it in l:
+        for t in it:
+            entities[t[0]].append(t[1])
+
+    return entities
