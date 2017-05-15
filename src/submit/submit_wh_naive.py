@@ -458,7 +458,7 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 
 def submit_xgb(name):
-    seed=42
+    seed=111
     big = load_train_all_xgb()
     small = load_test_all_xgb()
 
@@ -501,7 +501,7 @@ def submit_xgb(name):
 
 
 
-name='wh_naive_1500_0.8_0.8_5'
+name='wh_naive_1500_0.8_0.8_5_seed111'
 submit_xgb(name)
 
 
