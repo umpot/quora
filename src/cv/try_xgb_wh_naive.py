@@ -341,12 +341,18 @@ wh_fp_train=os.path.join(data_folder, 'wh', 'wh_train.csv')
 wh_fp_test=os.path.join(data_folder, 'wh', 'wh_test.csv')
 
 def load_wh_train():
-    df = pd.read_csv(wh_fp_train, index_col='id')
+    df = pd.concat([pd.read_csv(wh_fp_train, index_col='id'),
+                    pd.read_csv(prefixes_fp_train, index_col='id')], axis=1)
     return df
 
 def load_wh_test():
-    df = pd.read_csv(wh_fp_test, index_col='test_id')
+    df = pd.concat([pd.read_csv(wh_fp_test, index_col='test_id'),
+                    pd.read_csv(prefixes_fp_test, index_col='test_id')], axis=1)
     return df
+
+
+prefixes_fp_train=os.path.join(data_folder, 'wh', 'prefixes_train.csv')
+prefixes_fp_test=os.path.join(data_folder, 'wh', 'prefixes_test.csv')
 
 
 
@@ -443,7 +449,7 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
     folds =5
-    seed = 111
+    seed = 42
 
     skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
     losses = []
@@ -503,7 +509,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='xgb_wh_naive_0.8_0.8_5_seed111'
+name='xgb_wh_prefixes_0.8_0.8_5'
 perform_xgb_cv(name, gc_host)
 
 
