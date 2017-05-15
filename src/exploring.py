@@ -13,6 +13,7 @@ fp_train= '../../data/train.csv'
 fp_test= '../../data/test.csv'
 
 qid1,  qid2 = 'qid1',  'qid2'
+question1, question2='question1', 'question2'
 
 
 def load_train_test():

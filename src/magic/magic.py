@@ -98,11 +98,11 @@ def load_train_all():
         load_train(),
         load_train_lemmas(),
         load_train_stems(),
-        load_train_tokens(),
-        load_train_lengths(),
-        load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf()
+        load_train_tokens()
+        # load_train_lengths(),
+        # load_train_common_words(),
+        # load__train_metrics(),
+        # load_train_tfidf()
     ], axis=1)
 
 
@@ -111,11 +111,11 @@ def load_test_all():
         load_test(),
         load_test_lemmas(),
         load_test_stems(),
-        load_test_tokens(),
-        load_test_lengths(),
-        load_test_common_words(),
-        load__test_metrics(),
-        load_test_tfidf()
+        load_test_tokens()
+        # load_test_lengths(),
+        # load_test_common_words(),
+        # load__test_metrics(),
+        # load_test_tfidf()
     ], axis=1)
 
 
