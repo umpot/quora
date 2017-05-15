@@ -28,7 +28,7 @@ folder='/home/dd_petrovskiy/kg/quora/src/submit'
 
 
 files = [
-    'wh_naive_1500_0.8_0.8_5.csv'
+    'wh_naive_1500_0.8_0.8_5_seed111.csv'
 ]
 
 destination='.'

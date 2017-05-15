@@ -20,8 +20,8 @@ stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 
-# data_folder = '../../../data/'
-data_folder = '../../data/'
+data_folder = '../../../data/'
+# data_folder = '../../data/'
 
 
 fp_train = data_folder + 'train.csv'
@@ -349,19 +349,28 @@ def write_wh_naive():
 
 
 def get_most_frequent_start_words_ngrams(df, n):
+    m=get_most_frequent_start_words_ngrams_map(df, n)
+
+    m= [(k,v) for k,v in m.items()]
+    m.sort(key=lambda s: s[1], reverse=True)
+
+    return m
+
+
+def get_ngram_prefix(s, n):
+    s='' if s is None else str(s).lower()
+    lst = s.split()
+    if len(lst)<n:
+        return tuple(lst)
+
+    return tuple(lst[:n])
+
+def get_most_frequent_start_words_ngrams_map(df, n):
     l = list(df[question1].apply(str))+list(df[question2].apply(str))
-
-    def get_ngram_prefix(s):
-        s='' if s is None else s.lower()
-        lst = s.split()
-        if len(lst)<n:
-            return None
-
-        return tuple(lst[:n])
 
     m={}
     for i in l:
-        pref = get_ngram_prefix(i)
+        pref = get_ngram_prefix(i, n)
         if pref is None:
             continue
 
@@ -370,7 +379,149 @@ def get_most_frequent_start_words_ngrams(df, n):
         else:
             m[pref]=1
 
-    m= [(k,v) for k,v in m.items()]
-    m.sort(key=lambda s: s[1], reverse=True)
-
     return m
+
+['pref_freq1_1',
+ 'pref_freq2_1',
+ 'pref_freq1_2',
+ 'pref_freq2_2',
+ 'pref_freq1_3',
+ 'pref_freq2_3',
+ 'pref_freq1_4',
+ 'pref_freq2_4']
+
+def add_prefix_frequencies_cols_train(train_df, nums=(1,2,3,4)):
+    df = train_df
+
+    def get_prefix_count(m, pref):
+        if pref in m:
+            return m[pref]
+        return 1
+
+    new_cols = []
+
+    for N in nums:
+        m = get_most_frequent_start_words_ngrams_map(train_df, N)
+
+        pref_freq1 = 'pref_freq1_{}'.format(N)
+        new_cols.append(pref_freq1)
+        df[pref_freq1]=df[question1].apply(lambda s: get_ngram_prefix(s, N))
+        df[pref_freq1]=df[pref_freq1].apply(lambda s: get_prefix_count(m ,s))
+
+        pref_freq2 = 'pref_freq2_{}'.format(N)
+        new_cols.append(pref_freq2)
+        df[pref_freq2]=df[question2].apply(lambda s: get_ngram_prefix(s, N))
+        df[pref_freq2]=df[pref_freq2].apply(lambda s: get_prefix_count(m ,s))
+
+
+    return new_cols
+
+
+def get_comon_prefix_len(a,b):
+    a='' if a is None else a
+    b='' if b is None else b
+
+    a=str(a).lower().split()
+    b=str(b).lower().split()
+
+    l = min(len(a), len(b))
+    res = 0
+
+    for i in range(l):
+        if a[i]==b[i]:
+            res+=1
+        else:
+            break
+
+    return res
+
+def get_comon_prefix_ratio(a,b):
+    a='' if a is None else a
+    b='' if b is None else b
+
+    a=str(a).lower().split()
+    b=str(b).lower().split()
+
+    l = min(len(a), len(b))
+    res = 0
+
+    for i in range(l):
+        if a[i]==b[i]:
+            res+=1
+        else:
+            break
+
+    max1 = max(len(a), len(b))
+    max1=max(max1, 1)
+    return 1.0*res / max1
+
+def add_common_prefix_cols(df, col1, col2):
+    df['common_prefix_len']=df[[col1, col2]].apply(lambda s: get_comon_prefix_len(s[col1], s[col2]), axis=1)
+    df['common_prefix_ratio']=df[[col1, col2]].apply(lambda s: get_comon_prefix_ratio(s[col1], s[col2]), axis=1)
+
+
+def add_prefix_frequencies_cols_train_test(train_df, test_df, nums=(1,2,3,4)):
+    def get_prefix_count(m, pref):
+        if pref in m:
+            return m[pref]
+        return 1
+
+    new_cols = []
+
+    for df in [train_df, test_df]:
+        for N in nums:
+            m = get_most_frequent_start_words_ngrams_map(train_df, N)
+
+            pref_freq1 = 'pref_freq1_{}'.format(N)
+            new_cols.append(pref_freq1)
+            df[pref_freq1]=df[question1].apply(lambda s: get_ngram_prefix(s, N))
+            df[pref_freq1]=df[pref_freq1].apply(lambda s: get_prefix_count(m ,s))
+
+            pref_freq2 = 'pref_freq2_{}'.format(N)
+            new_cols.append(pref_freq2)
+            df[pref_freq2]=df[question2].apply(lambda s: get_ngram_prefix(s, N))
+            df[pref_freq2]=df[pref_freq2].apply(lambda s: get_prefix_count(m ,s))
+
+            pref_freq_log='pref_freq_log_{}'.format(N)
+            new_cols.append(pref_freq_log)
+            df[pref_freq_log] = np.abs(np.log(df[pref_freq1]/df[pref_freq2]))
+
+
+    return new_cols
+
+prefixes_fp_train=os.path.join(data_folder, 'wh', 'prefixes_train.csv')
+prefixes_fp_test=os.path.join(data_folder, 'wh', 'prefixes_test.csv')
+def write_prefixes():
+    train_df, test_df = load_train(), load_test()
+    add_prefix_frequencies_cols_train_test(train_df, test_df)
+    add_common_prefix_cols(train_df, question1, question2)
+    add_common_prefix_cols(test_df, question1, question2)
+    new_cols = ['pref_freq1_1',
+                'pref_freq2_1',
+                'pref_freq1_2',
+                'pref_freq2_2',
+                'pref_freq1_3',
+                'pref_freq2_3',
+                'pref_freq1_4',
+                'pref_freq2_4',
+                'common_prefix_len',
+                'common_prefix_ratio',
+                'pref_freq_log_1',
+                'pref_freq_log_2',
+                'pref_freq_log_3',
+                'pref_freq_log_4'
+                ]
+
+
+
+    index_label='id'
+    df = train_df[new_cols]
+    df.to_csv(prefixes_fp_train, index_label=index_label)
+
+    index_label='test_id'
+    df = test_df[new_cols]
+    df.to_csv(prefixes_fp_test, index_label=index_label)
+
+
+write_prefixes()
+
