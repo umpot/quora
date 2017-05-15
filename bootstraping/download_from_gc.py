@@ -20,18 +20,17 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = 'master-new'
-zone='us-east1-c'
-folder='/home/dd_petrovskiy/kg/data/tfidf'
+instance_name = 'kg1'
+zone='us-west1-a'
+folder='/home/dd_petrovskiy/kg/quora/src/submit'
 
 
 
 
 files = [
-    'tokens_with_stop_words_tfidf_test.csv',
-    'tokens_with_stop_words_tfidf_train.csv'
+    'wh_naive_1500_0.8_0.8_5.csv'
 ]
 
-destination='/home/dpetrovskyi/PycharmProjects/data/tfidf'
+destination='.'
 
 run(instance_name, zone, folder, files, destination)

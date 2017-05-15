@@ -443,7 +443,7 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
     folds =5
-    seed = 42
+    seed = 111
 
     skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
     losses = []
@@ -503,7 +503,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='xgb_wh_naive_0.8_0.8_5'
+name='xgb_wh_naive_0.8_0.8_5_seed111'
 perform_xgb_cv(name, gc_host)
 
 
