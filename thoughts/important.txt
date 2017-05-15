@@ -22,3 +22,10 @@
 
 21)Fetaures like 'Quantity' '20mg three times' in question1 but not in q2, or similarity small, or there is no similar substring
 22)year in question 1999 or None
+
+23)most frequent start word n-grams 'what is' 'how somebody could' etc
+    ++++ bayesian encoding on this categorical features
+    ++++ special features for the most frequent prefixes
+
+
+24)length of longest common prefix word\char

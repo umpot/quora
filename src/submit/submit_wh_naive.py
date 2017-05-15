@@ -18,11 +18,8 @@ question1, question2 = 'question1', 'question2'
 lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
-ner_q1, ner_q2='ner_q1', 'ner_q2'
 
-# data_folder = '../../../data/'
-data_folder = '../../data/'
-
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -108,17 +105,6 @@ def load_train_all():
         load_train_tfidf()
     ], axis=1)
 
-def load_train_nlp():
-    return pd.concat([
-        load_train(),
-        load_train_postag(),
-        load_train_lemmas(),
-        load_train_stems(),
-        load_train_tokens(),
-        load_train_ner()
-    ], axis=1)
-
-
 
 def load_test_all():
     return pd.concat([
@@ -169,22 +155,6 @@ def load_train_tokens():
 def load_test_tokens():
     df = pd.read_csv(tokens_test_fp, index_col='test_id')
     df = df.fillna('')
-    return df
-
-def load_train_postag():
-    df = pd.read_csv(postag_train_fp, index_col='id')
-    return df
-
-def load_test_postag():
-    df = pd.read_csv(postag_test_fp, index_col='test_id')
-    return df
-
-def load_train_ner():
-    df = pd.read_csv(ner_train_fp, index_col='id')
-    return df
-
-def load_test_ner():
-    df = pd.read_csv(ner_test_fp, index_col='test_id')
     return df
 
 def load_train_magic():
@@ -241,7 +211,70 @@ def load_test_lengths():
 ######################################################################################
 
 
+############################################################3
+############################################################3
+############################################################3
+import pandas as pd
+import numpy as np
 
+TARGET = 'is_duplicate'
+
+INDEX_PREFIX= 100000000
+#old
+{'pos': 0.369197853026293,
+ 'neg': 0.630802146973707}
+
+
+#new
+r1 = 0.174264424749
+r0 = 0.825754788586
+
+""""
+p_old/(1+delta) = p_new
+
+delta = (p_old/p_new)-1 = 1.1186071314214785
+l = delta*N = 452241
+"""
+
+delta = 1.1186071314214785
+
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
+
+def shuffle_df(df, random_state):
+    np.random.seed(random_state)
+    return df.iloc[np.random.permutation(len(df))]
+
+def oversample_df(df, l, random_state):
+    df_pos = df[df[TARGET]==1]
+    df_neg = df[df[TARGET]==0]
+
+    df_neg_sampl = df_neg.sample(l, random_state=random_state, replace=True)
+
+    df=pd.concat([df_pos, df_neg, df_neg_sampl])
+    df = shuffle_df(df, random_state)
+
+    return df
+
+def oversample(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+    l_test = int(delta * len(test_df))
+
+    return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
+
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
+
+
+############################################################3
+############################################################3
+############################################################3
 TARGET = 'is_duplicate'
 
 wh1='wh1'
@@ -320,57 +353,160 @@ def load_wh_test():
     return df
 
 
-def load_exploring():
-    df= pd.concat([load_train(), load_train_lemmas()], axis=1)
-    add_wh_cols(df)
-    add_wh_list_cols(df)
-
-    return df
 
 
-def write_wh_naive():
-    train_df, test_df = load_train_lemmas(), load_test_lemmas()
-    for df in [train_df, test_df]:
-        add_wh_cols(df)
-        add_the_same_wh_col(df)
-        df[wh1]=df[wh1].apply(lambda s: -1 if s is None else questions_types.index(s))
-        df[wh2]=df[wh2].apply(lambda s: -1 if s is None else questions_types.index(s))
+############################################################3
+############################################################3
+############################################################3
+import xgboost as xgb
+import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+import json
+from time import sleep
+import traceback
 
-    new_cols = [wh1, wh2, wh_same]
-
-    index_label='id'
-    df = train_df[new_cols]
-    df.to_csv(wh_fp_train, index_label=index_label)
-
-    index_label='test_id'
-    df = test_df[new_cols]
-    df.to_csv(wh_fp_test, index_label=index_label)
+gc_host = '35.185.55.5'
+local_host = '10.20.0.144'
 
 
+def load_train_all_xgb():
+    train_df = pd.concat([
+        load_train(),
+        load_train_lengths(),
+        load_train_common_words(),
+        load__train_metrics(),
+        load_train_tfidf(),
+        load_train_magic(),
+        load_wh_train()
+    ], axis=1)
 
-def get_most_frequent_start_words_ngrams(df, n):
-    l = list(df[question1].apply(str))+list(df[question2].apply(str))
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        del train_df[col]
 
-    def get_ngram_prefix(s):
-        s='' if s is None else s.lower()
-        lst = s.split()
-        if len(lst)<n:
-            return None
+    return train_df
 
-        return tuple(lst[:n])
+def load_test_all_xgb():
+    test_df = pd.concat([
+        load_test_lengths(),
+        load_test_common_words(),
+        load__test_metrics(),
+        load_test_tfidf(),
+        load_test_magic(),
+        load_wh_test()
+    ], axis=1)
 
-    m={}
-    for i in l:
-        pref = get_ngram_prefix(i)
-        if pref is None:
-            continue
 
-        if pref in m:
-            m[pref]+=1
-        else:
-            m[pref]=1
+    return test_df
 
-    m= [(k,v) for k,v in m.items()]
-    m.sort(key=lambda s: s[1], reverse=True)
+def plot_errors(imp):
+    train_runs= [x['train'] for x in imp]
+    test_runs= [x['test'] for x in imp]
 
-    return m
+    sz=len(train_runs[0])
+    x_axis=range(sz)
+    y_train = [np.mean([x[j] for x in train_runs]) for j in x_axis]
+    y_test = [np.mean([x[j] for x in test_runs]) for j in x_axis]
+
+    fig, ax = plt.subplots()
+    ax.plot(x_axis, y_train, label='train')
+    ax.plot(x_axis, y_test, label='test')
+    ax.legend()
+    plt.show()
+
+def xgboost_per_tree_results(estimator):
+    results_on_test = estimator.evals_result()['validation_1']['logloss']
+    results_on_train = estimator.evals_result()['validation_0']['logloss']
+    return {
+        'train': results_on_train,
+        'test': results_on_test
+    }
+
+def out_loss(loss):
+    print '====================================='
+    print '====================================='
+    print '====================================='
+    print loss
+    print '====================================='
+    print '====================================='
+    print '====================================='
+
+
+def write_results(name,mongo_host, per_tree_res, losses, imp, features):
+    from pymongo import MongoClient
+
+    imp=[x.item() for x in imp]
+    features=list(features)
+
+    client = MongoClient(mongo_host, 27017)
+    db = client['xgb_cv']
+    collection = db[name]
+    try:
+        collection.insert_one({
+            'results': per_tree_res,
+            'losses': losses,
+            'importance':imp,
+            'features':features
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        raise
+        # sleep(20)
+
+
+
+def submit_xgb(name):
+    seed=42
+    big = load_train_all_xgb()
+    small = load_test_all_xgb()
+
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
+
+    big, small = oversample_submit(big, small, seed)
+
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
+
+    train_target = big[TARGET]
+    del big[TARGET]
+    train_arr = big
+
+    print big.columns.values
+    test_arr = small
+
+    estimator = xgb.XGBClassifier(n_estimators=1500,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
+                                  max_depth=5)
+    print test_arr.columns.values
+    print len(train_arr)
+    print len(test_arr)
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
+
+    proba = estimator.predict_proba(test_arr)
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    small[TARGET] = proba[:, 1]
+
+    res = small[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
+
+
+
+
+name='wh_naive_1500_0.8_0.8_5'
+submit_xgb(name)
+
+
+print '============================'
+print 'DONE!'
+print '============================'
+#iters 1500, 1650, 1850, 1380, 1430
+
