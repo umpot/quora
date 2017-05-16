@@ -30,3 +30,34 @@
 
 
 24)length of longest common prefix word\char
+
+25)CV - split in the same proportion as train\test
+
+26)Tf but different idf(1/log^2, 1/sqrt etc)
+
+27)keyword extraction (simple for (example: top3 word by tfidf)), papers or frameworks
+28)Many custom 'similarity'-metrics.
+Ner-intersections(jacard, first, idf),
+topN idf - share-idf-df, jacard, etc
+topN idf form NOUNS(postag)
+NNP	Proper noun
+different keyword extraction algorithms
+Upper -words shares, jacard
+prefixes-similarity
+nouns-verbs-adj
+word2vec distances on keywords
+pair distances between representation words
+
+Problems:fancy words(adjectives??)
+Problems:India, Pakistan, iphone
+
+29)Cumulative list of key-words, Ner+topN by idf + ProperNouns
+some 'mixed' sets key-words + one verb(largest idf)
+
+30)Topic detection, scores for quora topics
+a)clustering + word2vec, bag-of-words, etc
+
+31)measure how 'common' is a question, tfidf?
+
+
+32)by-ner-features is_there_country, is_there_name, is_there_year etc, [(u'EVENT', 'World War 1')]

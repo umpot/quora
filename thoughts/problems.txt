@@ -1,0 +1,4 @@
+qid1                                                                                                           1639
+qid2                                                                                                           1640
+question1                                           What is the best place to celebrate New Year 2017 in Hyderabad?
+question2                                          Which is the best place to celebrate New Year 2015 in Hyderabad?

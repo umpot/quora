@@ -19,7 +19,6 @@ lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
-postag_q1, postag_q2='postag_q1', 'postag_q2'
 
 data_folder = '../../data/'
 
@@ -256,3 +255,32 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
+
+
+
+def get_m_from_tfidf(tfidf):
+    ff=tfidf.get_feature_names()
+    ii=tfidf.idf_
+    m={ff[j]:ii[j]for j in range(len(tfidf.get_feature_names()))}
+    return m
+
+def get_top_N_by_idf(s, N, m):
+    s=s.split()
+
+    def get_w_error(p):
+        try:
+            return m[p]
+        except:
+            print p
+            return -1
+
+    s=[(x, get_w_error(x)) for x in s]
+    s.sort(key=lambda s: s[1], reverse=True)
+    if len(s)<N:
+        d=N-len(s)
+        res = [x[0] for x in s]+d*[None]
+        return res
+    else:
+        res = [x[0] for x in s[:N]]
+        return res
