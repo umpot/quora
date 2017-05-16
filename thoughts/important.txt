@@ -58,6 +58,11 @@ some 'mixed' sets key-words + one verb(largest idf)
 a)clustering + word2vec, bag-of-words, etc
 
 31)measure how 'common' is a question, tfidf?
-
+        freq of words from 'l'-percintile by frequency
 
 32)by-ner-features is_there_country, is_there_name, is_there_year etc, [(u'EVENT', 'World War 1')]
+
+
+xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
+
+xx)Jackard\Dice\etc on ngrams
