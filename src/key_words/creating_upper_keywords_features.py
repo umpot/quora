@@ -552,9 +552,9 @@ def write_upper_keywords():
     tfidf = init_tfidf(train_df, test_df)
     word2vec = load_word2vec()
 
-    df=create_upper_key_words_features(train_df, word2vec, tfidf)
-    fp=os.path.join(data_folder, 'keywords', 'train_upper.csv')
-    df.to_csv(fp, index_label='id')
+    # df=create_upper_key_words_features(train_df, word2vec, tfidf)
+    # fp=os.path.join(data_folder, 'keywords', 'train_upper.csv')
+    # df.to_csv(fp, index_label='id')
 
     df=create_upper_key_words_features(test_df, word2vec, tfidf)
     fp=os.path.join(data_folder, 'keywords', 'test_upper.csv')
