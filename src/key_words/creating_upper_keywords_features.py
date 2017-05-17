@@ -290,7 +290,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-npartitions=4
+npartitions=32
 
 fp_model = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
 
