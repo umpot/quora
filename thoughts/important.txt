@@ -72,6 +72,8 @@ a)clustering + word2vec, bag-of-words, etc
 36)words_hamming NO
 37)FIX TFIDF SHARE 0 ===> NONE
 
+38)hash   !!!!!!!!!!!!!!!!!!!!!!
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

@@ -523,5 +523,6 @@ def write_prefixes():
     df.to_csv(prefixes_fp_test, index_label=index_label)
 
 
-write_prefixes()
+# write_prefixes()
 
+write_wh_naive()
