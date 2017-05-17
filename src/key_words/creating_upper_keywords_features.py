@@ -546,8 +546,8 @@ def create_upper_key_words_features(df, word2vec, tfidf):
 
 
 def write_upper_keywords():
-    train_df = load_train_nlp().head(1000)
-    test_df = load_test_nlp().head(1000)
+    train_df = load_train_nlp()
+    test_df = load_test_nlp()
 
     tfidf = init_tfidf(train_df, test_df)
     word2vec = load_word2vec()
