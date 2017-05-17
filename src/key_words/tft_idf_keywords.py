@@ -255,11 +255,26 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+top1='top1'
+top2='top2'
+
+def add_top_N_keywords(df, N, m):
+    df[top1]=df[lemmas_q1].apply(lambda s: get_top_N_by_idf(s,N,m))
+    df[top2]=df[lemmas_q2].apply(lambda s: get_top_N_by_idf(s,N,m))
+
+
+def df_for_exploring(df):
+    return df[[top1, top2,TARGET, ner_q1, ner_q2]].head(1000)
 
 
 
+def create_m_tfidf(df):
+    tfidf = TfidfVectorizer()
+    tfidf.fit_transform(list(df[lemmas_q1])+list(df[lemmas_q2]))
 
-def get_m_from_tfidf(tfidf):
+
     ff=tfidf.get_feature_names()
     ii=tfidf.idf_
     m={ff[j]:ii[j]for j in range(len(tfidf.get_feature_names()))}

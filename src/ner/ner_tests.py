@@ -117,15 +117,7 @@ def load_train_nlp():
         load_train_ner()
     ], axis=1)
 
-def load_test_nlp():
-    return pd.concat([
-        load_test(),
-        load_test_postag(),
-        load_test_lemmas(),
-        load_test_stems(),
-        load_test_tokens(),
-        load_test_ner()
-    ], axis=1)
+
 
 def load_test_all():
     return pd.concat([
@@ -264,3 +256,35 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
+from ast import literal_eval
+def prepare_df(df):
+    for col in [ner_q1, ner_q2]:
+        df[col] = df[col].apply(literal_eval)
+
+def filter_entities_by_type(e, t):
+    return [x[1] for x in e if x[0]==t]
+
+def add_specific_type_entity_col(df,t):
+    df['ent_{}_q1'.format(t)]=df[ner_q1].apply(lambda s: filter_entities_by_type(s, t))
+    df['ent_{}_q2'.format(t)]=df[ner_q2].apply(lambda s: filter_entities_by_type(s, t))
+
+
+def compare_person_entities(e1, e2):
+    pass
+
+
+def first_upper_counts(df):
+    l = list(df[question1])+list(df[question2])
+    l = [str(x).split()[0] for x in l]
+    m={}
+    for k in l:
+        if k in m:
+            m[k]+=1
+        else:
+            m[k]=1
+
+    m=[(k,v) for k,v in m.iteritems()]
+    m.sort(key=lambda s: s[1], reverse=True)
+
+    return m

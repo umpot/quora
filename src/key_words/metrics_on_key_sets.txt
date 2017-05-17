@@ -1,0 +1,6 @@
+0)num1, num2
+1)jaccard
+2)sorencen
+3)common\max
+4)tf-idf share\share-ratio\max\sumn
+5)wmd
