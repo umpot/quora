@@ -75,7 +75,11 @@ a)clustering + word2vec, bag-of-words, etc
 38)hash   !!!!!!!!!!!!!!!!!!!!!!
 
 39)VERBS!!!!!!!!!!
-40)contains URL!!!!! {'neg': 0.924625468164794, 'pos': 0.075374531835206} + '.' + numbers
+40)
+contains URL!!!!! {'neg': 0.924625468164794, 'pos': 0.075374531835206} + '.' + numbers
+strange {'neg': 0.7379757847319875, 'pos': 0.2620242152680125}
+has_number Out[15]: {'neg': 0.6968679045752854, 'pos': 0.30313209542471464}
+
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
