@@ -299,3 +299,7 @@ def get_top_N_by_idf(s, N, m):
     else:
         res = [x[0] for x in s[:N]]
         return res
+
+
+def explore_df(df):
+    return df[[top1, top2, TARGET, question1, question2]]

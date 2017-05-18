@@ -74,6 +74,9 @@ a)clustering + word2vec, bag-of-words, etc
 
 38)hash   !!!!!!!!!!!!!!!!!!!!!!
 
+39)VERBS!!!!!!!!!!
+40)contains URL!!!!! {'neg': 0.924625468164794, 'pos': 0.075374531835206} + '.' + numbers
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
