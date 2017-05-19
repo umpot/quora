@@ -3,6 +3,9 @@ import numpy as np
 import seaborn as sns
 import re
 import os
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 sns.set(color_codes=True)
 sns.set(style="whitegrid", color_codes=True)
@@ -238,6 +241,16 @@ def load_train_lengths():
 def load_test_lengths():
     df = pd.read_csv(length_test_fp, index_col='test_id')
     return df
+
+def shuffle_df(df, random_state=42):
+    np.random.seed(random_state)
+    return df.iloc[np.random.permutation(len(df))]
+
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
 
 
 

@@ -79,6 +79,17 @@ a)clustering + word2vec, bag-of-words, etc
 contains URL!!!!! {'neg': 0.924625468164794, 'pos': 0.075374531835206} + '.' + numbers
 strange {'neg': 0.7379757847319875, 'pos': 0.2620242152680125}
 has_number Out[15]: {'neg': 0.6968679045752854, 'pos': 0.30313209542471464}
+2016 in    {'neg': 0.5139010316488897, 'pos': 0.4860989683511103}!!!!!
+both contains 2016 {'neg': 0.3574488338886245, 'pos': 0.6425511661113755}   !!!!!!!!!!!!!!!!!!!
+Frequent not word tokens ????
+less_frequent_non_words {'neg': 0.7833446174678402, 'pos': 0.2166553825321598}
+frequent upper {'neg': 0.5589146654707058, 'pos': 0.44108533452929427}
+Android {'neg': 0.7879633320047827, 'pos': 0.21203666799521723}
+Trump {'neg': 0.36682682264466265, 'pos': 0.6331731773553374}
+
+
+
+avg freq? min freq ?
 
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc

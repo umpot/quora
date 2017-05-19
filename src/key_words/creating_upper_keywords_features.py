@@ -560,5 +560,46 @@ def write_upper_keywords():
     fp=os.path.join(data_folder, 'keywords', 'test_upper.csv')
     df.to_csv(fp, index_label='test_id')
 
+##########################################
+from collections import Counter
+
+
+def from_set_in_s(s, ss):
+    l = str(s).split()
+    for t in l:
+        if t in ss:
+            return True
+
+    return False
+
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
+
+
+
+def explore_for_most_frequent_uppers(df):
+    l=list(df[upper_q1])+list(df[upper_q2])
+    f=[]
+    for x in l:
+        f+=x
+
+    c= Counter(f)
+
+    m = c.most_common(50)
+    for tok in m:
+        ss=set([tok[0], tok[0].lower()])
+        bl = df[(df[question1].apply(lambda s: from_set_in_s(s, ss)))|(df[question2].apply(lambda s: from_set_in_s(s, ss)))]
+        print tok
+        print explore_target_ratio(bl)
+
+        print '======================================='
+
+
+
+##########################################
+
 
 write_upper_keywords()

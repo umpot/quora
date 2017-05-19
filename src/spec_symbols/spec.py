@@ -4,6 +4,10 @@ import seaborn as sns
 import re
 import os
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 sns.set(color_codes=True)
 sns.set(style="whitegrid", color_codes=True)
 pd.set_option('display.max_columns', 500)
@@ -265,6 +269,7 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 import re
+from collections import Counter
 
 dot_in_the_middle_pattern=re.compile('\w+\.\w+')
 
@@ -338,3 +343,78 @@ def get_with_number(df):
         return False
 
     return df[(df[question1].apply(lambda s: exists_token_that_match(s, has_num)))|(df[question2].apply(lambda s: exists_token_that_match(s, has_num)))]
+
+
+def get_frequent_questions(df):
+    l = list(df[question1].apply(str))+list(df[question2].apply(str))
+    c = Counter(l)
+    return c
+
+
+def get_numbers_counts(df):
+    l = list(df[tokens_q1].apply(str))+list(df[tokens_q2].apply(str))
+    res=[]
+    for x in l:
+        for t in x.split():
+            if t.isdigit():
+                res.append(t)
+
+
+    c = Counter(res)
+
+    return c
+
+
+def get_non_word_counts(df):
+    punct = re.compile('[\'\.\?\!:;\,"\(\)]')
+    def strip_punct(s):
+        s=str(s)
+        s=re.sub(punct, '',s)
+        return s
+
+    l = list(df[question1].apply(strip_punct))+list(df[question2].apply(strip_punct))
+    res=[]
+    for x in l:
+        for t in x.split():
+            if not t.isalpha():
+                res.append(t)
+
+
+    c = Counter(res)
+
+    return c
+
+
+def year_in_s(s):
+    l = str(s).split()
+    for t in l:
+        if t.isdigit():
+            n = int(t)
+            if n>1000 and n < 2200:
+                return True
+
+    return False
+
+
+def from_set_in_s(s, ss):
+    l = str(s).split()
+    for t in l:
+        if t in ss:
+            return True
+
+    return False
+
+
+def get_most_common_non_words(df, n):
+    return set([y[0] for y in get_non_word_counts(df).most_common(n)])
+
+
+def less_frequent_non_words(df, N):
+    c=get_non_word_counts(df)
+
+    return [k for k,v in c.iteritems()][:N]
+
+
+
+
+
