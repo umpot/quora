@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../../data/'
+data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -290,29 +290,9 @@ def load_wh_test():
 ######################################################################################
 
 
-
-
-
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-upper_keywords_fp_train=os.path.join(data_folder, 'keywords', 'train_upper.csv')
-upper_keywords_test=os.path.join(data_folder, 'keywords', 'test_upper.csv')
-
-def load_upper_keywords_train():
-    df = pd.read_csv(upper_keywords_fp_train, index_col='id')
-    return df
-
-def load_upper_keywords_test():
-    df = pd.read_csv(upper_keywords_test, index_col='test_id')
-    return df
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
+############################################################3
+############################################################3
+############################################################3
 import pandas as pd
 import numpy as np
 
@@ -364,6 +344,96 @@ def oversample(train_df, test_df, random_state=42):
 
     return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
+
+
+############################################################3
+############################################################3
+############################################################3
+TARGET = 'is_duplicate'
+
+wh1='wh1'
+wh2='wh2'
+wh_list_1='wh_list_1'
+wh_list_2='wh_list_2'
+wh_same = 'wh_same'
+
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
+
+
+
+questions_types=[
+    'why', 'what', 'who', 'how', 'where', 'why', 'when', 'which'
+]
+
+modals=[
+    'can',
+    'could',
+    'may',
+    'might',
+    'shall',
+    'should',
+    'will',
+    'would',
+    'must'
+]
+
+
+def add_the_same_wh_col(df):
+    df[wh_same]=df[[wh1, wh2]].apply(lambda s: s[wh1] == s[wh2], axis=1)
+    df[wh_same]=df[wh_same].apply(lambda s: 1 if s else 0)
+
+def add_wh_cols(df):
+    df[wh1] = df[lemmas_q1].apply(get_wh_type)
+    df[wh2] = df[lemmas_q2].apply(get_wh_type)
+
+
+def add_wh_list_cols(df):
+    df[wh_list_1] = df[lemmas_q1].apply(get_wh_list)
+    df[wh_list_2] = df[lemmas_q2].apply(get_wh_list)
+
+
+
+
+def get_wh_type(s):
+    s='' if s is None else str(s).lower()
+
+    for w in questions_types:
+        if s.startswith(w):
+            return w
+
+def get_wh_list(s):
+    l=s.split()
+    res=[]
+    for t in l:
+        if t in questions_types:
+            res.append(t)
+
+    return res
+
+
+wh_fp_train=os.path.join(data_folder, 'wh', 'wh_train.csv')
+wh_fp_test=os.path.join(data_folder, 'wh', 'wh_test.csv')
+
+def load_wh_train():
+    df = pd.read_csv(wh_fp_train, index_col='id')
+    return df
+
+def load_wh_test():
+    df = pd.read_csv(wh_fp_test, index_col='test_id')
+    return df
+
+
+
+
 
 
 ############################################################3
@@ -390,7 +460,6 @@ def load_train_all_xgb():
         load_train_tfidf(),
         load_train_magic(),
         load_wh_train()
-        # load_upper_keywords_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -398,6 +467,19 @@ def load_train_all_xgb():
         del train_df[col]
 
     return train_df
+
+def load_test_all_xgb():
+    test_df = pd.concat([
+        load_test_lengths(),
+        load_test_common_words(),
+        load__test_metrics(),
+        load_test_tfidf(),
+        load_test_magic(),
+        load_wh_test()
+    ], axis=1)
+
+
+    return test_df
 
 def plot_errors(imp):
     train_runs= [x['train'] for x in imp]
@@ -456,79 +538,56 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 
 
-def perform_xgb_cv(name, mongo_host):
-    df = load_train_all_xgb()
-    folds =5
-    seed = 42
+def submit_xgb(name):
+    seed=42
+    big = load_train_all_xgb()
+    small = load_test_all_xgb()
 
-    skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
-    losses = []
-    n_est=[]
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    big, small = oversample_submit(big, small, seed)
 
-        big, small = oversample(big, small, seed)
+    print explore_target_ratio(big)
+    # print explore_target_ratio(small)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    train_target = big[TARGET]
+    del big[TARGET]
+    train_arr = big
 
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
+    print big.columns.values
+    test_arr = small
 
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
+    estimator = xgb.XGBClassifier(n_estimators=1600,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
+                                  max_depth=5)
+    print test_arr.columns.values
+    print len(train_arr)
+    print len(test_arr)
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
 
-        estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5)
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr)
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
-        estimator.fit(
-            train_arr, train_target,
-            eval_set=eval_set,
-            eval_metric='logloss',
-            verbose=True,
-            early_stopping_rounds=300
-        )
+    proba = estimator.predict_proba(test_arr)
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    small[TARGET] = proba[:, 1]
 
-        proba = estimator.predict_proba(test_arr)
-
-        loss = log_loss(test_target, proba)
-        out_loss(loss)
-        losses.append(loss)
-        per_tree_res = xgboost_per_tree_results(estimator)
-        ii = estimator.feature_importances_
-        n_est.append(estimator.best_iteration)
-
-        # xgb.plot_importance(estimator)
-        # plot_errors(stats)
+    res = small[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
-        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
 
 
-    out_loss('avg = {}'.format(np.mean(losses)))
+name='magic2_1100_0.8_0.8_5_seed111'
+submit_xgb(name)
 
-
-name='try_xgb_magic2_wh_naive_0.8_0.8_5'
-perform_xgb_cv(name, gc_host)
-
-#1127
 
 print '============================'
 print 'DONE!'
 print '============================'
-
-
-
-
+#iters 1500, 1650, 1850, 1380, 1430
 
