@@ -290,54 +290,95 @@ def load_wh_test():
 ######################################################################################
 from collections import Counter
 
-freq_question1,  freq_question2,  q1_q2_intersect='freq_question1',  'freq_question2',  'q1_q2_intersect'
+similar_except='similar_except'
+
+upper_stops=[
+    'What','Which','Why','Where','Can','Does','Who', 'Do', 'When', 'Will', 'Is', 'Should', 'Could'
+]
 
 
-def get_all_questions_flat():
-    train_df, test_df = load_train(), load_test()
-    l= list(train_df[question1])+list(train_df[question2])+list(test_df[question1])+list(test_df[question2])
-    return Counter(l)
+def is_similar_except(a,b):
+    a=str(a).split()
+    b=str(b).split()
+
+    if len(a)!=len(b):
+        return False
+
+    diff=0
+
+    for i in range(len(a)):
+        if a[i]!=b[i]:
+            diff+=1
+
+        if diff>1:
+            return False
+
+    if diff==1:
+        return True
+    else:
+        return False
 
 
-def get_all_questions_flat_train():
-    df = load_train()
-    l= list(df[question1])+list(df[question2])
-    return Counter(l)
-
-def get_all_questions_flat_test():
-    df = load_test()
-    l= list(df[question1])+list(df[question2])
-    return Counter(l)
+def is_upper(s):
+    return s[0].isupper()
 
 
-def most_common_intersection(N):
-    c_train = get_all_questions_flat_train()
-    c_test=get_all_questions_flat_test()
+def get_different_tokens(a,b):
+    a=str(a).split()
+    b=str(b).split()
 
-    a=set([x[0] for x in c_train.most_common(N)])
-    b=set([x[0] for x in c_test.most_common(N)])
+    for i in range(len(a)):
+        if a[i]!=b[i]:
+            return (a[i], b[i])
 
-    return a.intersection(b)
+    raise
 
-def filter_df(df, s):
-    return df[(df[question1].apply(lambda x: str(x)==s))|(df[question2].apply(lambda x: str(x)==s))]
+def is_similar_except_upper(a,b):
+    a=str(a).split()
+    b=str(b).split()
 
-def explore_common_counts_test(c_train, c_test, N=100):
-    for x in c_test.most_common(N):
-        print x[0], c_train[x[0]], c_test[x[0]]
+    if len(a)!=len(b):
+        return False
+
+    diff=0
+    upper_diff=0
+
+    for i in range(len(a)):
+        if a[i]!=b[i]:
+            diff+=1
+            if is_upper(a[i]) and is_upper(b[i]):
+                if a[i] not in upper_stops and b[i] not in upper_stops:
+                    upper_diff+=1
+
+        if diff>1:
+            return False
+
+    if diff==1 and upper_diff==1:
+        return True
+    else:
+        return False
+
+def explore_similar_except_upper(df):
+    df[similar_except]=df[[tokens_q1, tokens_q2]].apply(lambda s: is_similar_except_upper(s[tokens_q1], s[tokens_q2]), axis=1)
+
+    return df[df[similar_except]]
 
 
-def explore_common_counts_train(c_train, c_test, N=100):
-    for x in c_train.most_common(N):
-        print x[0], c_train[x[0]], c_test[x[0]]
+def explore_similar_except(df):
+    df[similar_except]=df[[tokens_q1, tokens_q2]].apply(lambda s: is_similar_except(s[tokens_q1], s[tokens_q2]), axis=1)
+
+    return df[df[similar_except]]
 
 
-def drop_dups(df):
-    return df[~df.index.duplicated(keep='first')]
+def get_upper_stop_words():
+    df = explore_similar_except_upper(load_train_nlp())
+    pos = df[df[TARGET]==1]
+    s = pos[[tokens_q1, tokens_q2]].apply(lambda s: get_different_tokens(s[tokens_q1], s[tokens_q2]), axis=1)
+    s=list(s)
+    res=[]
+    for t in s:
+        res.append(t[0])
+        res.append(t[1])
 
+    return Counter(res)
 
-def explore_magic_train():
-    return pd.concat([
-        load_train(),
-        load_train_magic()
-    ], axis=1)

@@ -16,12 +16,15 @@ import os
 sns.set(color_codes=True)
 sns.set(style="whitegrid", color_codes=True)
 
-gc_host = '35.185.55.5'
+gc_host = '104.197.97.20'
 local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
 
 host = gc_host
 
-client = MongoClient(host, 27017)
+client=MongoClient(host, 27017)
+client['admin'].authenticate(user, password)
 
 
 def plot_errors(name, fold=0):

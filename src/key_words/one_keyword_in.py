@@ -284,60 +284,38 @@ def load_wh_test():
     df = pd.read_csv(wh_fp_test, index_col='test_id')
     return df
 
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-from collections import Counter
-
-freq_question1,  freq_question2,  q1_q2_intersect='freq_question1',  'freq_question2',  'q1_q2_intersect'
+    ######################################################################################
+    ######################################################################################
+    ######################################################################################
+    ######################################################################################
 
 
-def get_all_questions_flat():
-    train_df, test_df = load_train(), load_test()
-    l= list(train_df[question1])+list(train_df[question2])+list(test_df[question1])+list(test_df[question2])
-    return Counter(l)
+in_q1, in_q2='in_q1', 'in_q2'
+inn='inn'
+
+def add_in_cols(df, w):
+    w=w
+    df[in_q2]=df[question2].apply(lambda s: w in str(s))
+    df[in_q1]=df[question1].apply(lambda s: w in str(s))
+    def m(x,y):
+        if not x and not y:
+            return 0
+        elif x and y:
+            return 1
+        else:
+            return -1
+
+    df['inn'] = df.apply(lambda s: m(s[in_q1], s[in_q2]), axis=1)
 
 
-def get_all_questions_flat_train():
-    df = load_train()
-    l= list(df[question1])+list(df[question2])
-    return Counter(l)
-
-def get_all_questions_flat_test():
-    df = load_test()
-    l= list(df[question1])+list(df[question2])
-    return Counter(l)
 
 
-def most_common_intersection(N):
-    c_train = get_all_questions_flat_train()
-    c_test=get_all_questions_flat_test()
-
-    a=set([x[0] for x in c_train.most_common(N)])
-    b=set([x[0] for x in c_test.most_common(N)])
-
-    return a.intersection(b)
-
-def filter_df(df, s):
-    return df[(df[question1].apply(lambda x: str(x)==s))|(df[question2].apply(lambda x: str(x)==s))]
-
-def explore_common_counts_test(c_train, c_test, N=100):
-    for x in c_test.most_common(N):
-        print x[0], c_train[x[0]], c_test[x[0]]
-
-
-def explore_common_counts_train(c_train, c_test, N=100):
-    for x in c_train.most_common(N):
-        print x[0], c_train[x[0]], c_test[x[0]]
-
-
-def drop_dups(df):
-    return df[~df.index.duplicated(keep='first')]
-
-
-def explore_magic_train():
-    return pd.concat([
-        load_train(),
-        load_train_magic()
-    ], axis=1)
+def explore_for_keywords(df,ww):
+    for w in ww:
+        add_in_cols(df,w)
+        x=df[df[inn]==1]
+        y=df[df[inn]==-1]
+        print w
+        print '1: len={}, {}'.format(len(x), explore_target_ratio(x))
+        print '-1: len={}, {}'.format(len(y), explore_target_ratio(y))
+        print '======================================================'

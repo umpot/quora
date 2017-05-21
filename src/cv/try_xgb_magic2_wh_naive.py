@@ -377,8 +377,10 @@ import json
 from time import sleep
 import traceback
 
-gc_host = '35.185.55.5'
+gc_host = '104.197.97.20'
 local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
 
 
 def load_train_all_xgb():
@@ -439,6 +441,7 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
     features=list(features)
 
     client = MongoClient(mongo_host, 27017)
+    client['admin'].authenticate(user, password)
     db = client['xgb_cv']
     collection = db[name]
     try:

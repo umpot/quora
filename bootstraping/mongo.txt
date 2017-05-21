@@ -1,0 +1,12 @@
+use admin
+db.createUser(
+  {
+    user: "ubik",
+    pwd: "nfrf[eqyz",
+    roles: [ { role: "root", db: "admin" } ]
+  }
+);
+db.grantRolesToUser("ubik",["readWrite"])
+db.grantRolesToUser("ubik",["userAdminAnyDatabase"])
+db.grantRolesToUser("ubik",["readWriteAnyDatabase"])
+db.grantRolesToUser("ubik",["dbAdminAnyDatabase"])

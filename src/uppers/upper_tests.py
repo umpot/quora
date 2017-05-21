@@ -271,108 +271,14 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
-upper_stop_words =\
-['What',
- 'How',
- 'Why',
- 'Is',
- 'Which',
- 'Can',
- 'I',
- 'Who',
- 'Do',
- 'Where',
- 'If',
- "What's",
- 'Does',
- 'Are',
- 'Should',
- 'When',
- 'Will',
- 'In',
- 'My',
- "I'm",
- 'Did',
- 'Would',
- 'Has',
- 'Have',
- 'Was',
- 'Could',
- 'As',
- 'The',
- 'A',
- 'On',
- 'For',
- 'After',
- 'Am',
- 'At',
- 'Were',
- 'From',
- 'With',
- "I've",
- 'To',
- 'What\xe2\x80\x99s',
- 'Any',
- # 'Daniel',
- 'We',
- 'Since',
- "Who's",
- 'It',
- 'There',
- 'According',
- 'Now',
- # 'Indian',
- 'Given',
- 'what',
- 'Difference',
- 'While',
- 'You',
- 'Some',
- # 'India:',
- 'During',
- 'Whats',
- # 'Harvard',
- 'People',
- 'Between',
- 'By',
- 'Most',
- "How's",
- 'So',
- 'Whom',
- # 'Donald',
- 'All',
- # 'Instagram',
- 'This',
- 'Being',
- 'Someone',
- 'Hi',
- 'Two',
- 'One',
- 'I\xe2\x80\x99m',
- 'An',
- 'how',
- 'Dating',
- # 'Quora:',
- 'Under',
- 'Besides',
- 'Whose',
- "It's",
- 'Life',
- 'Whenever',
- # 'Android',
- 'Suppose',
- 'World',
- "Where's",
- 'Every',
- 'Whether',
- 'Psychology',
- 'Time',
- 'Explain',
- 'Without',
- 'Best',
- # 'Star',
- # 'English'
- ]
+upper_stop_words = \
+    {'What', 'How', 'Why', 'Is', 'Which', 'Can', 'I', 'Who', 'Do', 'Where', 'If', "What's", 'Does', 'Are', 'Should',
+     'When', 'Will', 'In', 'My', "I'm", 'Did', 'Would', 'Has', 'Have', 'Was', 'Could', 'As', 'The', 'A', 'On', 'For',
+     'After', 'Am', 'At', 'Were', 'From', 'With', "I've", 'To', 'What\xe2\x80\x99s', 'Any', 'We', 'Since', "Who's",
+     'It', 'There', 'According', 'Now', 'Given', 'what', 'Difference', 'While', 'You', 'Some', 'During', 'Whats',
+     'People', 'Between', 'By', 'Most', "How's", 'So', 'Whom', 'All', 'This', 'Being', 'Someone', 'Hi', 'Two', 'One',
+     'I\xe2\x80\x99m', 'An', 'how', 'Dating', 'Under', 'Besides', 'Whose', "It's", 'Life', 'Whenever', 'Suppose',
+     'World', "Where's", 'Every', 'Whether', 'Psychology', 'Time', 'Explain', 'Without', 'Best'}
 
 
 def first_upper_counts(df):
@@ -390,16 +296,28 @@ def first_upper_counts(df):
 
     return m
 
+
 def get_uppers(s):
-    s=str(s).split()
-    s=filter(lambda s: s[0].isupper(),s)
-    s=filter(lambda s: s not in upper_stop_words, s)
+    s = str(s).split()
+    s = filter(lambda s: s[0].isupper(), s)
+    s = filter(lambda s: s not in upper_stop_words, s)
     return ' '.join(s)
 
-upper_q1='upper_q1'
-upper_q2='upper_q2'
+
+upper_q1 = 'upper_q1'
+upper_q2 = 'upper_q2'
+from collections import Counter
+
+
+def get_upper_counter(df):
+    add_upper_columns(df)
+    l = list(df[upper_q1]) + list(df[upper_q2])
+    l = ' '.join(l).split()
+    l = filter(lambda s: s not in upper_stop_words, l)
+
+    return Counter(l)
 
 
 def add_upper_columns(df):
-    df[upper_q1]=df[tokens_q1].apply(get_uppers)
-    df[upper_q2]=df[tokens_q2].apply(get_uppers)
+    df[upper_q1] = df[tokens_q1].apply(get_uppers)
+    df[upper_q2] = df[tokens_q2].apply(get_uppers)

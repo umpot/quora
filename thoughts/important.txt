@@ -91,6 +91,31 @@ Trump {'neg': 0.36682682264466265, 'pos': 0.6331731773553374}
 
 avg freq? min freq ?
 
+41)One Upper-word diff
+frequencies(avg) of diff-tokens, is diff token stop, auxial
+
+42)magic combinations q1_freq\q2_freq etc
+43)hand-tuning most frequent
+
+44)Frequency of target when some combo of words present in q1(q1 and q2)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+45)india!!!!!
+india=set(['demonetization', 'india', 'rs', 'rs,', '500', '1000', 'rupee', 'ban'])
+trump=set(['trump', 'donald', 'clinton', 'hillary','presidential'])
+x=df[df[in_q1]>1]
+{'neg': 0.038034331874789634, 'pos': 0.9619656681252103}
+z=df[(df[in_q1]>1)&(df[in_q2]>1)]
+
+46)one keyword inn!
+x=df[df[inn]==-1]
+explore_target_ratio(x)
+Out[10]: {'neg': 0.9753694581280788, 'pos': 0.024630541871921183}
+
+x=df[df[inn]==1]
+explore_target_ratio(x)
+Out[12]: {'neg': 0.8087954110898662, 'pos': 0.19120458891013384}
+
+
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
