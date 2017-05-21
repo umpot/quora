@@ -54,6 +54,7 @@ pip install jupyter
 pip install IPython
 pip install dask[complete]
 pip install pyemd
+pip install joblib
 
 pip install -U spacy
 python -m spacy download en

@@ -116,21 +116,21 @@ def load_train_all():
 def load_train_nlp():
     return pd.concat([
         load_train(),
-        load_train_postag(),
-        load_train_lemmas(),
-        load_train_stems(),
+        # load_train_postag(),
+        # load_train_lemmas(),
+        # load_train_stems(),
         load_train_tokens(),
-        load_train_ner()
+        # load_train_ner()
     ], axis=1)
 
 def load_test_nlp():
     return pd.concat([
         load_test(),
-        load_test_postag(),
-        load_test_lemmas(),
-        load_test_stems(),
+        # load_test_postag(),
+        # load_test_lemmas(),
+        # load_test_stems(),
         load_test_tokens(),
-        load_test_ner()
+        # load_test_ner()
     ], axis=1)
 
 def load_test_all():
@@ -300,6 +300,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 npartitions=4
+from joblib import Parallel, delayed
 
 top_upper_200_fp=os.path.join(data_folder, 'top_uppers_200.json')
 in_q1, in_q2='in_upper_q1', 'in_upper_q2'
@@ -319,30 +320,54 @@ def get_top_upper(a,b, top_list, top_set):
 
     return s[0][0]
 
+# def create_frequencies(df, top_list):
+#     res = {}
+#     for w in top_list:
+#         t=time()
+#         add_in_cols(df,w)
+#         print 'time {}'.format(time()-t)
+#         x=df[df[inn]==1]
+#         y=df[df[inn]==-1]
+#         ratio_x = explore_target_ratio(x)
+#         ratio_y = explore_target_ratio(y)
+#
+#         print w
+#         print 1, ratio_x
+#         print -1, ratio_y
+#         print '==========================='
+#
+#         res[w]={1: ratio_x, -1: ratio_y}
+#
+#     return res
+
+
 def create_frequencies(df, top_list):
-    res = {}
-    for w in top_list:
-        t=time()
-        add_in_cols(df,w)
-        print 'time {}'.format(time()-t)
-        x=df[df[inn]==1]
-        y=df[df[inn]==-1]
-        ratio_x = explore_target_ratio(x)
-        ratio_y = explore_target_ratio(y)
-
-        print w
-        print 1, ratio_x
-        print -1, ratio_y
-        print '==========================='
-
-        res[w]={1: ratio_x, -1: ratio_y}
+    res = Parallel(n_jobs=4, verbose=1)(delayed(get_freq)(w, df) for w in top_list)
+    # for w in top_list:
+    #     get_freq(w)
+    res={x[0]:x[1] for x in res}
 
     return res
+
+def get_freq(w, df):
+    t=time()
+    add_in_cols(df, w)
+    print 'time {}'.format(time()-t)
+    x = df[df[inn] == 1]
+    y = df[df[inn] == -1]
+    ratio_x = explore_target_ratio(x)
+    ratio_y = explore_target_ratio(y)
+    print w
+    print 1, ratio_x
+    print -1, ratio_y
+    print '==========================='
+    return w, {1: ratio_x, -1: ratio_y}
 
 def add_upper_frequencies_df(df, top_list, top_set, freq):
     # top_list= load_top_200_uppers()
     # top_set=set(top_list)
     # freq = create_frequencies(df, top_list)
+    print freq
     def get_upper_plus(a,b):
         up = get_top_upper(a,b, top_list, top_set)
         if up is None:
@@ -355,7 +380,7 @@ def add_upper_frequencies_df(df, top_list, top_set, freq):
         up = get_top_upper(a,b, top_list, top_set)
         if up is None:
             return None
-        if (up in a and up not in b) and (up in b and up not in a):
+        if (up in a and up not in b) or (up in b and up not in a):
             return freq[up][-1]['pos']
         return None
 
@@ -378,7 +403,7 @@ def process_train_test_df(train_df, test_df, update_df):
 def write_upper_frequencies():
     train_df, test_df = load_train_nlp(), load_test_nlp()
     train_df, test_df = shuffle_df(train_df, random_state=42), shuffle_df(test_df, random_state=42)
-    train_df, test_df = train_df.head(100), test_df.head(100)
+    # train_df, test_df = train_df.head(10000), test_df.head(10000)
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     for big_ind, small_ind in skf.split(np.zeros(len(train_df)), train_df[TARGET]):
@@ -408,25 +433,10 @@ def load_top_200_uppers():
     res= json.load(open(top_upper_200_fp))
     return [x[0] for x in res]
 
-def add_in_cols(df, w):
-    w=w
-    df[in_q2]=from_pandas(df[question2], npartitions=npartitions).apply(lambda s: w in str(s)).compute()
-    df[in_q1]=from_pandas(df[question1], npartitions=npartitions).apply(lambda s: w in str(s)).compute()
-    def m(x,y):
-        if not x and not y:
-            return 0
-        elif x and y:
-            return 1
-        else:
-            return -1
-
-    df[inn] = from_pandas(df, npartitions=npartitions).apply(lambda s: m(s[in_q1], s[in_q2]), axis=1).compute()
-
-
 # def add_in_cols(df, w):
 #     w=w
-#     df[in_q2]=df[question2].apply(lambda s: w in str(s))
-#     df[in_q1]=df[question1].apply(lambda s: w in str(s))
+#     df[in_q2]=from_pandas(df[question2], npartitions=npartitions).apply(lambda s: w in str(s)).compute()
+#     df[in_q1]=from_pandas(df[question1], npartitions=npartitions).apply(lambda s: w in str(s)).compute()
 #     def m(x,y):
 #         if not x and not y:
 #             return 0
@@ -435,7 +445,22 @@ def add_in_cols(df, w):
 #         else:
 #             return -1
 #
-#     df[inn] = df.apply(lambda s: m(s[in_q1], s[in_q2]), axis=1)
+#     df[inn] = from_pandas(df, npartitions=npartitions).apply(lambda s: m(s[in_q1], s[in_q2]), axis=1).compute()
+
+
+def add_in_cols(df, w):
+    w=w
+    df[in_q2]=df[question2].apply(lambda s: w in str(s))
+    df[in_q1]=df[question1].apply(lambda s: w in str(s))
+    def m(x,y):
+        if not x and not y:
+            return 0
+        elif x and y:
+            return 1
+        else:
+            return -1
+
+    df[inn] = df.apply(lambda s: m(s[in_q1], s[in_q2]), axis=1)
 
 def explore_for_keywords(df,ww):
     for w in ww:
