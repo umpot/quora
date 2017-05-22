@@ -575,7 +575,7 @@ def submit_xgb(name):
     print big.columns.values
     test_arr = small
 
-    estimator = xgb.XGBClassifier(n_estimators=1600,
+    estimator = xgb.XGBClassifier(n_estimators=1300,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=5)
@@ -606,5 +606,5 @@ submit_xgb(name)
 print '============================'
 print 'DONE!'
 print '============================'
-#iters 1500, 1650, 1850, 1380, 1430
+#1123, 974, 862, 1124, 1301
 
