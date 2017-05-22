@@ -22,14 +22,13 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 instance_name = 'instance-1'
 zone='us-west1-b'
-folder='/home/dd_petrovskiy/kg/data/keywords'
+folder='/home/dd_petrovskiy/kg/quora/src/submit'
 
 
 
 
 files = [
-    'train_upper_freq_200.csv',
-    'test_upper_freq_200.csv'
+    'submit_with_one_upper_0.8_0.8_5_seed111.csv'
 ]
 
 destination='.'

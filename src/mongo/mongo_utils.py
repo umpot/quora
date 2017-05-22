@@ -59,3 +59,11 @@ def explore_importance(name, fold=0):
     ys=[x[1] for x in res]
     sns.barplot(xs, ys)
     sns.plt.show()
+
+
+def get_losses(name, fold=4):
+    db = client['xgb_cv']
+    results = db[name]
+    losses = [x['losses'] for x in results.find()][fold]
+
+    return losses
