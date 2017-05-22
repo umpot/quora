@@ -346,8 +346,8 @@ def add_in_cols(df, w):
 
 
 def create_frequencies(df, top_list):
-    l = split_list(top_list, 5)
-    res = Parallel(n_jobs=4, verbose=1)(delayed(get_freq_list)(ww, df) for ww in l)
+    l = split_list(top_list, 10)
+    res = Parallel(n_jobs=24, verbose=1)(delayed(get_freq_list)(ww, df) for ww in l)
     # for w in top_list:
     #     get_freq(w)
     res={x[0]:x[1] for x in flat_list(res)}
@@ -418,9 +418,8 @@ def add_avg_frequencies_df(df, top_list, freq, N):
             return [None]
         return [t[1]]
 
-    new_cols = []
-    df['tmp_sum_plus']=[]
-    df['tmp_sum_minus']=[]
+    df['tmp_sum_plus']=[[] for x in range(len(df))]
+    df['tmp_sum_minus']=[[] for x in range(len(df))]
     for w in top_list:
         df['tmp']=df.apply(lambda s: get_freq_tuple(s[tokens_set1], s[tokens_set2], w, freq), axis=1)
         df['tmp_p']=df['tmp'].apply(get_pos_from_tmp)
@@ -484,9 +483,9 @@ def write_top_frequencies(N):
     train_df[new_cols].to_csv(fp, index_label='id')
 
 
-    process_train_test_df(train_df, test_df, None, top_list)
+    process_train_test_df(train_df, test_df, None, top_list, N)
     fp=os.path.join(data_folder, 'keywords', 'test_top_{}_avg_freq.csv'.format(N))
     test_df[new_cols].to_csv(fp, index_label='test_id')
 
 
-write_top_frequencies(20)
+write_top_frequencies(200)
