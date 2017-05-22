@@ -463,7 +463,7 @@ def add_set_cols(df):
 def write_top_frequencies(N):
     train_df, test_df = load_train_nlp(), load_test_nlp()
     train_df, test_df = shuffle_df(train_df, random_state=42), shuffle_df(test_df, random_state=42)
-    train_df, test_df = train_df.head(5000), test_df.head(5000)
+    # train_df, test_df = train_df.head(5000), test_df.head(5000)
     add_set_cols(train_df)
     add_set_cols(test_df)
 
