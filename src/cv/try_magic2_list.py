@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -84,26 +84,12 @@ TEST_METRICS_FP = [
     data_folder + 'distances/'+'test_metrics_sequence_tokens.csv'
 ]
 
-def fix_nans(df):
-    def blja(s):
-        if s!=s:
-            return ''
-        return s
-
-    for col in [question1, question2]:
-        df[col]=df[col].apply(blja)
-
-    return df
 
 def load_train():
-    return fix_nans(
-        pd.read_csv(fp_train, index_col='id')
-    )
+    return pd.read_csv(fp_train, index_col='id')
 
 def load_test():
-    return fix_nans(
-        pd.read_csv(fp_test, index_col='test_id')
-    )
+    return pd.read_csv(fp_test, index_col='test_id')
 
 
 def load__train_metrics():
@@ -303,94 +289,288 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 
-upper_stop_words = \
-    {'What', 'How', 'Why', 'Is', 'Which', 'Can', 'I', 'Who', 'Do', 'Where', 'If', "What's", 'Does', 'Are', 'Should',
-     'When', 'Will', 'In', 'My', "I'm", 'Did', 'Would', 'Has', 'Have', 'Was', 'Could', 'As', 'The', 'A', 'On', 'For',
-     'After', 'Am', 'At', 'Were', 'From', 'With', "I've", 'To', 'What\xe2\x80\x99s', 'Any', 'We', 'Since', "Who's",
-     'It', 'There', 'According', 'Now', 'Given', 'what', 'Difference', 'While', 'You', 'Some', 'During', 'Whats',
-     'People', 'Between', 'By', 'Most', "How's", 'So', 'Whom', 'All', 'This', 'Being', 'Someone', 'Hi', 'Two', 'One',
-     'I\xe2\x80\x99m', 'An', 'how', 'Dating', 'Under', 'Besides', 'Whose', "It's", 'Life', 'Whenever', 'Suppose',
-     'World', "Where's", 'Every', 'Whether', 'Psychology', 'Time', 'Explain', 'Without', 'Best'}
-
-in_q1, in_q2='in_upper_q1', 'in_upper_q2'
-inn='inn_upper'
 
 
-def first_upper_counts(df):
-    l = list(df[question1]) + list(df[question2])
-    l = [str(x).split()[0] for x in l]
-    m = {}
-    for k in l:
-        if k in m:
-            m[k] += 1
-        else:
-            m[k] = 1
-
-    m = [(k, v) for k, v in m.iteritems()]
-    m.sort(key=lambda s: s[1], reverse=True)
-
-    return m
 
 
-def get_uppers(s):
-    s = str(s).split()
-    s = filter(lambda s: s[0].isupper(), s)
-    s = filter(lambda s: s not in upper_stop_words, s)
-    return ' '.join(s)
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+upper_keywords_fp_train=os.path.join(data_folder, 'keywords', 'train_upper.csv')
+upper_keywords_test=os.path.join(data_folder, 'keywords', 'test_upper.csv')
+
+def load_upper_keywords_train():
+    df = pd.read_csv(upper_keywords_fp_train, index_col='id')
+    return df
+
+def load_upper_keywords_test():
+    df = pd.read_csv(upper_keywords_test, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
 
 
-upper_q1 = 'upper_q1'
-upper_q2 = 'upper_q2'
-from collections import Counter
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+one_upper_fp_train=os.path.join(data_folder, 'keywords', 'train_upper_freq_200.csv')
+one_upper_fp_test=os.path.join(data_folder, 'keywords', 'test_upper_freq_200.csv')
+
+def load_one_upper_train():
+    df = pd.read_csv(one_upper_fp_train, index_col='id')
+    return df
+
+def load_one_upper_test():
+    df = pd.read_csv(one_upper_fp_test, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+magic2_list_fp_train=os.path.join(data_folder, 'magic', 'magic2_list_train.csv')
+magic2_list_fp_test=os.path.join(data_folder, 'magic', 'magic2__list_test.csv')
+
+def load_magic2_list_train():
+    df = pd.read_csv(magic2_list_fp_train, index_col='id')
+    return df
+
+def load_magic2_list_test():
+    df = pd.read_csv(magic2_list_fp_test, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+import pandas as pd
+import numpy as np
+
+TARGET = 'is_duplicate'
+
+INDEX_PREFIX= 100000000
+#old
+{'pos': 0.369197853026293,
+ 'neg': 0.630802146973707}
 
 
-def get_upper_counter(df):
-    add_upper_columns(df)
-    l = list(df[upper_q1]) + list(df[upper_q2])
-    l = ' '.join(l).split()
-    l = filter(lambda s: s not in upper_stop_words, l)
+#new
+r1 = 0.174264424749
+r0 = 0.825754788586
 
-    return Counter(l)
+""""
+p_old/(1+delta) = p_new
 
-def get_all_tokens_counter(df):
-    l = list(df[tokens_q1]) + list(df[tokens_q2])
-    l = ' '.join(l).split()
-    # l = filter(lambda s: s not in upper_stop_words, l)
+delta = (p_old/p_new)-1 = 1.1186071314214785
+l = delta*N = 452241
+"""
 
-    return Counter(l)
+delta = 1.1186071314214785
 
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
 
-def add_upper_columns(df):
-    df[upper_q1] = df[tokens_q1].apply(get_uppers)
-    df[upper_q2] = df[tokens_q2].apply(get_uppers)
+def shuffle_df(df, random_state):
+    np.random.seed(random_state)
+    return df.iloc[np.random.permutation(len(df))]
 
+def oversample_df(df, l, random_state):
+    df_pos = df[df[TARGET]==1]
+    df_neg = df[df[TARGET]==0]
 
-def add_in_cols(df, w):
-    w=w
-    df[in_q2]=df[tokens_q1].apply(lambda s: w in s)
-    df[in_q1]=df[tokens_q2].apply(lambda s: w in s)
-    def m(x,y):
-        if not x and not y:
-            return 0
-        elif x and y:
-            return 1
-        else:
-            return -1
+    df_neg_sampl = df_neg.sample(l, random_state=random_state, replace=True)
 
-    df[inn] = df.apply(lambda s: m(s[in_q1], s[in_q2]), axis=1)
+    df=pd.concat([df_pos, df_neg, df_neg_sampl])
+    df = shuffle_df(df, random_state)
 
-def explore_for_keywords(df,ww):
-    for w in ww:
-        add_in_cols(df,w)
-        x=df[df[inn]==1]
-        y=df[df[inn]==-1]
-        print w
-        print '1: len={}, {}'.format(len(x), explore_target_ratio(x))
-        print '-1: len={}, {}'.format(len(y), explore_target_ratio(y))
-        print '======================================================'
+    return df
+
+def oversample(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+    l_test = int(delta * len(test_df))
+
+    return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
 
-def explore_for_most_common(df, N):
-    c=get_all_tokens_counter(df)
-    ww=[x[0] for x in c.most_common(N)]
-    explore_for_keywords(df, ww)
+
+############################################################3
+############################################################3
+############################################################3
+import xgboost as xgb
+import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+import json
+from time import sleep
+import traceback
+
+gc_host = '104.197.97.20'
+local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
+
+
+def load_train_all_xgb():
+    train_df = pd.concat([
+        load_train(),
+        load_train_lengths(),
+        load_train_common_words(),
+        load__train_metrics(),
+        load_train_tfidf(),
+        load_train_magic(),
+        load_wh_train(),
+        load_one_upper_train(),
+        load_magic2_list_train()
+        # load_upper_keywords_train()
+    ], axis=1)
+
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        del train_df[col]
+
+    return train_df
+
+def plot_errors(imp):
+    train_runs= [x['train'] for x in imp]
+    test_runs= [x['test'] for x in imp]
+
+    sz=len(train_runs[0])
+    x_axis=range(sz)
+    y_train = [np.mean([x[j] for x in train_runs]) for j in x_axis]
+    y_test = [np.mean([x[j] for x in test_runs]) for j in x_axis]
+
+    fig, ax = plt.subplots()
+    ax.plot(x_axis, y_train, label='train')
+    ax.plot(x_axis, y_test, label='test')
+    ax.legend()
+    plt.show()
+
+def xgboost_per_tree_results(estimator):
+    results_on_test = estimator.evals_result()['validation_1']['logloss']
+    results_on_train = estimator.evals_result()['validation_0']['logloss']
+    return {
+        'train': results_on_train,
+        'test': results_on_test
+    }
+
+def out_loss(loss):
+    print '====================================='
+    print '====================================='
+    print '====================================='
+    print loss
+    print '====================================='
+    print '====================================='
+    print '====================================='
+
+
+def write_results(name,mongo_host, per_tree_res, losses, imp, features):
+    from pymongo import MongoClient
+
+    imp=[x.item() for x in imp]
+    features=list(features)
+
+    client = MongoClient(mongo_host, 27017)
+    client['admin'].authenticate(user, password)
+    db = client['xgb_cv']
+    collection = db[name]
+    try:
+        collection.insert_one({
+            'results': per_tree_res,
+            'losses': losses,
+            'importance':imp,
+            'features':features
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        raise
+        # sleep(20)
+
+
+
+def perform_xgb_cv(name, mongo_host):
+    df = load_train_all_xgb()
+    folds =5
+    seed = 42
+
+    skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
+    losses = []
+    n_est=[]
+    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
+        big = df.iloc[big_ind]
+        small = df.iloc[small_ind]
+
+        print explore_target_ratio(big)
+        print explore_target_ratio(small)
+
+        big, small = oversample(big, small, seed)
+
+        print explore_target_ratio(big)
+        print explore_target_ratio(small)
+
+        train_target = big[TARGET]
+        del big[TARGET]
+        train_arr = big
+
+        test_target = small[TARGET]
+        del small[TARGET]
+        test_arr = small
+
+        estimator = xgb.XGBClassifier(n_estimators=10000,
+                                      subsample=0.8,
+                                      colsample_bytree=0.8,
+                                      max_depth=5)
+        print test_arr.columns.values
+        print len(train_arr)
+        print len(test_arr)
+        eval_set = [(train_arr, train_target), (test_arr, test_target)]
+        estimator.fit(
+            train_arr, train_target,
+            eval_set=eval_set,
+            eval_metric='logloss',
+            verbose=True,
+            early_stopping_rounds=300
+        )
+
+        proba = estimator.predict_proba(test_arr)
+
+        loss = log_loss(test_target, proba)
+        out_loss(loss)
+        losses.append(loss)
+        per_tree_res = xgboost_per_tree_results(estimator)
+        ii = estimator.feature_importances_
+        n_est.append(estimator.best_iteration)
+
+        # xgb.plot_importance(estimator)
+        # plot_errors(stats)
+
+
+        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
+
+
+    out_loss('avg = {}'.format(np.mean(losses)))
+
+
+name='try_magic2_list_0.8_0.8_5'
+perform_xgb_cv(name, gc_host)
+
+#1127
+
+print '============================'
+print 'DONE!'
+print '============================'
+
+#1123, 974, 862, 1124, 1301
+
+
+
