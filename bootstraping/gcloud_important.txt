@@ -4,6 +4,9 @@ gcloud compute instances list
 2)copy from remote:
 gcloud compute copy-files kg3:/home/dd_petrovskiy/kg/kaggle/src/all5/results2.csv .
 
-3)ssh to instance
+3)copy to local
+gcloud compute copy-files magic2__list_test.csv magic2_list_train.csv kg1:/home/dd_petrovskiy/kg/data/magic
+
+4)ssh to instance
 gcloud compute --project "<project-name>" ssh --zone "<your-zone>" "<instance-name>"
 gcloud compute --project ubikkg ssh --zone europe-west1-b master
