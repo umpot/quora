@@ -84,12 +84,26 @@ TEST_METRICS_FP = [
     data_folder + 'distances/'+'test_metrics_sequence_tokens.csv'
 ]
 
+def fix_nans(df):
+    def blja(s):
+        if s!=s:
+            return ''
+        return s
+
+    for col in [question1, question2]:
+        df[col]=df[col].apply(blja)
+
+    return df
 
 def load_train():
-    return pd.read_csv(fp_train, index_col='id')
+    return fix_nans(
+        pd.read_csv(fp_train, index_col='id')
+    )
 
 def load_test():
-    return pd.read_csv(fp_test, index_col='test_id')
+    return fix_nans(
+        pd.read_csv(fp_test, index_col='test_id')
+    )
 
 
 def load__train_metrics():

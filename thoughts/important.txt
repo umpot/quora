@@ -117,6 +117,11 @@ Out[12]: {'neg': 0.8087954110898662, 'pos': 0.19120458891013384}
 
 
 
+47)non-askii  {'neg': 0.7278844250940035, 'pos': 0.2721155749059964}
+
+
+
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
