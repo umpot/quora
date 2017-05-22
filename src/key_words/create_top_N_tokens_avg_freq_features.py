@@ -440,6 +440,9 @@ def add_avg_frequencies_df(df, top_list, freq, N):
     df[plus]=df['tmp_sum_plus'].apply(get_avg_from_list)
     df[minus]=df['tmp_sum_minus'].apply(get_avg_from_list)
 
+    for col in ['tmp_sum_plus', 'tmp_sum_minus', 'tmp', 'tmp_p', 'tmp_n']:
+        del df[col]
+
     return [plus, minus]
 
 
