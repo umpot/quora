@@ -539,12 +539,12 @@ def load_test_contains():
 
     return res
 
-n_jobs=20
+n_jobs=3
 def_split=50
 
-write_folds()
-write_top_tokens()
-write_out_of_fold_frequencies()
-write_out_of_fold_test_contains()
-write_train_freq()
+# write_folds()
+# write_top_tokens()
+# write_out_of_fold_frequencies()
+# write_out_of_fold_test_contains()
+# write_train_freq()
 write_test_conatins()
