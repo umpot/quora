@@ -613,7 +613,7 @@ def submit_xgb(name):
 
 
 
-name='submit_with_one_upper_0.8_0.8_5_1150'
+name='submit_with_bay_tok_freq_0.8_0.8_5_1150'
 submit_xgb(name)
 
 
