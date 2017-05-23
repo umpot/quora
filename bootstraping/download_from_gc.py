@@ -20,7 +20,7 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = 'instance-1'
+instance_name = 'kg1'
 zone='us-west1-b'
 folder='/home/dd_petrovskiy/kg/data/top_k_freq'
 
@@ -28,7 +28,7 @@ folder='/home/dd_petrovskiy/kg/data/top_k_freq'
 
 
 files = [
-    'folds.json',  'out_of_fold_contains.json',  'out_of_fold_freq.json',  'tokens.json',  'train_freq.json'
+    'out_of_fold_freq_sets.json'
 ]
 
 destination='/home/dpetrovskyi/PycharmProjects/data/top_k_freq'
