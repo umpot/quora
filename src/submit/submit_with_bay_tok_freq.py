@@ -454,9 +454,14 @@ def load_one_upper_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+train_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_avg_K_tok_freq.csv')
+test_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'test_avg_K_tok_freq.csv')
 
+def load_topNs_avg_tok_freq_train():
+    return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
 
-
+def load_topNs_avg_tok_freq_test():
+    return pd.read_csv(test_avg_tokK_freq_fp, index_col='test_id')
 ######################################################################################
 ######################################################################################
 ######################################################################################

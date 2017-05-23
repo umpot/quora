@@ -620,7 +620,7 @@ def create_topNs_features_test():
         new_cols.append(new_col)
         df[new_col] = df[col].apply(geometric_mean_non_zero)
 
-    df[new_cols].to_csv(test_avg_tokK_freq_fp, index_label='id')
+    df[new_cols].to_csv(test_avg_tokK_freq_fp, index_label='test_id')
 
 
 def load_topNs_avg_tok_freq_train():
