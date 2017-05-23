@@ -370,6 +370,7 @@ def get_contains_data_list(ww, df):
     return [get_contains_data(w, df) for w in ww]
 
 def get_contains_data(w, df):
+    print w
     return w, {
         'q1':list(df[df[tokens_set1].apply(lambda s: w in s)].index),
         'q2':list(df[df[tokens_set2].apply(lambda s: w in s)].index)
