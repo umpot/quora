@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -348,6 +348,8 @@ train_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_freq.json')
 out_of_fold_contains_fp= os.path.join(data_folder, 'top_k_freq', 'out_of_fold_contains.json')
 test_contains_fp= os.path.join(data_folder, 'top_k_freq', 'test_contains.json')
 
+train_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_avg_K_tok_freq.csv')
+
 
 
 
@@ -538,8 +540,61 @@ def load_out_of_fold_freq_set():
        'freq_500_minus', 'freq_1000_plus', 'freq_1000_minus']
 
 
+def mean_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+    return np.mean(s)
 
+def geometric_mean_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+
+    s=[np.log(x) for x in s]
+    s = np.mean(s)
+    return np.exp(s)
+
+
+
+npartitions=4
+# def create_topNs_features():
+#     df = load_out_of_fold_freq_set()
+#     new_cols=[]
+#     for col in df.columns:
+#         new_col='{}_mean'.format(col)
+#         print new_col
+#         new_cols.append(new_col)
+#         df[new_col] = from_pandas(df[col], npartitions=npartitions).apply(mean_non_zero).compute()
+#
+#         new_col='{}_g_mean'.format(col)
+#         print new_col
+#         new_cols.append(new_col)
+#         df[new_col] = from_pandas(df[col], npartitions=npartitions).apply(geometric_mean_non_zero).compute()
+#
+#     df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
 
 
 def create_topNs_features():
-    bl = load_out_of_fold_freq_set()
+    df = load_out_of_fold_freq_set()
+    print 'loaded'
+    new_cols=[]
+    for col in df.columns:
+        new_col='{}_mean'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(mean_non_zero)
+
+        new_col='{}_g_mean'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(geometric_mean_non_zero)
+
+    df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
+
+
+def load_topNs_avg_tok_freq_train():
+    return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
+
+
+create_topNs_features()
