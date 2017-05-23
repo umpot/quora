@@ -348,7 +348,13 @@ train_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_freq.json')
 out_of_fold_contains_fp= os.path.join(data_folder, 'top_k_freq', 'out_of_fold_contains.json')
 test_contains_fp= os.path.join(data_folder, 'top_k_freq', 'test_contains.json')
 
+
+out_of_fold_freq_sets_fp = os.path.join(data_folder, 'top_k_freq', 'out_of_fold_freq_sets.json')
+test_freq_sets_fp = os.path.join(data_folder, 'top_k_freq', 'test_freq_sets.json')
+
+
 train_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_avg_K_tok_freq.csv')
+test_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'test_avg_K_tok_freq.csv')
 
 
 
@@ -413,8 +419,6 @@ def get_freqs_from_fold(ind, folds, freq):
             return freq[i]
 
 
-out_of_fold_freq_sets_fp = os.path.join(data_folder, 'top_k_freq', 'out_of_fold_freq_sets.json')
-
 
 def write_test_freq_sets():
     Ns=[50, 100, 200, 500, 1000]
@@ -451,16 +455,16 @@ def write_test_freq_sets():
 
         col = 'freq_{}_plus'.format(N)
         new_cols.append(col)
-        test_df[col] = train_df['ind'].apply(lambda s: blja[s][1])
+        test_df[col] = test_df['ind'].apply(lambda s: blja[s][1])
         print col
 
         col = 'freq_{}_minus'.format(N)
         new_cols.append(col)
-        test_df[col] = train_df['ind'].apply(lambda s: blja[s][-1])
+        test_df[col] = test_df['ind'].apply(lambda s: blja[s][-1])
         print col
 
     df = test_df[new_cols]
-    df.to_csv(out_of_fold_freq_sets_fp, index_label='test_id')
+    df.to_csv(test_freq_sets_fp, index_label='test_id')
 
 
 def write_out_of_fold_freq_sets():
@@ -534,6 +538,14 @@ def load_out_of_fold_freq_set():
 
     return bl
 
+def load_test_freq_set():
+    bl = pd.read_csv(test_freq_sets_fp, index_col='test_id')
+    for col in bl.columns:
+        bl[col] = bl[col].apply(lambda s: s.replace('set(', '').replace(')', ''))
+        bl[col] = bl[col].apply(ast.literal_eval)
+
+    return bl
+
 
 ['freq_50_plus', 'freq_50_minus', 'freq_100_plus', 'freq_100_minus',
        'freq_200_plus', 'freq_200_minus', 'freq_500_plus',
@@ -575,7 +587,7 @@ npartitions=4
 #     df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
 
 
-def create_topNs_features():
+def create_topNs_features_out_of_fold():
     df = load_out_of_fold_freq_set()
     print 'loaded'
     new_cols=[]
@@ -593,8 +605,30 @@ def create_topNs_features():
     df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
 
 
+def create_topNs_features_test():
+    df = load_test_freq_set()
+    print 'loaded'
+    new_cols=[]
+    for col in df.columns:
+        new_col='{}_mean'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(mean_non_zero)
+
+        new_col='{}_g_mean'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(geometric_mean_non_zero)
+
+    df[new_cols].to_csv(test_avg_tokK_freq_fp, index_label='id')
+
+
 def load_topNs_avg_tok_freq_train():
     return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
 
+def load_topNs_avg_tok_freq_test():
+    return pd.read_csv(test_avg_tokK_freq_fp, index_col='id')
 
-create_topNs_features()
+
+write_test_freq_sets()
+create_topNs_features_test()

@@ -599,7 +599,7 @@ def submit_xgb(name):
 
 
 
-name='submit_with_one_upper_0.8_0.8_5_seed111'
+name='submit_with_one_upper_0.8_0.8_5'
 submit_xgb(name)
 
 
