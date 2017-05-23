@@ -271,10 +271,15 @@ def shuffle_df(df, random_state=42):
     np.random.seed(random_state)
     return df.iloc[np.random.permutation(len(df))]
 
-def explore_target_ratio(df):
+def explore_target_ratio(df,w):
+    sz = len(df)
+    if sz==0:
+        for x in range(100):
+            print '================{}=================='.format(w)
+    sz=max(1,sz)
     return {
-        'pos':1.0*len(df[df[TARGET]==1])/len(df),
-        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+        'pos':1.0*len(df[df[TARGET]==1]) / sz,
+        'neg':1.0*len(df[df[TARGET]==0]) / sz
     }
 
 
@@ -403,95 +408,18 @@ def get_freq(w, df):
     print 'time {}'.format(time()-t)
     x = df[df[inn] == 1]
     y = df[df[inn] == -1]
-    ratio_x = explore_target_ratio(x)
-    ratio_y = explore_target_ratio(y)
+    ratio_x = explore_target_ratio(x, w)
+    ratio_y = explore_target_ratio(y, w)
     print w
     print 1, ratio_x
     print -1, ratio_y
     print '==========================='
     return w, {1: ratio_x, -1: ratio_y}
 
-# def add_frequencies_df(df, top_list, freq):
-#
-#     def get_freq_tuple(a,b, w, freq):
-#         if w in a and w in b:
-#             return (1, freq[w][1]['pos'])
-#         if (w in a and w not in b) or (w in b and w not in a):
-#             return (-1, freq[w][-1]['pos'])
-#         return None
-#
-#     def get_pos_from_tmp(t):
-#         if t is None:
-#             return None
-#         if t[0]==-1:
-#             return None
-#         return t[1]
-#
-#     def get_neg_from_tmp(t):
-#         if t is None:
-#             return None
-#         if t[0]==1:
-#             return None
-#         return t[1]
-#
-#     new_cols = []
-#     for w in top_list:
-#         df['tmp']=df.apply(lambda s: get_freq_tuple(s[tokens_set1], s[tokens_set2], w, freq), axis=1)
-#
-#         col = '{}_both'.format(w)
-#         new_cols.append(col)
-#         df[col] = df['tmp'].apply(get_pos_from_tmp)
-#
-#         col = '{}_only_one'.format(w)
-#         new_cols.append(col)
-#         df[col] = df['tmp'].apply(get_neg_from_tmp)
-#
-#     return new_cols
-
-
-# def process_train_test_df(train_df, test_df, update_df, top_list):
-#     freq = create_frequencies(train_df, top_list)
-#
-#     new_cols = add_frequencies_df(test_df, top_list, freq)
-#     if update_df is None:
-#         return
-#     for col in new_cols:
-#         update_df.loc[test_df.index, col]=test_df[col]
-#
-#     return new_cols
-
 
 def add_set_cols(df):
     df[tokens_set1]=df[tokens_q1].apply(lambda s: set(s.split()))
     df[tokens_set2]=df[tokens_q2].apply(lambda s: set(s.split()))
-
-
-# def write_top_frequencies(N):
-#     train_df, test_df = load_train_nlp(), load_test_nlp()
-#     train_df, test_df = shuffle_df(train_df, random_state=42), shuffle_df(test_df, random_state=42)
-#     train_df, test_df = train_df.head(5000), test_df.head(5000)
-#     add_set_cols(train_df)
-#     add_set_cols(test_df)
-#
-#     top_list = get_top_N_tokens(train_df, N)
-#     print top_list
-#
-#     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-#     new_cols=None
-#     for big_ind, small_ind in skf.split(np.zeros(len(train_df)), train_df[TARGET]):
-#         big = train_df.iloc[big_ind]
-#         small = train_df.iloc[small_ind]
-#         new_cols = process_train_test_df(big, small, train_df, top_list)
-#         print train_df.columns
-#
-#
-#     fp=os.path.join(data_folder, 'keywords', 'train_top_{}_freq.csv'.format(N))
-#     train_df[new_cols].to_csv(fp, index_label='id')
-#
-#
-#     process_train_test_df(train_df, test_df, None, top_list)
-#     fp=os.path.join(data_folder, 'keywords', 'test_top_{}_freq.csv'.format(N))
-#     test_df[new_cols].to_csv(fp, index_label='test_id')
 
 folds_fp=os.path.join(data_folder, 'top_k_freq', 'folds.json')
 topKtokens_fp=os.path.join(data_folder, 'top_k_freq', 'tokens.json')
