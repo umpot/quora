@@ -487,7 +487,8 @@ def load_train_all_xgb():
         load_train_tfidf(),
         load_train_magic(),
         load_wh_train(),
-        load_one_upper_train()
+        load_one_upper_train(),
+        load_topNs_avg_tok_freq_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -504,7 +505,8 @@ def load_test_all_xgb():
         load_test_tfidf(),
         load_test_magic(),
         load_wh_test(),
-        load_one_upper_test()
+        load_one_upper_test(),
+        load_topNs_avg_tok_freq_test()
     ], axis=1)
 
 
