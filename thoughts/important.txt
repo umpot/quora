@@ -129,6 +129,15 @@ you
 50)Some AVG on this separating-frequencies ?????
 For same tokens, for different tokens, weighted, max, min etc
 
+51)features for hot topics!!!!!!!!!!!!!!!!!!!!!
+features for the most freq similar questions (Ra 500-1000, loose weight, Learn English)
+detectors, mini classifiers? 500 Rupee detector, lose-weight-detector
+
+df = train_df[train_df[question1].apply(lambda s: '1000' in s)]
+{'neg': 0.10990502035278155, 'pos': 0.8900949796472184}/{'neg': 0.12927551844869378, 'pos': 0.8707244815513062} q2
+
+
+
 
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
