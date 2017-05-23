@@ -137,6 +137,21 @@ df = train_df[train_df[question1].apply(lambda s: '1000' in s)]
 {'neg': 0.10990502035278155, 'pos': 0.8900949796472184}/{'neg': 0.12927551844869378, 'pos': 0.8707244815513062} q2
 
 
+52)What universities does Newfield Exploration recruit new grads from? What majors are they looking
+ What universities does Icon Exploration recruit new grads from? What majors are they looking for?
+ difference only in upper
+ def diff_only_upper(a,b):
+     x = set(a.split()).intersection(set(b.split()))
+     if len(x) == 0:
+         return False
+     for y in x:
+         if not y.isupper():
+             return False
+     return True
+
+  {'neg': 0.9302678120262758, 'pos': 0.0697321879737241}
+
+
 
 
 

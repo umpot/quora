@@ -28,7 +28,7 @@ folder='/home/dd_petrovskiy/kg/data/top_k_freq'
 
 
 files = [
-    'out_of_fold_freq_sets.json'
+    'test_contains.json'
 ]
 
 destination='/home/dpetrovskyi/PycharmProjects/data/top_k_freq'

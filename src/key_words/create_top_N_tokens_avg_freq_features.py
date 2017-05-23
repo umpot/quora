@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../../data/'
+data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -397,8 +397,19 @@ def load_test_contains():
 
     return res
 
-def create_topNs_features():
-    pass
+
+
+def get_from_fold(ind, folds):
+    for train, test in folds:
+        if ind in test.index:
+            return test.loc[ind]
+
+def get_freqs_from_fold(ind, folds, freq):
+    for i in range(len(folds)):
+        train, test = folds[i]
+        if ind in test.index:
+            return freq[i]
+
 
 out_of_fold_freq_sets_fp = os.path.join(data_folder, 'top_k_freq', 'out_of_fold_freq_sets.json')
 
@@ -512,11 +523,23 @@ def write_out_of_fold_freq_sets():
     df = train_df[new_cols]
     df.to_csv(out_of_fold_freq_sets_fp, index_label='id')
 
+import ast
+def load_out_of_fold_freq_set():
+    bl = pd.read_csv(out_of_fold_freq_sets_fp, index_col='id')
+    for col in bl.columns:
+        bl[col] = bl[col].apply(lambda s: s.replace('set(', '').replace(')', ''))
+        bl[col] = bl[col].apply(ast.literal_eval)
+
+    return bl
+
+
+['freq_50_plus', 'freq_50_minus', 'freq_100_plus', 'freq_100_minus',
+       'freq_200_plus', 'freq_200_minus', 'freq_500_plus',
+       'freq_500_minus', 'freq_1000_plus', 'freq_1000_minus']
 
 
 
 
 
-
-
-write_out_of_fold_freq_sets()
+def create_topNs_features():
+    bl = load_out_of_fold_freq_set()
