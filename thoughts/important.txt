@@ -152,6 +152,9 @@ df = train_df[train_df[question1].apply(lambda s: '1000' in s)]
   {'neg': 0.9302678120262758, 'pos': 0.0697321879737241}
 
 
+53)Strange Only-Locadion-Difff:
+'What are the safety precautions on handling shotguns proposed' in s
+{'neg': 0.023622047244094488, 'pos': 0.9763779527559056}
 
 
 

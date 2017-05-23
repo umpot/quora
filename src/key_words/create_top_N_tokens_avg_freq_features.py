@@ -605,6 +605,24 @@ def create_topNs_features_out_of_fold():
     df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
 
 
+# def create_topNs_features_test():
+#     df = load_test_freq_set()
+#     print 'loaded'
+#     new_cols=[]
+#     for col in df.columns:
+#         new_col='{}_mean'.format(col)
+#         print new_col
+#         new_cols.append(new_col)
+#         df[new_col] = df[col].apply(mean_non_zero)
+#
+#         new_col='{}_g_mean'.format(col)
+#         print new_col
+#         new_cols.append(new_col)
+#         df[new_col] = df[col].apply(geometric_mean_non_zero)
+#
+#     df[new_cols].to_csv(test_avg_tokK_freq_fp, index_label='test_id')
+
+
 def create_topNs_features_test():
     df = load_test_freq_set()
     print 'loaded'
@@ -627,7 +645,7 @@ def load_topNs_avg_tok_freq_train():
     return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
 
 def load_topNs_avg_tok_freq_test():
-    return pd.read_csv(test_avg_tokK_freq_fp, index_col='id')
+    return pd.read_csv(test_avg_tokK_freq_fp, index_col='test_id')
 
 
 write_test_freq_sets()
