@@ -402,6 +402,54 @@ def create_topNs_features():
 
 out_of_fold_freq_sets_fp = os.path.join(data_folder, 'top_k_freq', 'out_of_fold_freq_sets.json')
 
+
+def write_test_freq_sets():
+    Ns=[50, 100, 200, 500, 1000]
+    tokens = load_top_tokens()
+    train_df, test_df = load_train_nlp(), load_test_nlp()
+    cont = load_test_contains()
+    freq = load_train_freq()
+
+    for w in tokens:
+        bl = cont[w]
+        a = set(bl['q1'])
+        b=set(bl['q2'])
+        plus = a.intersection(b)
+        minus = a.symmetric_difference(b)
+        cont[w]={1:plus, -1:minus}
+
+    new_cols = []
+    test_df['ind'] = test_df.index
+    print 'Loaded'
+    for N in Ns:
+        print N
+        toks = tokens[:N]
+        blja = {ind:{1:set(), -1:set()} for ind in test_df.index}
+        for w in toks:
+            print w
+            plus = cont[w][1]
+            minus=cont[w][-1]
+
+            for ind in plus:
+                blja[ind][1].add(freq[w][1])
+
+            for ind in minus:
+                blja[ind][-1].add(freq[w][-1])
+
+        col = 'freq_{}_plus'.format(N)
+        new_cols.append(col)
+        test_df[col] = train_df['ind'].apply(lambda s: blja[s][1])
+        print col
+
+        col = 'freq_{}_minus'.format(N)
+        new_cols.append(col)
+        test_df[col] = train_df['ind'].apply(lambda s: blja[s][-1])
+        print col
+
+    df = test_df[new_cols]
+    df.to_csv(out_of_fold_freq_sets_fp, index_label='test_id')
+
+
 def write_out_of_fold_freq_sets():
     Ns=[50, 100, 200, 500, 1000]
     tokens = load_top_tokens()
@@ -430,9 +478,10 @@ def write_out_of_fold_freq_sets():
     print 'Loaded'
     for N in Ns:
         print N
-        blja = {ind:{1:set(), -1:set()} for ind in test_df.index}
+        toks = tokens[:N]
+        blja = {ind:{1:set(), -1:set()} for ind in train_df.index}
         for i in range(len(folds)):
-            toks = tokens[:N]
+            print 'fold_{}'.format(i)
             train, test = folds[i]
             cont = contains[i]
             freq=frequencies[i]
