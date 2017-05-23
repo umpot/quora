@@ -427,8 +427,9 @@ def write_out_of_fold_freq_sets():
 
     new_cols = []
     train_df['ind'] = train_df.index
-    print train_df[['ind', qid1]].head(1000)
+    print 'Loaded'
     for N in Ns:
+        print N
         blja = {ind:{1:set(), -1:set()} for ind in test_df.index}
         for i in range(len(folds)):
             toks = tokens[:N]
@@ -439,6 +440,7 @@ def write_out_of_fold_freq_sets():
 
 
             for w in toks:
+                print w
                 plus = cont[w][1]
                 minus=cont[w][-1]
 
@@ -451,9 +453,12 @@ def write_out_of_fold_freq_sets():
         col = 'freq_{}_plus'.format(N)
         new_cols.append(col)
         train_df[col] = train_df['ind'].apply(lambda s: blja[s][1])
+        print col
+
         col = 'freq_{}_minus'.format(N)
         new_cols.append(col)
         train_df[col] = train_df['ind'].apply(lambda s: blja[s][-1])
+        print col
 
     df = train_df[new_cols]
     df.to_csv(out_of_fold_freq_sets_fp, index_label='id')
