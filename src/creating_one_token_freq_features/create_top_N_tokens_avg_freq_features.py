@@ -732,4 +732,5 @@ def load_topNs_avg_tok_freq_test():
 # create_topNs_features_test()
 
 # create_topNs_features_out_of_fold()
+print 'Writting {}'.format(test_avg_tokK_freq_fp)
 create_topNs_features_test()

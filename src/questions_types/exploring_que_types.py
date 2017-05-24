@@ -323,6 +323,13 @@ def filter_with_second_tok(df, second):
 def filter_with_first_and_second_tok(df, first, second):
     return df[(df[first_q1].apply(lambda s: s==first))&(df[second_q1].apply(lambda s: s==second))]
 
+def get_first_token_counter(df):
+    bl = df[question1].apply(lambda s: get_tok_at(s, 0))
+    c = Counter(bl)
+
+    return c
+
+
 def get_second_token_counter(df):
     bl = df[question1].apply(lambda s: get_tok_at(s, 1))
     c = Counter(bl)
