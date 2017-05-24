@@ -6,6 +6,7 @@ import os
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import json
 
 sns.set(color_codes=True)
 sns.set(style="whitegrid", color_codes=True)
@@ -24,10 +25,21 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
+
+folds_fp=os.path.join(data_folder, 'top_k_freq', 'folds.json')
+
+
+def load_folds():
+    return json.load(open(folds_fp))
+
+def create_folds(df):
+    folds = load_folds()
+
+    return [(df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']]) for x in range(len(folds))]
 
 lemmas_train_fp = os.path.join(data_folder,'nlp','lemmas_train.csv')
 lemmas_test_fp = os.path.join(data_folder,'nlp','lemmas_test.csv')
@@ -302,6 +314,7 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
 from collections import Counter
 
 what_second = []
@@ -312,6 +325,13 @@ second_q1, second_q2 = 'second_q1', 'second_q2'
 bi_prefix_q1, bi_prefix_q2 = 'bi_prefix_q1', 'bi_prefix_q2'
 
 bi_prefix_key='bi_prefix_key'
+equal_bi_prefix='equal_bi_prefix'
+
+bi_prefix_bay_freq='bi_prefix_bay_freq'
+
+
+bi_pref_freq_train_fp = os.path.join(data_folder,'prefix','bi_pref_freq_train.csv')
+bi_pref_freq_test_fp = os.path.join(data_folder,'prefix','bi_pref_freq_test.csv')
 
 
 
@@ -320,49 +340,6 @@ def get_tok_at(s, i):
     if len(l)<=i:
         return None
     return l[i]
-
-def filter_with_first_tok(df, pref):
-    return df[df[first_q1].apply(lambda s: s==pref)]
-
-def filter_with_second_tok(df, second):
-    return df[df[second_q1].apply(lambda s: s==second)]
-
-def filter_with_first_and_second_tok(df, first, second):
-    return df[(df[first_q1].apply(lambda s: s==first))&(df[second_q1].apply(lambda s: s==second))]
-
-def get_first_token_counter(df):
-    bl = df[question1].apply(lambda s: get_tok_at(s, 0))
-    c = Counter(bl)
-
-    return c
-
-def filter_starts_with(df, pref):
-    return df[df[question1].apply(lambda s: s.startswith(pref))][[question1, question2]]
-
-"""
-Normalization:
-lower????
-I'm -> I am
-What's What\xee -> What is
-Does a XXX -> Does a
-Can the , Are the , Did the, Does a==> Can xxx, Are xxx
-
-If a, Is a
-
-Most:
-What's -> What is
-'Is the' -> Is xxx ???? second token after the
-"""
-
-
-def get_second_token_counter(df):
-    bl = df[question1].apply(lambda s: get_tok_at(s, 1))
-    c = Counter(bl)
-
-    return c
-
-def get_bigram_pref_counter(df):
-    return Counter(df[first_q1]+' '+df[second_q1])
 
 def add_n_token_cols(df):
     df[first_q1] = df[question1].apply(lambda s: get_tok_at(s, 0))
@@ -381,4 +358,49 @@ def add_bi_prefix_cols(df):
     df[bi_prefix_q1] = df[first_q1].apply(str_or_None)+' '+df[second_q1].apply(str_or_None)
     df[bi_prefix_q2] = df[first_q2].apply(str_or_None)+' '+df[second_q2].apply(str_or_None)
 
-    df[bi_prefix_key] = df.apply(lambda s: (s[bi_prefix_q1], s[bi_prefix_q2]), axis=1)
+    df[bi_prefix_key] = df[bi_prefix_q1] + "*---*" + df[bi_prefix_q2]
+
+def add_equal_bi_prefix_col(df):
+    def is_eq(a,b):
+        if a==b:
+            return 1
+        return 0
+
+    df[equal_bi_prefix]=df.apply(lambda s: is_eq(s[bi_prefix_q1], s[bi_prefix_q2]), axis=1)
+
+
+    # for col in new_cols:
+    #     train_df[col]=df.loc[train_df.index, col]
+    #     test_df[col]=df.loc[test_df.index, col]
+    #
+    # return train_df, test_df, new_cols
+
+
+def write_bi_pref_bay_freq_features():
+    train_df, test_df = load_train(), load_test()
+    for df in [train_df, test_df]:
+        add_bi_prefix_cols(df)
+        add_equal_bi_prefix_col(df)
+
+    folds = create_folds(train_df)
+    for train, test in folds:
+        process_train_test_bi_pref(train, test, train_df)
+
+    process_train_test_bi_pref(train_df, test_df, test_df)
+
+    new_cols = [equal_bi_prefix, bi_prefix_bay_freq]
+
+    train_df[new_cols].to_csv(bi_pref_freq_train_fp, index_label='id')
+    test_df[new_cols].to_csv(bi_pref_freq_test_fp, index_label='test_id')
+
+
+def process_train_test_bi_pref(train_df, test_df, update_df):
+    col=bi_prefix_bay_freq
+
+    bl = train_df.groupby(bi_prefix_key)[TARGET].mean().to_frame(col)
+    bl = pd.merge(test_df, bl, left_on=bi_prefix_key, right_index=True)
+
+    update_df[col] = bl.loc[test_df.index, col]
+
+
+write_bi_pref_bay_freq_features()

@@ -6,6 +6,7 @@ import os
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import json
 
 sns.set(color_codes=True)
 sns.set(style="whitegrid", color_codes=True)
@@ -28,6 +29,17 @@ data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
+
+folds_fp=os.path.join(data_folder, 'top_k_freq', 'folds.json')
+
+
+def load_folds():
+    return json.load(open(folds_fp))
+
+def create_folds(df):
+    folds = load_folds()
+
+    return [(df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']]) for x in range(len(folds))]
 
 lemmas_train_fp = os.path.join(data_folder,'nlp','lemmas_train.csv')
 lemmas_test_fp = os.path.join(data_folder,'nlp','lemmas_test.csv')

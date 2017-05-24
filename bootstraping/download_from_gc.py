@@ -28,7 +28,7 @@ folder='/home/dd_petrovskiy/kg/quora/src/submit'
 
 
 files = [
-    'submit_with_bay_tok_freq_0.8_0.8_5_1150.csv'
+    'submit_with_bay_tok_freq_min_max0.8_0.8_5_1100.csv'
 ]
 
 destination='.'

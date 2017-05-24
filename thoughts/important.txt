@@ -162,6 +162,16 @@ df = train_df[train_df[question1].apply(lambda s: '1000' in s)]
 
 55)Mix of type-of-question distances/bayesian freq with Nouns/Uppers/keywords/big tfidf  distances/bayesian
 
+56)person feature has\have\I\you\me\they etc
+
+57)bl = df[df[question1].apply(lambda s: 'math]' in s)]  700-instances
+{'neg': 0.9369565217391305, 'pos': 0.06304347826086956}
+
+58)textacy topic-modeling
+59)subject-verb-object triples !!!!!!!!! textacy, spacy, noun_chunks
+60)textacy textrank keywords!!!! get_information_content
+
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
