@@ -436,7 +436,8 @@ def load_train_all_xgb():
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
-        load_topNs_avg_tok_freq_train()
+        load_topNs_avg_tok_freq_train(),
+        load_bi_pref_bay_freq_train()
         # load_upper_keywords_train()
     ], axis=1)
 
