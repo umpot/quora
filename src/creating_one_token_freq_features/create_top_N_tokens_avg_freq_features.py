@@ -533,7 +533,7 @@ import ast
 def load_out_of_fold_freq_set():
     bl = pd.read_csv(out_of_fold_freq_sets_fp, index_col='id')
     for col in bl.columns:
-        bl[col] = bl[col].apply(lambda s: s.replace('set(', '').replace(')', ''))
+        bl[col] = bl[col].apply(lambda s: s[4:-1])
         bl[col] = bl[col].apply(ast.literal_eval)
 
     return bl
@@ -541,7 +541,7 @@ def load_out_of_fold_freq_set():
 def load_test_freq_set():
     bl = pd.read_csv(test_freq_sets_fp, index_col='test_id')
     for col in bl.columns:
-        bl[col] = bl[col].apply(lambda s: s.replace('set(', '').replace(')', ''))
+        bl[col] = bl[col].apply(lambda s: s[4:-1])
         bl[col] = bl[col].apply(ast.literal_eval)
 
     return bl
@@ -567,6 +567,34 @@ def geometric_mean_non_zero(s):
     s = np.mean(s)
     return np.exp(s)
 
+
+def std_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+    return np.std(s)
+
+def len_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    return len(s)
+
+def min_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+    return np.min(s)
+
+def max_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+    return np.max(s)
+
+def max_min_ratio_non_zero(s):
+    s=filter(lambda x: x!=0, s)
+    if len(s)==0:
+        return None
+    return np.max(s)/np.min(s)
 
 
 npartitions=4
@@ -601,6 +629,32 @@ def create_topNs_features_out_of_fold():
         print new_col
         new_cols.append(new_col)
         df[new_col] = df[col].apply(geometric_mean_non_zero)
+
+        new_col='{}_len'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(len_non_zero)
+
+
+        new_col='{}_std'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(std_non_zero)
+
+        new_col='{}_min'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(min_non_zero)
+
+        new_col='{}_max'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(max_non_zero)
+
+        new_col='{}_max_min_ratio'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(max_min_ratio_non_zero)
 
     df[new_cols].to_csv(train_avg_tokK_freq_fp, index_label='id')
 
@@ -638,6 +692,32 @@ def create_topNs_features_test():
         new_cols.append(new_col)
         df[new_col] = df[col].apply(geometric_mean_non_zero)
 
+        new_col='{}_len'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(len_non_zero)
+
+
+        new_col='{}_std'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(std_non_zero)
+
+        new_col='{}_min'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(min_non_zero)
+
+        new_col='{}_max'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(max_non_zero)
+
+        new_col='{}_max_min_ratio'.format(col)
+        print new_col
+        new_cols.append(new_col)
+        df[new_col] = df[col].apply(max_min_ratio_non_zero)
+
     df[new_cols].to_csv(test_avg_tokK_freq_fp, index_label='test_id')
 
 
@@ -648,5 +728,7 @@ def load_topNs_avg_tok_freq_test():
     return pd.read_csv(test_avg_tokK_freq_fp, index_col='test_id')
 
 
-write_test_freq_sets()
-create_topNs_features_test()
+# write_test_freq_sets()
+# create_topNs_features_test()
+
+create_topNs_features_out_of_fold()
