@@ -179,6 +179,13 @@ RP(out, up),
 CC(and, but, or)
 CD(1990, one, million)
 
+
+63)wmd, norm-wmd, tfidf-shares on diffrent subsets, POS, top-idf, Nouns, adjectives
+without stops, without nouns, without verbs etc
+
+
+64)maybe modals, wh - features ?????
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
