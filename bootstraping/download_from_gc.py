@@ -22,13 +22,13 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 instance_name = 'kg1'
 zone='us-west1-b'
-folder='/home/dd_petrovskiy/kg/quora/src/submit/'
+folder='/home/dd_petrovskiy/kg/quora/src/cv/'
 
 
 
 
 files = [
-    'submit_with_bi_pref_bay_freq_0.8_0.8_5_1150.csv'
+    'nohup.out'
 ]
 
 destination='.'
