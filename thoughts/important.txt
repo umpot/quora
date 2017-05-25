@@ -172,6 +172,13 @@ df = train_df[train_df[question1].apply(lambda s: '1000' in s)]
 60)textacy textrank keywords!!!! get_information_content
 61)textacy Flesch–Kincaid readability tests
 
+62)adjectives (superlative, comparative), adverbs, pronouns(possesive pronouns)
+determiners (all/some/any),
+MD(modals!! can, will, should)
+RP(out, up),
+CC(and, but, or)
+CD(1990, one, million)
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
