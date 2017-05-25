@@ -57,7 +57,7 @@ def explore_importance(name, fold=0):
     # res=res[:N]
     xs = [x[0] for x in res]
     ys=[x[1] for x in res]
-    sns.barplot(xs, ys)
+    sns.barplot(xs, ys, orient='v')
     sns.plt.show()
 
 
