@@ -470,10 +470,10 @@ bi_pref_freq_train_fp = os.path.join(data_folder,'prefix','bi_pref_freq_train.cs
 bi_pref_freq_test_fp = os.path.join(data_folder,'prefix','bi_pref_freq_test.csv')
 
 def load_bi_pref_bay_freq_train():
-    pd.read_csv(bi_pref_freq_train_fp, index_col='id')
+    return pd.read_csv(bi_pref_freq_train_fp, index_col='id')
 
 def load_bi_pref_bay_freq_test():
-    pd.read_csv(bi_pref_freq_test_fp, index_col='test_id')
+    return pd.read_csv(bi_pref_freq_test_fp, index_col='test_id')
 
 
 ######################################################################################
