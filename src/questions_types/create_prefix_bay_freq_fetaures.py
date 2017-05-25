@@ -449,5 +449,5 @@ def load_bi_pref_dummies_50_test():
     return pd.read_csv(bi_prefix_dummies_50_test_fp, index_col='test_id')
 
 
-write_top_N_bi_prefix_dummies(50)
+# write_top_N_bi_prefix_dummies(50)
 # write_bi_pref_bay_freq_features()

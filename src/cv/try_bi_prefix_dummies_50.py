@@ -535,7 +535,7 @@ def perform_xgb_cv(name, mongo_host):
         estimator = xgb.XGBClassifier(n_estimators=10000,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
-                                      max_depth=5)
+                                      max_depth=6)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr)
@@ -552,7 +552,7 @@ def perform_xgb_cv(name, mongo_host):
 
         loss = log_loss(test_target, proba)
         out_loss(loss)
-        losses.append(loss)
+        losses.append({'loss':loss, 'best_score':estimator.best_score, 'best_iteration':estimator.best_iteration})
         per_tree_res = xgboost_per_tree_results(estimator)
         ii = estimator.feature_importances_
         n_est.append(estimator.best_iteration)
@@ -567,7 +567,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='try_bi_prefix_dummies_50_0.8_0.8_5'
+name='try_bi_prefix_dummies_50_0.8_0.8_6'
 perform_xgb_cv(name, gc_host)
 
 
