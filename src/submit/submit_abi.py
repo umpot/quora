@@ -604,7 +604,7 @@ def submit_xgb(name):
     print big.columns.values
     test_arr = small
 
-    estimator = xgb.XGBClassifier(n_estimators=1100,
+    estimator = xgb.XGBClassifier(n_estimators=1000,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=5)
@@ -628,11 +628,11 @@ def submit_xgb(name):
 
 
 
-name='submit_abi_0.8_0.8_5_1100'
+name='submit_abi_0.8_0.8_5_1000'
 submit_xgb(name)
 
 
-#911, 972, 947, 1003
+#911, 972, 947, 1003, 911
 print '============================'
 print 'DONE!'
 print '============================'
