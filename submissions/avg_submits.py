@@ -25,10 +25,10 @@ def create_geo_mean_submit(fps, name):
 
 
 fps=[
-    'submit_with_bay_tok_freq_0.8_0.8_5_1150.csv',
-    'upper_1600_0.8_0.8_5_seed42.csv'
+    'submit_abi_0.8_0.8_5_1000.csv',
+    'submit_with_bi_pref_bay_freq_0.8_0.8_5_1150.csv'
 ]
 
-name = 'blja'
+name = 'abi_bi_pref_mean'
 
-create_geo_mean_submit(fps, name)
+create_mean_submit(fps, name)
