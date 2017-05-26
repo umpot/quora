@@ -658,6 +658,13 @@ def write_metrics_on_POS_features():
     # test_df[new_cols].to_csv(test_pos_metrics_fp, index_label='test_id')
 
 
+def load_metrics_on_pos_train():
+    return pd.read_csv(train_pos_metrics_fp, index_col='id')
+
+def load_metrics_on_pos_test():
+    return pd.read_csv(train_pos_metrics_fp, index_col='test_id')
+
+
 
 write_metrics_on_POS_features()
 # def get_verbs(s):
