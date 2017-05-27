@@ -1,0 +1,15 @@
+1)Type of spliting:
+    Spacy
+    lemmas
+    split
+
+2)Preprocessing:
+    remove trash,puncts, etc
+    lower
+
+3)with\without staopwords
+
+4)Features
+    share 1,2,3
+    common_num
+
