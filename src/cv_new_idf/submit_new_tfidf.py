@@ -192,7 +192,7 @@ def load_test_tfidf_new():
                                                         'test_tokens_lower_no_stops.csv']
         ]
     return pd.concat(
-        [pd.read_csv(fp, index_col='id') for fp in fps],
+        [pd.read_csv(fp, index_col='test_id') for fp in fps],
         axis=1)
 
 
