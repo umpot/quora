@@ -299,14 +299,19 @@ def apply_tokens_lower_no_stops(df):
 
 
 def write_tfidf_features(is_train, is_test, name1):
+    print 'BEFORE train={}, test={}'.format(is_train, is_test)
     is_train == 'true'==is_train
     is_test == 'true'==is_test
+
+    print 'AFTERR train={}, test={}'.format(is_train, is_test)
+
+    return
 
     print 'Loading dfs...'
     train_df = load_train_nlp()
     if is_test:
         test_df = load_test_nlp()
-    # train_df, test_df = train_df.head(2000), test_df.head(2000)
+    # train_df, test_df = train_df.head(100), test_df.head(100)
 
     prefix_map = {
        'dirty_lower_no_stops' :apply_dirty_lower_no_stops,
@@ -337,9 +342,9 @@ def write_tfidf_features(is_train, is_test, name1):
     cols_map = {j: cols_map[j] for j in range(len(cols_map))}
 
     for name, preprocess in prefix_map.iteritems():
-        print name
         if name!=name1:
             continue
+        print name
         idfs = [smooth_idf, lambda s: std_idf(s, len(train_df))]
         print 'Preprocessing Train...'
         preprocess(train_df)

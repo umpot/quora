@@ -20,15 +20,22 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = 'kg2'
+instance_name = 'kg1'
 zone='us-west1-b'
-folder='/home/dd_petrovskiy/kg/quora/src/cv/'
+folder='/home/dd_petrovskiy/kg/data/tfidf/'
 
 
 
 
 files = [
-    'new_xgb_settings_cv_nohup.out'
+    'train_dirty_lower_no_stops.csv',
+    'test_dirty_lower_no_stops.csv',
+    'train_dirty_upper.csv',
+    'test_dirty_upper.csv',
+    'train_tokens_lower.csv',
+    'test_tokens_lower.csv',
+    'train_tokens_lower_no_stops.csv',
+    'test_tokens_lower_no_stops.csv'
 ]
 
 destination='.'
