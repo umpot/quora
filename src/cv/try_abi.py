@@ -537,7 +537,8 @@ def perform_xgb_cv(name, mongo_host):
                                       # colsample_bytree=0.8,
                                       max_depth=7,
                                       objective='binary:logistic',
-                                      learning_rate=0.02)
+                                      learning_rate=0.02,
+                                      base_score=0.2)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr)
