@@ -668,7 +668,7 @@ def perform_xgb_cv(name, mongo_host):
         write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
 
 
-    out_loss('avg = {}'.format(np.mean(losses)))
+    out_loss('avg = {}'.format(np.mean([x['loss'] for x in losses])))
 
 
 name='try_new_idf_only_lower_split_on_0.6_0.8_7_0.02'
