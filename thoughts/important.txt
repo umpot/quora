@@ -186,6 +186,8 @@ without stops, without nouns, without verbs etc
 
 64)maybe modals, wh - features ?????
 
+65)Very rare tokens, numbers 5000.0 etc
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

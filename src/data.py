@@ -109,7 +109,7 @@ def fix_nans(df):
 
 def load_train():
     return fix_nans(
-        pd.read_csv(fp_train, index_col='id')
+        pd.read_csv(fp_train, index_col='id', encoding="utf-8")
     )
 
 def load_test():

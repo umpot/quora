@@ -1,0 +1,51 @@
+1)Different IDF:
+    1/10K+c
+    log(N/c)
+    log(+1+N/c)
+    log(-1+N/c)
+    1/xxx+c
+    Custom???
+            1/c**2
+            1/Log(c)**2
+
+2)Different-token-splitting-strategies
+    Spacy
+    ' '.split()
+
+3)Different-text-cleaning-strategies
+    No-cleaning
+    Remove punct
+    Remove all not-alpha-tokens
+
+4)Different set of Stopwords
+    nltk
+    sklearn
+    Custom(top-N-by-count or except {...})
+
+5)Tf - Number-of-Occurences
+
+6)lower/upper
+
+7)Different share ratio
+        intersection/sum1+sum2
+        inter/max(sum1, sum2)
+        inter/join(sum1, sum2)
+
+
+8)tfidf-statistics
+    mean/std/max/min
+    sum_q1/sum_q2
+    share/share_ratio
+
+
+
+9)min/max/mean/std on join/union and diffs
+
+===========================================================
+To-test
+1)stops/no stops
+2)clean/no-clean (punctuation)
+3)Split Spacy/.split()
+4)1/N+10K /
+
+

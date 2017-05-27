@@ -20,7 +20,7 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = 'kg1'
+instance_name = 'kg2'
 zone='us-west1-b'
 folder='/home/dd_petrovskiy/kg/quora/src/cv/'
 
@@ -28,7 +28,7 @@ folder='/home/dd_petrovskiy/kg/quora/src/cv/'
 
 
 files = [
-    'nohup.out'
+    'new_xgb_settings_cv_nohup.out'
 ]
 
 destination='.'
