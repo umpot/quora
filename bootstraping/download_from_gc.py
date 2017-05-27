@@ -27,17 +27,18 @@ folder='/home/dd_petrovskiy/kg/data/tfidf/'
 
 
 
-files = [
-    'train_dirty_lower_no_stops.csv',
-    'test_dirty_lower_no_stops.csv',
-    'train_dirty_upper.csv',
-    'test_dirty_upper.csv',
-    'train_tokens_lower.csv',
-    'test_tokens_lower.csv',
-    'train_tokens_lower_no_stops.csv',
-    'test_tokens_lower_no_stops.csv'
-]
 
 destination='.'
 
+files = [
+    'train_dirty_lower_no_stops.csv',
+    'train_dirty_upper.csv',
+    'train_tokens_lower.csv',
+    'train_tokens_lower_no_stops.csv',
+
+    'test_dirty_lower_no_stops.csv',
+    'test_tokens_lower_no_stops.csv',
+    'test_tokens_lower.csv',
+    'test_dirty_upper.csv'
+]
 run(instance_name, zone, folder, files, destination)

@@ -300,12 +300,10 @@ def apply_tokens_lower_no_stops(df):
 
 def write_tfidf_features(is_train, is_test, name1):
     print 'BEFORE train={}, test={}'.format(is_train, is_test)
-    is_train == 'true'==is_train
-    is_test == 'true'==is_test
+    is_train = 'true'==is_train
+    is_test = 'true'==is_test
 
     print 'AFTERR train={}, test={}'.format(is_train, is_test)
-
-    return
 
     print 'Loading dfs...'
     train_df = load_train_nlp()
