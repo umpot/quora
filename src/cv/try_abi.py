@@ -533,9 +533,11 @@ def perform_xgb_cv(name, mongo_host):
         test_arr = small
 
         estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5)
+                                      subsample=0.6,
+                                      # colsample_bytree=0.8,
+                                      max_depth=7,
+                                      objective='binary:logistic',
+                                      learning_rate=0.02)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr)
@@ -567,7 +569,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='try_abi_0.8_0.8_5'
+name='try_abi_0.6__7_eta_0.02'
 perform_xgb_cv(name, gc_host)
 
 
