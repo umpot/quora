@@ -519,7 +519,7 @@ def load_train_all_xgb():
         load_train_lengths(),
         load_train_common_words(),
         load__train_metrics(),
-        load_train_tfidf(),
+        load_train_tfidf_new(),
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
