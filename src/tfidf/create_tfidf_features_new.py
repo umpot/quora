@@ -187,14 +187,15 @@ def load_test_nlp():
 
 
 def process_idf_statistics(q1, q2, weights):
-    w1={weights.get(x,0) for x in q1}
-    w2={weights.get(x,0) for x in q2}
+    w1=[weights.get(x,0) for x in q1]
+    w2=[weights.get(x,0) for x in q2]
+
 
     q_inter = q1.intersection(q2)
-    w_inter = {weights.get(x,0) for x in q_inter}
+    w_inter = [weights.get(x,0) for x in q_inter]
 
     q_union = q1.union(q2)
-    w_union = {weights.get(x,0) for x in q_union}
+    w_union = [weights.get(x,0) for x in q_union]
 
     # q1_diff = q1.difference(q2)
     # w1_diff = {weights.get(x,0) for x in q1_diff}
@@ -220,8 +221,8 @@ def process_idf_statistics(q1, q2, weights):
     w1_sum = None if q1_empty else np.sum(w1)
     w2_sum = None if q2_empty else np.sum(w2)
 
-    w1_sum_or_zero = 0 if q1_empty is None else w1_sum
-    w2_sum_or_zero = 0 if q2_empty is None else w2_sum
+    w1_sum_or_zero = 0 if q1_empty else w1_sum
+    w2_sum_or_zero = 0 if q2_empty else w2_sum
 
     w_inter = 0 if len(q_inter)==0 else np.sum(w_inter)
     w_union = 0 if len(q_union)==0 else np.sum(w_union)
@@ -236,13 +237,16 @@ def process_idf_statistics(q1, q2, weights):
     den = 1 if den==0 else den
     w_share_ratio_2 = (2*w_share)/den
 
-    den = np.max(w1_sum_or_zero, w2_sum_or_zero)
+    den = np.max([w1_sum_or_zero, w2_sum_or_zero])
     den = 1 if den==0 else den
     w_share_ratio_3 = (w_share)/den
 
     w_means_log = None
     if w1_mean is not None and w2_mean is not None:
-        w_means_log = np.abs(np.log(w1_mean/w2_mean))
+        if w2_mean==0 or w1_mean==0:
+            w_means_log = None
+        else:
+            w_means_log = np.abs(np.log(w1_mean/w2_mean))
 
 
     return w1_max, w2_max,\
@@ -259,7 +263,7 @@ def smooth_idf(count, eps=10000, min_count=2):
     if count < min_count:
         return 0
     else:
-        return 1 / (count + eps)
+        return 1.0 / (count + eps)
 
 def std_idf(count, N):
     return np.log(N/count)
@@ -294,10 +298,15 @@ def apply_tokens_lower_no_stops(df):
     df[tmp2] = df[tokens_q2].apply(lambda s: {x for x in set(s.lower().split()) if x not in STOP_WORDS})
 
 
-def write_tfidf_features(is_train, is_test):
+def write_tfidf_features(is_train, is_test, name1):
+    is_train == 'true'==is_train
+    is_test == 'true'==is_test
+
     print 'Loading dfs...'
-    train_df, test_df = load_train_nlp(), load_test_nlp()
-    train_df, test_df = train_df.head(2000), test_df.head(2000)
+    train_df = load_train_nlp()
+    if is_test:
+        test_df = load_test_nlp()
+    # train_df, test_df = train_df.head(2000), test_df.head(2000)
 
     prefix_map = {
        'dirty_lower_no_stops' :apply_dirty_lower_no_stops,
@@ -329,6 +338,8 @@ def write_tfidf_features(is_train, is_test):
 
     for name, preprocess in prefix_map.iteritems():
         print name
+        if name!=name1:
+            continue
         idfs = [smooth_idf, lambda s: std_idf(s, len(train_df))]
         print 'Preprocessing Train...'
         preprocess(train_df)
@@ -345,8 +356,8 @@ def write_tfidf_features(is_train, is_test):
             print idf_name
             #TRAIN
             if is_train:
-                train_df['tmp'] = from_pandas(train_df[[tmp1, tmp2]], npartitions=npartitions).apply(
-                    lambda s: process_idf_statistics(s[tmp1], s[tmp2], weights), axis=1).compute()
+                train_df['tmp'] = train_df[[tmp1, tmp2]].apply(
+                    lambda s: process_idf_statistics(s[tmp1], s[tmp2], weights), axis=1)
 
                 for k,v in cols_map.iteritems():
                     print v
@@ -355,8 +366,8 @@ def write_tfidf_features(is_train, is_test):
                     new_cols.append(col)
 
             if is_test:
-                test_df['tmp'] = from_pandas(test_df[[tmp1, tmp2]], npartitions=npartitions).apply(
-                    lambda s: process_idf_statistics(s[tmp1], s[tmp2], weights), axis=1).compute()
+                test_df['tmp'] = test_df[[tmp1, tmp2]].apply(
+                    lambda s: process_idf_statistics(s[tmp1], s[tmp2], weights), axis=1)
 
                 for k,v in cols_map.iteritems():
                     col = '{}_{}_{}'.format(v, idf_name, name)
@@ -369,12 +380,10 @@ def write_tfidf_features(is_train, is_test):
         test_fp = os.path.join(data_folder, 'tfidf', 'test_{}.csv'.format(name))
 
         if is_train:
-            train_df[[new_cols]].to_csv(train_fp, index_label='id')
+            train_df[new_cols].to_csv(train_fp, index_label='id')
 
         if is_test:
-            test_df[[new_cols]].to_csv(test_fp, index_label='test_id')
+            test_df[new_cols].to_csv(test_fp, index_label='test_id')
 
 
-npartitions=4
-
-write_tfidf_features(True, True)
+write_tfidf_features(sys.argv[1], sys.argv[2], sys.argv[3])
