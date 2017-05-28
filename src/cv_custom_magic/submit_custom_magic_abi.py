@@ -557,6 +557,28 @@ def add_custom_magic_features_submit(train_df, test_df, folds):
 
     custom_magic_with_update(train_df, test_df, update_df=test_df)
 
+def add_custom_magic_features_and_calibrate_submit(train_df, test_df, folds):
+    for train, test in folds:
+        custom_magic_with_update(train, test, update_df=train_df)
+
+    custom_magic_with_update(train_df, test_df, update_df=test_df)
+    calibrate_df(test_df, [q1_dup_freq, q2_dup_freq, q1_q2_dup_freq])
+
+def calibrate_df(df, cols):
+    train = 0.3691985666274004
+    test=0.17426487864605453
+
+    a = test / train
+    b = (1 - test) / (1 - train)
+
+    def calibrate(x):
+        if x is None:
+            return None
+        return (a * x) / ((a * x) + (b * (1 - x)))
+
+    for col in cols:
+        df[col] = df[col].apply(calibrate)
+
 
 def drop_qs(df):
     cols_to_del = [qid1, qid2, question1, question2]
@@ -725,7 +747,7 @@ def submit_xgb(name):
     print explore_target_ratio(big)
 
 
-    add_custom_magic_features_one_cv_fold(big, small)
+    add_custom_magic_features_and_calibrate_submit(big, small)
     drop_qs(big)
     drop_qs(small)
 
@@ -765,7 +787,7 @@ def submit_xgb(name):
 
 
 
-name='submit_custom_magic_abi_0.8_0.8_5_1000'
+name='submit_custom_magic_abi_and_calibration0.8_0.8_5_1000'
 submit_xgb(name)
 
 
