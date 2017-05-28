@@ -601,6 +601,21 @@ def split_into_folds(df, random_state=42):
 ############################################################3
 ############################################################3
 ############################################################3
+folds_fp = os.path.join(data_folder, 'top_k_freq', 'folds.json')
+
+
+def load_folds():
+    return json.load(open(folds_fp))
+
+
+def create_folds(df):
+    folds = load_folds()
+
+    return [(df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']]) for x in range(len(folds))]
+
+############################################################3
+############################################################3
+############################################################3
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -748,7 +763,7 @@ def submit_xgb(name):
     print explore_target_ratio(big)
 
 
-    add_custom_magic_features_and_calibrate_submit(big, small)
+    add_custom_magic_features_and_calibrate_submit(big, small, create_folds(big))
     drop_qs(big)
     drop_qs(small)
 
