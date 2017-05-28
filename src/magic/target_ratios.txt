@@ -1,0 +1,600 @@
+('What are the best ways to lose weight?', 161)
+train: 161
+ratio: {'neg': 0.7577639751552795, 'pos': 0.2422360248447205}
+test: 130
+None
+=========================================
+("How can you look at someone's private Instagram account without following them?", 120)
+train: 120
+ratio: {'neg': 1.0, 'pos': 0.0}
+test: 69
+None
+=========================================
+('How can I lose weight quickly?', 111)
+train: 111
+ratio: {'neg': 0.7657657657657657, 'pos': 0.23423423423423423}
+test: 75
+None
+=========================================
+("What's the easiest way to make money online?", 88)
+train: 88
+ratio: {'neg': 0.5568181818181818, 'pos': 0.4431818181818182}
+test: 67
+None
+=========================================
+('Can you see who views your Instagram?', 79)
+train: 79
+ratio: {'neg': 0.8734177215189873, 'pos': 0.12658227848101267}
+test: 38
+None
+=========================================
+('What are some things new employees should know going into their first day at AT&T?', 77)
+train: 77
+ratio: {'neg': 1.0, 'pos': 0.0}
+test: 47
+None
+=========================================
+('What do you think of the decision by the Indian Government to demonetize 500 and 1000 rupee notes?', 68)
+train: 68
+ratio: {'neg': 0.3088235294117647, 'pos': 0.6911764705882353}
+test: 22
+None
+=========================================
+('Which is the best digital marketing course?', 66)
+train: 66
+ratio: {'neg': 0.6666666666666666, 'pos': 0.3333333333333333}
+test: 12
+None
+=========================================
+('How can you increase your height?', 63)
+train: 63
+ratio: {'neg': 0.6984126984126984, 'pos': 0.30158730158730157}
+test: 48
+None
+=========================================
+('How do l see who viewed my videos on Instagram?', 61)
+train: 61
+ratio: {'neg': 0.819672131147541, 'pos': 0.18032786885245902}
+test: 42
+None
+=========================================
+('How should I start my preparation for the IAS exam?', 58)
+train: 58
+ratio: {'neg': 0.6206896551724138, 'pos': 0.3793103448275862}
+test: 32
+None
+=========================================
+('How would demonetizing 500 and 1000 rupee notes and introducing new 2000 rupee notes help curb black money and corruption?', 57)
+train: 57
+ratio: {'neg': 0.07017543859649122, 'pos': 0.9298245614035088}
+test: 16
+None
+=========================================
+('How should I lose weight?', 56)
+train: 56
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 18
+None
+=========================================
+('How do i lose weight?', 55)
+train: 55
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 18
+None
+=========================================
+('Why do people ask questions on Quora that can easily be answered by Google?', 55)
+train: 55
+ratio: {'neg': 0.01818181818181818, 'pos': 0.9818181818181818}
+test: 15
+None
+=========================================
+('How do I lose weight?', 55)
+train: 55
+ratio: {'neg': 0.01818181818181818, 'pos': 0.9818181818181818}
+test: 36
+None
+=========================================
+('What are the best ways to reduce and eliminate belly, abdominal, and thigh fat?', 55)
+train: 55
+ratio: {'neg': 0.9272727272727272, 'pos': 0.07272727272727272}
+test: 65
+None
+=========================================
+('Why do some people ask questions on Quora that could easily be answered by using a search engine?', 55)
+train: 55
+ratio: {'neg': 0.2, 'pos': 0.8}
+test: 32
+None
+=========================================
+('Why do people ask Quora questions which can be answered easily by Google?', 54)
+train: 54
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 16
+None
+=========================================
+("How do I reset my Gmail password when I don't remember my recovery information?", 54)
+train: 54
+ratio: {'neg': 0.7407407407407407, 'pos': 0.25925925925925924}
+test: 42
+None
+=========================================
+('How will the scrapping of Rs 500 and Rs 1000 notes help in reducing black money and corruption?', 54)
+train: 54
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 0
+None
+=========================================
+('Why do some people on QUORA ask questions that they can easily findout on Google?', 53)
+train: 53
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 16
+None
+=========================================
+('What do you think about ban on Rs. 500 and Rs. 1000 currency notes?', 52)
+train: 52
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 7
+None
+=========================================
+('What are the best was to lose weight?', 52)
+train: 52
+ratio: {'neg': 0.019230769230769232, 'pos': 0.9807692307692307}
+test: 28
+None
+=========================================
+('Why do people ask questions on Quora that are easily to find answers too on Google?', 52)
+train: 52
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 15
+None
+=========================================
+('How can improve my English speaking?', 51)
+train: 51
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 28
+None
+=========================================
+('How do I improve my English speaking?', 51)
+train: 51
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 22
+None
+=========================================
+('What can I do to improve my English speaking?', 51)
+train: 51
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 22
+None
+=========================================
+('What should I do to improve my English ?', 51)
+train: 51
+ratio: {'neg': 0.0196078431372549, 'pos': 0.9803921568627451}
+test: 22
+None
+=========================================
+('Why do so many people ask questions on Quora that can be found in a Google search?', 51)
+train: 51
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 14
+None
+=========================================
+('How can I improve my English pronunciation?', 51)
+train: 51
+ratio: {'neg': 0.0392156862745098, 'pos': 0.9607843137254902}
+test: 46
+None
+=========================================
+('Why do people ask stupid questions on Quora that could be easily answered by Google?', 51)
+train: 51
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 13
+None
+=========================================
+('What is the best phone to buy below 15k?', 51)
+train: 51
+ratio: {'neg': 0.6078431372549019, 'pos': 0.39215686274509803}
+test: 19
+None
+=========================================
+('How can I improve my English in all aspects?', 50)
+train: 50
+ratio: {'neg': 0.02, 'pos': 0.98}
+test: 23
+None
+=========================================
+('How I can improve my English communication?', 50)
+train: 50
+ratio: {'neg': 0.02, 'pos': 0.98}
+test: 23
+None
+=========================================
+('I forgot my Facebook password and email password. How can I log into Facebook?', 50)
+train: 50
+ratio: {'neg': 0.64, 'pos': 0.36}
+test: 35
+None
+=========================================
+('What are the easy ways to earn money online?', 50)
+train: 50
+ratio: {'neg': 0.04, 'pos': 0.96}
+test: 24
+None
+=========================================
+('What do you think about banning 500 and 1000 rupee notes in India?', 50)
+train: 50
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 8
+None
+=========================================
+('How could I improve my English pronunciation?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 0
+None
+=========================================
+('How could I improve my English?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 29
+None
+=========================================
+('How can I improve my English Language?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 24
+None
+=========================================
+('How can I improve in English?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 30
+None
+=========================================
+('How can changing 500 and 1000 rupee notes end the black money in India?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 4
+None
+=========================================
+('How do I improve my English language?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 1
+None
+=========================================
+('How does banning 500 and 1000 rupee notes help to control black money?', 49)
+train: 49
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 7
+None
+=========================================
+('What are the easiest ways to earn money online?', 49)
+train: 49
+ratio: {'neg': 0.02040816326530612, 'pos': 0.9795918367346939}
+test: 22
+None
+=========================================
+('What is the easiest way to earn money from online?', 48)
+train: 48
+ratio: {'neg': 0.020833333333333332, 'pos': 0.9791666666666666}
+test: 26
+None
+=========================================
+('How does the ban on 500 and 1000 rupee notes helps to identify black money and corruption?', 48)
+train: 48
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 6
+None
+=========================================
+('Would demonetization of 500 and 1000 rupee notes actually help in curbing black money in India?', 48)
+train: 48
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 0
+None
+=========================================
+('What should I do to earn money online?', 47)
+train: 47
+ratio: {'neg': 0.02127659574468085, 'pos': 0.9787234042553191}
+test: 22
+None
+=========================================
+('What do you think of the decision by the Indian government to demonetize 500 and 1000 rupee notes?', 47)
+train: 47
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 5
+None
+=========================================
+('Why do people bother to ask questions on Quora they could just google to get the answer?', 47)
+train: 47
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 13
+None
+=========================================
+('How can I earn money online?', 47)
+train: 47
+ratio: {'neg': 0.02127659574468085, 'pos': 0.9787234042553191}
+test: 59
+None
+=========================================
+('Why do so may people ask questions on Quora that can easily be found by a simple Google searh?', 47)
+train: 47
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 14
+None
+=========================================
+('Can I make money online?', 47)
+train: 47
+ratio: {'neg': 0.0851063829787234, 'pos': 0.9148936170212766}
+test: 18
+None
+=========================================
+('What is best way to make money online?', 46)
+train: 46
+ratio: {'neg': 0.06521739130434782, 'pos': 0.9347826086956522}
+test: 20
+None
+=========================================
+('Can I earn money online?', 46)
+train: 46
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 22
+None
+=========================================
+('Would banning notes of denominations 500 and 1000 help to curb the black money in system?', 46)
+train: 46
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 7
+None
+=========================================
+('What is the cheapest, painless, easiest way to commit suicide?', 46)
+train: 46
+ratio: {'neg': 0.4782608695652174, 'pos': 0.5217391304347826}
+test: 44
+None
+=========================================
+('How can I earn money easily online?', 46)
+train: 46
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 22
+None
+=========================================
+('Will banning 500 and 1000 notes can stop the black money?', 46)
+train: 46
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 6
+None
+=========================================
+('How do I earn money online?', 46)
+train: 46
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 32
+None
+=========================================
+('Why do people often ask questions in Quora while they can Google it themselves?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 12
+None
+=========================================
+('Why do so many people ask things on Quora that they could just as easily Google?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 13
+None
+=========================================
+('How do you make money online?', 45)
+train: 45
+ratio: {'neg': 0.044444444444444446, 'pos': 0.9555555555555556}
+test: 22
+None
+=========================================
+('How do we make money online?', 45)
+train: 45
+ratio: {'neg': 0.044444444444444446, 'pos': 0.9555555555555556}
+test: 18
+None
+=========================================
+('Why do people ask questions on Quora instead of Googling it?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 14
+None
+=========================================
+('How can I earn money part time online?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 23
+None
+=========================================
+('Why do people ask questions on Quora that could simply be googled?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 12
+None
+=========================================
+('Why do people ask such questions here on Quora which could be easily found on the internet?', 45)
+train: 45
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 15
+None
+=========================================
+('How could I make money online?', 45)
+train: 45
+ratio: {'neg': 0.044444444444444446, 'pos': 0.9555555555555556}
+test: 17
+None
+=========================================
+('How will I improve my spoken English?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 21
+None
+=========================================
+('How can I increase the traffic on my website?', 44)
+train: 44
+ratio: {'neg': 0.3181818181818182, 'pos': 0.6818181818181818}
+test: 17
+None
+=========================================
+('What are some easy ways to make done extra money online?', 44)
+train: 44
+ratio: {'neg': 0.045454545454545456, 'pos': 0.9545454545454546}
+test: 16
+None
+=========================================
+('Will the decision to demonetize 500 and 1000 rupee notes help to curb black money?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 6
+None
+=========================================
+('Why do so many people ask questions on Quora instead of searching the answers on Wikipedia?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 15
+None
+=========================================
+('Why do people ask questions here in Quora instead of just googling?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 14
+None
+=========================================
+('What are the best ways to make money online?', 44)
+train: 44
+ratio: {'neg': 0.045454545454545456, 'pos': 0.9545454545454546}
+test: 15
+None
+=========================================
+('How exactly does banning Rs 500 and Rs 1000 notes curb the problem of black money?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 6
+None
+=========================================
+('How can I improve my spoken English?', 44)
+train: 44
+ratio: {'neg': 0.022727272727272728, 'pos': 0.9772727272727273}
+test: 43
+None
+=========================================
+('What should I do to improve my spoken English?', 44)
+train: 44
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 21
+None
+=========================================
+('What are the best movies of all time?', 43)
+train: 43
+ratio: {'neg': 0.6046511627906976, 'pos': 0.3953488372093023}
+test: 27
+None
+=========================================
+('How can I become fluent in English?', 43)
+train: 43
+ratio: {'neg': 1.0, 'pos': 0.0}
+test: 102
+None
+=========================================
+('What is a way to make money online?', 43)
+train: 43
+ratio: {'neg': 0.023255813953488372, 'pos': 0.9767441860465116}
+test: 15
+None
+=========================================
+('How can I slowly lose weight?', 43)
+train: 43
+ratio: {'neg': 0.023255813953488372, 'pos': 0.9767441860465116}
+test: 15
+None
+=========================================
+('What are ways I can make money online?', 43)
+train: 43
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 16
+None
+=========================================
+('What is make money online?', 43)
+train: 43
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 20
+None
+=========================================
+('How does banning 500 & 1000 rupee notes solve black money problem?', 43)
+train: 43
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 5
+None
+=========================================
+('How will scraping of 500 and 1000 rupees notes help in curbing corruption and black money?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 8
+None
+=========================================
+('How can I improve fluency in English?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 21
+None
+=========================================
+('What are the various ways through which one can earn money online?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 19
+None
+=========================================
+('How do I actually lose weight?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 16
+None
+=========================================
+('How is black money curbed with the ban of 1000 rupee notes and introducing new 500 and 2000 rupee notes?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 5
+None
+=========================================
+('How can I start to make money online?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 15
+None
+=========================================
+("Why don't many people posting questions on Quora check Google first?", 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 11
+None
+=========================================
+('How do I improve my pronunciation in English?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 0
+None
+=========================================
+('Are we heading towards World War III?', 42)
+train: 42
+ratio: {'neg': 0.38095238095238093, 'pos': 0.6190476190476191}
+test: 35
+None
+=========================================
+('How can one make money online?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 19
+None
+=========================================
+('How can I improve my pronunciation in English?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 0
+None
+=========================================
+('How do I improve my pronunciation of English?', 42)
+train: 42
+ratio: {'neg': 0.0, 'pos': 1.0}
+test: 19
+None
+=========================================

@@ -85,11 +85,28 @@ TEST_METRICS_FP = [
 ]
 
 
+def fix_nans(df):
+    def blja(s):
+        if s != s:
+            return ''
+        return s
+
+    for col in [question1, question2]:
+        df[col] = df[col].apply(blja)
+
+    return df
+
+
 def load_train():
-    return pd.read_csv(fp_train, index_col='id')
+    return fix_nans(
+        pd.read_csv(fp_train, index_col='id', encoding="utf-8")
+    )
+
 
 def load_test():
-    return pd.read_csv(fp_test, index_col='test_id')
+    return fix_nans(
+        pd.read_csv(fp_test, index_col='test_id')
+    )
 
 
 def load__train_metrics():
@@ -341,3 +358,62 @@ def explore_magic_train():
         load_train(),
         load_train_magic()
     ], axis=1)
+
+def explore_magic_test():
+    return pd.concat([
+        load_test(),
+        load_test_magic()
+    ], axis=1)
+
+
+def explore_counts_in_train_test(s):
+    a = filter_df(train_df, s)
+    b = filter_df(test_df, s)
+    print 'train: {}'.format(len(a))
+    ratio = explore_target_ratio(a)
+    print 'ratio: {}'.format(ratio)
+    print ''
+
+    print 'test: {}'.format(len(b))
+    # print 'ratio: {}'.format(explore_target_ratio(b))
+    print ''
+
+    return {'train_count':len(a), 'test_count':len(b), 'ratio':ratio}
+
+def explore_counts_in_train_test_write(s, train_df, test_df):
+    a = filter_df(train_df, s)
+    b = filter_df(test_df, s)
+    print 'train: {}'.format(len(a))
+    ratio = explore_target_ratio(a)
+    print 'ratio: {}'.format(ratio)
+    print ''
+
+    print 'test: {}'.format(len(b))
+    # print 'ratio: {}'.format(explore_target_ratio(b))
+    print ''
+
+    return {'train_count':len(a), 'test_count':len(b), 'ratio':ratio}
+
+
+def how_many_tops_from_train_are_in_test(N=100):
+    c =get_all_questions_flat()
+    ss = {x[0] for x in c.most_common(N)}
+    return len(test_df[(test_df[question1].apply(lambda s: s in ss))|(test_df[question1].apply(lambda s: s in ss))])
+
+
+def top_by_magic_target_ratios():
+    c =get_all_questions_flat_train()
+    for x in c.most_common(1000):
+        print x
+        print explore_counts_in_train_test(x[0])
+        print '========================================='
+
+
+def write_strange_counts(N=10):
+    c =get_all_questions_flat_train()
+    res=[]
+    for x in c.most_common(1000):
+        print x
+        data = explore_counts_in_train_test(x[0])
+        print data
+        print '========================================='

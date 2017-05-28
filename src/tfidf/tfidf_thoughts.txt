@@ -41,6 +41,10 @@
 
 9)min/max/mean/std on join/union and diffs
 
+NEW===
+
+10)add geometric_mean, sqrt-mean
+
 ===========================================================
 To-test
 1)stops/no stops

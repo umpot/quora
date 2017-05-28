@@ -188,6 +188,14 @@ without stops, without nouns, without verbs etc
 
 65)Very rare tokens, numbers 5000.0 etc
 
+66)Presence or absence dummises for top-dups tokens except stops!!!!!
+Idf on this???????? idf-share  ?????
+Or that differs from common distribution
+
+67)To think about 'reweighting' magics: q1_num, q2_num, q1_q2_intersecion, target_shares
+So I;m doing oversampling, it has affected counts but is it in corespondense with test?
+Or I can multiply by some L and get better LB?
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

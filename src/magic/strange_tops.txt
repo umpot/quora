@@ -1,0 +1,35 @@
+('How do l see who viewed my videos on Instagram?', 61)
+train: 61
+ratio: {'neg': 0.819672131147541, 'pos': 0.18032786885245902}
+test: 42
+None
+=========================================
+('How should I start my preparation for the IAS exam?', 58)
+train: 58
+ratio: {'neg': 0.6206896551724138, 'pos': 0.3793103448275862}
+test: 32
+None
+=========================================
+('How can you increase your height?', 63)
+train: 63
+ratio: {'neg': 0.6984126984126984, 'pos': 0.30158730158730157}
+test: 48
+None
+=========================================
+('Which is the best digital marketing course?', 66)
+train: 66
+ratio: {'neg': 0.6666666666666666, 'pos': 0.3333333333333333}
+test: 12
+None
+=========================================
+('What do you think of the decision by the Indian Government to demonetize 500 and 1000 rupee notes?', 68)
+train: 68
+ratio: {'neg': 0.3088235294117647, 'pos': 0.6911764705882353}
+test: 22
+None
+=========================================
+('Can you see who views your Instagram?', 79)
+train: 79
+ratio: {'neg': 0.8734177215189873, 'pos': 0.12658227848101267}
+test: 38
+None

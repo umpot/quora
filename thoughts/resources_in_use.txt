@@ -1,0 +1,46 @@
+1)NLTK (WordNet) and spaCy (English language model).
+
+2)Embedings
+https://nlp.stanford.edu/projects/glove/
+https://github.com/Kyubyong/wordvectors
+https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md
+https://github.com/3Top/word2vec-api
+https://github.com/stanfordnlp/GloVe
+https://github.com/jhlau/doc2vec
+
+3)Word Frequency Corpus
+
+http://norvig.com/ngrams/count_1w.txt
+
+4)Models:
+https://github.com/tensorflow/models/tree/master/lm_1b
+
+5)Top 50 followed topics on Quora 2015
+https://www.quora.com/What-were-the-most-followed-topics-on-Quora-in-2015
+
+6)Stanford Parser
+
+7)word2vec-api
+
+https://github.com/3Top/word2vec-api
+
+And models from the list
+
+8)Yahoo answers:
+http://webscope.sandbox.yahoo.com/catalog.php?datatype=l
+
+9)stanford question answering dataset
+
+https://rajpurkar.github.io/SQuAD-explorer/
+
+10)https://github.com/explosion/sense2vec
+
+11)Word List:
+    http://www.enchantedlearning.com/wordlist/opposites.shtml
+
+12)Topic Classification on Qoura questions:
+    https://github.com/vishaljain3991/cnn_topic_classification
+
+13)
+The Stanford Natural Language Inference (SNLI) Corpus
+Sick Data Set http://clic.cimec.unitn.it/composes/sick.html

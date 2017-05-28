@@ -1,0 +1,18 @@
+Hi everyone,
+
+Thanks for upvoting a previous post and sorry for making a little mess up.
+Would also like to appologize my team mate cause I did not consult publication of magics with him.
+ So that's all for the introduction.
+
+The goal of writing this post is to share two innteresting ideas - at least in my opinion
+and as We decided to quit from active participation in this contest and
+ we would probably not have a time for implementing them,
+  and also in my opinion it would be waste if anyone did not check it.
+  So let's get to the point. Imagine that graph mentioned in my previous post
+   is weighted ( e.g. weights are for example common word matches between the nodes) -
+    so let's normalize row-wise the transition matrix of the graph ((i,j) element is weight of edge (i,j)).
+     So the first ( much much simplier idea ) would be to normalize this matrix to stochastic matrix ( weights of each row would sum up to 1. )
+     and use the wieghts of normalized matrix instead of previous one as feature.
+     And the second, much much harder and much much crazier -
+     compute the PageRank value for each node and use as feature.
+     Happy coding if anyone would catch this and may the force be with You!
