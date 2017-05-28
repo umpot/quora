@@ -577,6 +577,7 @@ def calibrate_df(df, cols):
         return (a * x) / ((a * x) + (b * (1 - x)))
 
     for col in cols:
+        print 'Calibrationg {} ...'.format(col)
         df[col] = df[col].apply(calibrate)
 
 
