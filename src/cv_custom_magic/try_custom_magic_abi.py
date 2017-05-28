@@ -47,9 +47,10 @@ def create_folds(df):
 
 def split_into_folds(df, random_state=42):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+    skf.get_n_splits(df, df[TARGET])
     res=[]
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        res.append((df.loc[big_ind], df.loc[small_ind]))
+    for big_ind, small_ind in skf.split(df, df[TARGET]):
+        res.append((df.iloc[big_ind], df.iloc[small_ind]))
 
     return res
 
@@ -720,7 +721,8 @@ def drop_qs(df):
 
 
 def perform_xgb_cv(name, mongo_host):
-    df = load_train_all_xgb_no_drop_qs()
+    # df = load_train_all_xgb_no_drop_qs()
+    df = load_train()
     folds =5
     seed = 42
 
