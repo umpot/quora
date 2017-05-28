@@ -69,8 +69,8 @@ ner_test_fp = os.path.join(data_folder, 'nlp', 'ner_test.csv')
 stems_train_fp = os.path.join(data_folder, 'nlp', 'stems_train.csv')
 stems_test_fp = os.path.join(data_folder, 'nlp', 'stems_test.csv')
 
-tfidf_with_stops_train_fp = os.path.join(data_folder, 'tfidf', 'tokens_with_stop_words_tfidf_train.csv')
-tfidf_with_stops_test_fp = os.path.join(data_folder, 'tfidf', 'tokens_with_stop_words_tfidf_test.csv')
+tfidf_with_stops_train_fp = os.path.join(data_folder, 'tfidf','old', 'tokens_with_stop_words_tfidf_train.csv')
+tfidf_with_stops_test_fp = os.path.join(data_folder, 'tfidf','old', 'tokens_with_stop_words_tfidf_test.csv')
 
 magic_train_fp = os.path.join(data_folder, 'magic', 'magic_train.csv')
 magic_test_fp = os.path.join(data_folder, 'magic', 'magic_test.csv')
