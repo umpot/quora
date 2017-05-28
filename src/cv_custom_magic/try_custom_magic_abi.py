@@ -638,6 +638,25 @@ def load_train_all_xgb():
 
     return train_df
 
+
+def load_train_all_xgb_no_drop_qs():
+    train_df = pd.concat([
+        load_train(),
+        load_train_lengths(),
+        load_train_common_words(),
+        load__train_metrics(),
+        load_train_tfidf(),
+        load_train_magic(),
+        load_wh_train(),
+        load_one_upper_train(),
+        load_topNs_avg_tok_freq_train(),
+        load_abi_train()
+        # load_upper_keywords_train()
+    ], axis=1)
+
+    return train_df
+
+
 def plot_errors(imp):
     train_runs= [x['train'] for x in imp]
     test_runs= [x['test'] for x in imp]
@@ -694,10 +713,14 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
         raise
         # sleep(20)
 
+def drop_qs(df):
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        del df[col]
 
 
 def perform_xgb_cv(name, mongo_host):
-    df = load_train_all_xgb()
+    df = load_train_all_xgb_no_drop_qs()
     folds =5
     seed = 42
 
@@ -715,6 +738,9 @@ def perform_xgb_cv(name, mongo_host):
         print explore_target_ratio(small)
 
         add_custom_magic_features_one_cv_fold(big, small)
+        drop_qs(big)
+        drop_qs(small)
+
 
         big, small = oversample(big, small, seed)
 
