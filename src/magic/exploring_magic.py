@@ -336,8 +336,14 @@ def most_common_intersection(N):
 
     return a.intersection(b)
 
-def filter_df(df, s):
+def filter_df_q1_q2(df, s):
     return df[(df[question1].apply(lambda x: str(x)==s))|(df[question2].apply(lambda x: str(x)==s))]
+
+def filter_df_q1(df, s):
+    return df[(df[question1].apply(lambda x: str(x)==s))]
+
+def filter_df_q2(df, s):
+    return df[(df[question1].apply(lambda x: str(x)==s))]
 
 def explore_common_counts_test(c_train, c_test, N=100):
     for x in c_test.most_common(N):
@@ -417,3 +423,62 @@ def write_strange_counts(N=10):
         data = explore_counts_in_train_test(x[0])
         print data
         print '========================================='
+
+
+question1_in_q1_train         =      'question1_in_q1_train'
+question1_in_q2_train_test    =      'question1_in_q2_train_test'
+question1_in_q2_train         =      'question1_in_q2_train'
+question1_in_q1_train_test    =      'question1_in_q1_train_test'
+question1_in_q_test           =      'question1_in_q_test'
+question1_in_q2_test          =      'question1_in_q2_test'
+question1_in_q1_test          =      'question1_in_q1_test'
+question1_in_q_train          =      'question1_in_q_train'
+question2_in_q2_train_test    =      'question2_in_q2_train_test'
+question2_in_q1_train         =      'question2_in_q1_train'
+question2_in_q2_train         =      'question2_in_q2_train'
+question2_in_q1_train_test    =      'question2_in_q1_train_test'
+question2_in_q_test           =      'question2_in_q_test'
+question2_in_q2_test          =      'question2_in_q2_test'
+question2_in_q1_test          =      'question2_in_q1_test'
+question2_in_q_train          =      'question2_in_q_train'
+
+def filter_nans(ser):
+    def is_not_nan(s):
+        return not s!=s and not s is None
+
+    return filter(is_not_nan, ser)
+
+def add_big_in_train_test_columns():
+    train_df, test_df = load_train(), load_test()
+
+    q1_train = Counter(train_df[question1])
+    q2_train = Counter(train_df[question2])
+
+    q1_test = Counter(test_df[question1])
+    q2_test = Counter(test_df[question2])
+
+    q_train = Counter(list(train_df[question1]) + list(train_df[question2]))
+    q_test = Counter(list(test_df[question1]) + list(test_df[question2]))
+
+    q1_train_test = Counter(list(train_df[question1]) + list(test_df[question1]))
+    q2_train_test = Counter(list(train_df[question2]) + list(test_df[question2]))
+
+    m = {
+        'q1_train': q1_train,
+        'q2_train': q2_train,
+        'q1_test': q1_test,
+        'q2_test': q2_test,
+        'q_train': q_train,
+        'q_test': q_test,
+        'q1_train_test': q1_train_test,
+        'q2_train_test': q2_train_test
+    }
+
+    for df in [train_df, test_df]:
+        for col in [question1, question2]:
+            for name, counter in m.iteritems():
+                df['{}_in_{}'.format(col, name)] = df[col].apply(lambda s: counter[s])
+                print col, name
+
+
+    return train_df, test_df

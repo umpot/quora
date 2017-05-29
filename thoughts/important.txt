@@ -196,6 +196,8 @@ Or that differs from common distribution
 So I;m doing oversampling, it has affected counts but is it in corespondense with test?
 Or I can multiply by some L and get better LB?
 
+68)s more frequently in q1 or q2 feature (train/test)
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

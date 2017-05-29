@@ -1,3 +1,5 @@
+from collections import Counter
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -24,7 +26,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../../data/'
+data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -557,30 +559,6 @@ def add_custom_magic_features_submit(train_df, test_df, folds):
 
     custom_magic_with_update(train_df, test_df, update_df=test_df)
 
-def add_custom_magic_features_and_calibrate_submit(train_df, test_df, folds):
-    for train, test in folds:
-        custom_magic_with_update(train, test, update_df=train_df)
-
-    custom_magic_with_update(train_df, test_df, update_df=test_df)
-    calibrate_df(test_df, [q1_dup_freq, q2_dup_freq, q1_q2_dup_freq])
-
-def calibrate_df(df, cols):
-    train = 0.3691985666274004
-    test=0.17426487864605453
-
-    a = test / train
-    b = (1 - test) / (1 - train)
-
-    def calibrate(x):
-        if x is None:
-            return None
-        return (a * x) / ((a * x) + (b * (1 - x)))
-
-    for col in cols:
-        print 'Calibrationg {} ...'.format(col)
-        df[col] = df[col].apply(calibrate)
-
-
 def drop_qs(df):
     cols_to_del = [qid1, qid2, question1, question2]
     for col in cols_to_del:
@@ -596,6 +574,46 @@ def split_into_folds(df, random_state=42):
         res.append((df.iloc[big_ind], df.iloc[small_ind]))
 
     return res
+
+def get_all_questions_flat_train():
+    df = load_train()
+    l= list(df[question1])+list(df[question2])
+    return Counter(l)
+
+def get_all_questions_flat_test():
+    df = load_test()
+    l= list(df[question1])+list(df[question2])
+    return Counter(l)
+
+big_question1, big_question2='big_question1', 'big_question2'
+
+def add_big_train__test_col(df, N=10):
+    c_train=get_all_questions_flat_train()
+    c_test=get_all_questions_flat_test()
+    for col in [question1, question2]:
+        df['big_{}'.format(col)]= df[col].apply(lambda s: (c_train[s]>=N) and c_test[s]>=N)
+
+def apply_map(x):
+    if (x is None) or (x!=x):
+        return None
+    if x<0.25:
+        return 0
+    if x<0.5:
+        return 1
+    if x<0.75:
+        return 2
+    return 3
+
+def filter_and_null_new_cols(df):
+    add_big_train__test_col(df)
+    new_cols = [q1_dup_freq, q2_dup_freq, q1_q2_dup_freq]
+    bl=df[(~df[big_question1])|(~df[big_question2])]
+    for col in new_cols:
+        df.loc[bl.index, col]=None
+        df[col]=df[col].apply(apply_map)
+
+    for col in [big_question1, big_question2]:
+        del df[col]
 
 
 ############################################################3
@@ -757,13 +775,15 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 def submit_xgb(name):
     seed=42
-    big = load_train_all_xgb_no_drop_qs()
-    small = load_test_all_xgb_no_drop_qs()
+    # big = load_train_all_xgb_no_drop_qs()
+    # small = load_test_all_xgb_no_drop_qs()
+    big=load_train()
+    small = load_test()
 
     print explore_target_ratio(big)
 
 
-    add_custom_magic_features_and_calibrate_submit(big, small, create_folds(big))
+    add_custom_magic_features_submit(big, small, create_folds(big))
     drop_qs(big)
     drop_qs(small)
 
@@ -804,7 +824,7 @@ def submit_xgb(name):
 
 
 name='submit_custom_magic_abi_and_calibration0.8_0.8_5_1000'
-submit_xgb(name)
+# submit_xgb(name)
 
 
 #894, 729

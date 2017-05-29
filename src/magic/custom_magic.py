@@ -219,6 +219,7 @@ def load_train_tfidf_new():
         [pd.read_csv(fp, index_col='id') for fp in fps],
         axis=1)
 
+
 def load_test_tfidf_new():
     fps = [
         os.path.join(data_folder, 'tfidf', x) for x in ['test_dirty_lower_no_stops.csv',
@@ -359,6 +360,45 @@ def load_wh_test():
     df = pd.read_csv(wh_fp_test, index_col='test_id')
     return df
 
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+def get_all_questions_flat_train():
+    df = load_train()
+    l = list(df[question1]) + list(df[question2])
+    return Counter(l)
+
+
+def get_all_questions_flat_test():
+    df = load_test()
+    l = list(df[question1]) + list(df[question2])
+    return Counter(l)
+
+
+def most_common_intersection(N):
+    c_train = get_all_questions_flat_train()
+    c_test = get_all_questions_flat_test()
+
+    a = set([x[0] for x in c_train.most_common(N)])
+    b = set([x[0] for x in c_test.most_common(N)])
+
+    return a.intersection(b)
+
+
+def filter_df_q1_q2(df, s):
+    return df[(df[question1].apply(lambda x: str(x) == s)) | (df[question2].apply(lambda x: str(x) == s))]
+
+
+def filter_df_q1(df, s):
+    return df[(df[question1].apply(lambda x: str(x) == s))]
+
+
+def filter_df_q2(df, s):
+    return df[(df[question1].apply(lambda x: str(x) == s))]
+
+
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -372,13 +412,15 @@ def explore_magic_train():
         load_train_magic()
     ], axis=1)
 
+
 def explore_magic_test():
     return pd.concat([
         load_test(),
         load_test_magic()
     ], axis=1)
 
-freq_question1,  freq_question2,  q1_q2_intersect='freq_question1',  'freq_question2',  'q1_q2_intersect'
+
+freq_question1, freq_question2, q1_q2_intersect = 'freq_question1', 'freq_question2', 'q1_q2_intersect'
 
 q1_target_ratio, q2_target_ratio = 'q1_target_ratio', 'q2_target_ratio'
 q1_as_q1_count, q1_as_q1_dups_num = 'q1_as_q1_count', 'q1_as_q1_dups_num'
@@ -386,104 +428,192 @@ q2_as_q2_count, q2_as_q2_dups_num = 'q2_as_q2_count', 'q2_as_q2_dups_num'
 q1_as_q2_count, q1_as_q2_dups_num = 'q1_as_q2_count', 'q1_as_q2_dups_num'
 q2_as_q1_count, q2_as_q1_dups_num = 'q2as_q1_count', 'q2_as_q1_dups_num'
 
+q1_dup_freq, q2_dup_freq, q1_q2_dup_freq = 'q1_dup_freq', 'q2_dup_freq', 'q1_q2_dup_freq'
+q1_as_q1_dup_freq, q2_as_q2_dup_freq = 'q1_as_q1_dup_freq', 'q2_as_q2_dup_freq'
 
-q1_dup_freq, q2_dup_freq, q1_q2_dup_freq='q1_dup_freq', 'q2_dup_freq', 'q1_q2_dup_freq'
-
-# def process_custom_magic_train_test():
-#     train_df = explore_magic_train()
-#     # test_df = load_test_magic()
-#
-#     q1_as_q1 = train_df.groupby(question1)[TARGET].agg({q1_as_q1_count:'count', q1_as_q1_dups_num:'sum'})
-#     train_df = pd.merge(train_df, q1_as_q1, left_on=question1, right_index=True, how='left')
-#
-#     q2_as_q2 = train_df.groupby(question2)[TARGET].agg({q2_as_q2_count:'count', q2_as_q2_dups_num:'sum'})
-#     train_df = pd.merge(train_df, q2_as_q2, left_on=question2, right_index=True, how='left')
-#
-#     suka = pd.merge(q1_as_q1, q2_as_q2, left_index=True, right_index=True, how='left')
-#     suka = suka.rename(columns={q2_as_q2_count:q1_as_q2_count, q2_as_q2_dups_num:q1_as_q2_dups_num})
-#     suka.fillna(0, inplace=True)
-#     train_df = pd.merge(train_df, suka[[q1_as_q2_count, q1_as_q2_dups_num]], left_on=question1, right_index=True, how='left')
-#
-#     suka = pd.merge(q2_as_q2, q1_as_q1, left_index=True, right_index=True, how='left')
-#     suka = suka.rename(columns={q1_as_q1_count:q2_as_q1_count, q1_as_q1_dups_num:q2_as_q1_dups_num})
-#     suka.fillna(0, inplace=True)
-#     train_df = pd.merge(train_df, suka[[q2_as_q1_count, q2_as_q1_dups_num]], left_on=question2, right_index=True, how='left')
-#
-#     train_df[q1_dup_freq] = (train_df[q1_as_q1_dups_num]+train_df[q1_as_q2_dups_num])/(train_df[q1_as_q1_count]+train_df[q1_as_q2_count])
-#     train_df[q2_dup_freq] = (train_df[q2_as_q1_dups_num]+train_df[q2_as_q2_dups_num])/(train_df[q2_as_q1_count]+train_df[q2_as_q2_count])
-#
-#     train_df[q1_q2_dup_freq] = (train_df[q1_as_q1_dups_num]+train_df[q1_as_q2_dups_num]+train_df[q2_as_q1_dups_num]+train_df[q2_as_q2_dups_num])/\
-#                        (train_df[q1_as_q1_count]+train_df[q1_as_q2_count]+train_df[q2_as_q1_count]+train_df[q2_as_q2_count])
 
 def split_into_folds(df, random_state=42):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
-    res=[]
+    res = []
     for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
         res.append((df.loc[big_ind], df.loc[small_ind]))
 
     return res
 
 
+big_question1, big_question2 = 'big_question1', 'big_question2'
+
+
+def add_big_train__test_col(df, train_df, N=10):
+    c_train_q1 = Counter(train_df[question1])
+    c_train_q2 = Counter(train_df[question2])
+    # c_test = get_all_questions_flat_test()
+
+    df[big_question1] = df[question1].apply(lambda s: c_train_q1[s]>=N)
+    df[big_question2] = df[question2].apply(lambda s: c_train_q2[s]>=N)
+
+
+def apply_map(x):
+    if x is None or x!=x:
+        return None
+    if x < 0.25:
+        return 0
+    if x < 0.5:
+        return 1
+    if x < 0.75:
+        return 2
+    return 3
+
+
+# def post_process_new_magic(df, train_df):
+#     add_big_train__test_col(df, train_df)
+#     new_cols = [q1_dup_freq, q2_dup_freq]
+#     bl = df[~df[big_question1]]
+#     df.loc[bl.index, q1_dup_freq] = None
+#
+#     bl = df[~df[big_question2]]
+#     df.loc[bl.index, q2_dup_freq] = None
+#
+#     for col in new_cols:
+#         df[col] = df[col].apply(apply_map)
+
+
+def post_process_new_magic(df, train_df):
+    add_big_train__test_col(df, train_df)
+    new_cols = [q1_as_q1_dup_freq, q2_as_q2_dup_freq]
+    bl = df[~df[big_question1]]
+    df.loc[bl.index, q1_as_q1_dup_freq] = None
+
+    bl = df[~df[big_question2]]
+    df.loc[bl.index, q2_as_q2_dup_freq] = None
+
+    for col in new_cols:
+        df[col] = df[col].apply(apply_map)
+
+
+def debug_blja(bf):
+    s="What's the easiest way to make money online?"
+    bl = bf[bf[question1] == s]
+    print '11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
+    print bl
+    print '11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
+    if TARGET in bl.columns:
+        df = bl[TARGET]
+        print 'Q1'
+        print 'q1 num={}, freq={}'.format(df.count(), df.mean())
+        print '\n'
+
+    # if q1_dup_freq in bl.columns:
+    #     print 'FREQ1 = {}'.fo
+
+
+    bl = bf[bf[question2] == s]
+    print '2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222'
+    print bl
+    print '2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222'
+    print '\n'
+    if TARGET in bl.columns:
+        df = bl[TARGET]
+        print 'Q2'
+        print '\n'
+        print 'q2 num={}, freq={}'.format(df.count(), df.mean())
+
+
+
 def custom_magic_with_update(bf_train, bf_test, update_df):
+    train_df = load_train()
+
     q1_as_q1 = bf_train.groupby(question1)[TARGET].agg({q1_as_q1_count: 'count', q1_as_q1_dups_num: 'sum'})
     bf_train = pd.merge(bf_train, q1_as_q1, left_on=question1, right_index=True, how='left')
+    #debug_blja(bf_train)
 
     q2_as_q2 = bf_train.groupby(question2)[TARGET].agg({q2_as_q2_count: 'count', q2_as_q2_dups_num: 'sum'})
     bf_train = pd.merge(bf_train, q2_as_q2, left_on=question2, right_index=True, how='left')
+    #debug_blja(bf_train)
 
     suka_q1 = pd.merge(q1_as_q1, q2_as_q2, left_index=True, right_index=True, how='left')
-    suka_q1 = suka_q1.rename(columns={q2_as_q2_count:q1_as_q2_count, q2_as_q2_dups_num:q1_as_q2_dups_num})
+    suka_q1 = suka_q1.rename(columns={q2_as_q2_count: q1_as_q2_count, q2_as_q2_dups_num: q1_as_q2_dups_num})
     suka_q1.fillna(0, inplace=True)
-    bf_train = pd.merge(bf_train, suka_q1[[q1_as_q2_count, q1_as_q2_dups_num]], left_on=question1, right_index=True, how='left')
+    bf_train = pd.merge(bf_train, suka_q1[[q1_as_q2_count, q1_as_q2_dups_num]], left_on=question1, right_index=True,
+                        how='left')
+    #debug_blja(bf_train)
 
     suka_q2 = pd.merge(q2_as_q2, q1_as_q1, left_index=True, right_index=True, how='left')
-    suka_q2 = suka_q2.rename(columns={q1_as_q1_count:q2_as_q1_count, q1_as_q1_dups_num:q2_as_q1_dups_num})
+    suka_q2 = suka_q2.rename(columns={q1_as_q1_count: q2_as_q1_count, q1_as_q1_dups_num: q2_as_q1_dups_num})
     suka_q2.fillna(0, inplace=True)
-    bf_train = pd.merge(bf_train, suka_q2[[q2_as_q1_count, q2_as_q1_dups_num]], left_on=question2, right_index=True, how='left')
+    bf_train = pd.merge(bf_train, suka_q2[[q2_as_q1_count, q2_as_q1_dups_num]], left_on=question2, right_index=True,
+                        how='left')
+    #debug_blja(bf_train)
 
-    bf_train[q1_dup_freq] = (bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num]) / (bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count])
-    bf_train[q2_dup_freq] = (bf_train[q2_as_q1_dups_num] + bf_train[q2_as_q2_dups_num]) / (bf_train[q2_as_q1_count] + bf_train[q2_as_q2_count])
+    bf_train[q1_dup_freq] = (bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num]) / (
+    bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count])
+    bf_train[q2_dup_freq] = (bf_train[q2_as_q1_dups_num] + bf_train[q2_as_q2_dups_num]) / (
+    bf_train[q2_as_q1_count] + bf_train[q2_as_q2_count])
+    #debug_blja(bf_train)
 
-    bf_train[q1_q2_dup_freq] = (bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num] + bf_train[q2_as_q1_dups_num] + bf_train[q2_as_q2_dups_num]) / \
-                               (bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count] + bf_train[q2_as_q1_count] + bf_train[q2_as_q2_count])
+    bf_train[q1_as_q1_dup_freq] = (bf_train[q1_as_q1_dups_num]) / (bf_train[q1_as_q1_count])
+    bf_train[q2_as_q2_dup_freq] = (bf_train[q2_as_q2_dups_num]) / (bf_train[q2_as_q2_count])
 
+    bf_train[q1_q2_dup_freq] = (
+                               bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num] + bf_train[q2_as_q1_dups_num] +
+                               bf_train[q2_as_q2_dups_num]) / \
+                               (bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count] + bf_train[q2_as_q1_count] +
+                                bf_train[q2_as_q2_count])
+    #debug_blja(bf_train)
 
     bf_test = pd.merge(bf_test, q1_as_q1, left_on=question1, right_index=True, how='left')
+    #debug_blja(bf_test)
     bf_test = pd.merge(bf_test, q2_as_q2, left_on=question2, right_index=True, how='left')
-
-
-    bf_test = pd.merge(bf_test, suka_q1[[q1_as_q2_count, q1_as_q2_dups_num]], left_on=question1, right_index=True, how='left')
-    bf_test = pd.merge(bf_test, suka_q2[[q2_as_q1_count, q2_as_q1_dups_num]], left_on=question2, right_index=True, how='left')
+    #debug_blja(bf_test)
+    bf_test = pd.merge(bf_test, suka_q1[[q1_as_q2_count, q1_as_q2_dups_num]], left_on=question1, right_index=True,
+                       how='left')
+    #debug_blja(bf_test)
+    bf_test = pd.merge(bf_test, suka_q2[[q2_as_q1_count, q2_as_q1_dups_num]], left_on=question2, right_index=True,
+                       how='left')
+    #debug_blja(bf_test)
     bf_test.fillna(0, inplace=True)
-
-    # print bf_test.columns.values
-    blja_q1_dup_freq, blja_q2_dup_freq, blja_q1_q2_dup_freq = 'blja_q1_dup_freq', 'blja_q2_dup_freq', 'blja_q1_q2_dup_freq'
-
-    bf_test[blja_q1_dup_freq]= (bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count])==0
-    bf_test[blja_q2_dup_freq] =  (bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])==0
-    bf_test[blja_q1_q2_dup_freq] = (bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count] + bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])==0
+    #debug_blja(bf_test)
 
 
 
-    bf_test[q1_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num]) / (bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count])
-    bf_test[q2_dup_freq] = (bf_test[q2_as_q1_dups_num] + bf_test[q2_as_q2_dups_num]) / (bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])
+    bf_test[q1_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num]) / (
+    bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count])
+    #debug_blja(bf_test)
 
-    bf_test[q1_q2_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num] + bf_test[q2_as_q1_dups_num] + bf_test[q2_as_q2_dups_num]) / \
-                              (bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count] + bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])
+    bf_test[q2_dup_freq] = (bf_test[q2_as_q1_dups_num] + bf_test[q2_as_q2_dups_num]) / (
+    bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])
+    #debug_blja(bf_test)
 
+    bf_test[q1_q2_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num] + bf_test[q2_as_q1_dups_num] +
+                               bf_test[q2_as_q2_dups_num]) / \
+                              (bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count] + bf_test[q2_as_q1_count] + bf_test[
+                                  q2_as_q2_count])
+    #debug_blja(bf_test)
 
-    if update_df is None:
-        return bf_train, bf_test
+    bf_test[q1_as_q1_dup_freq] = (bf_test[q1_as_q1_dups_num]) / (bf_test[q1_as_q1_count])
+    #debug_blja(bf_test)
+    bf_test[q2_as_q2_dup_freq] = (bf_test[q2_as_q2_dups_num]) / (bf_test[q2_as_q2_count])
+    #debug_blja(bf_test)
 
-    new_cols = [q1_dup_freq, q2_dup_freq, q1_q2_dup_freq]+[blja_q1_dup_freq, blja_q2_dup_freq, blja_q1_q2_dup_freq]
+    post_process_new_magic(bf_train, train_df)
+    #debug_blja(bf_test)
+    post_process_new_magic(bf_test, train_df)
+    #debug_blja(bf_test)
+    del train_df
 
-    print 'Before {}'.format(not_null_q1_dup_freq_cnt(update_df))
+    # if update_df is None:
+    #     return bf_train, bf_test
 
+    new_cols = [q1_as_q1_dup_freq, q2_as_q2_dup_freq]
+    # print 'Before {}'.format(not_null_q1_dup_freq_cnt(update_df))
 
     for col in new_cols:
         update_df.loc[bf_test.index, col] = bf_test.loc[bf_test.index, col]
 
-    print 'After {}'.format(not_null_q1_dup_freq_cnt(update_df))
+    # print 'After {}'.format(not_null_q1_dup_freq_cnt(update_df))
+
+
+
 
     return bf_train, bf_test
 
@@ -493,15 +623,19 @@ def not_null_q1_dup_freq_cnt(df):
         return len(df[~df[q1_dup_freq].isnull()])
     return 0
 
+def not_null_q2_dup_freq_cnt(df):
+    if q2_dup_freq in df.columns:
+        return len(df[~df[q2_dup_freq].isnull()])
+    return 0
+
 
 def add_custom_magic_features_one_cv_fold(cv_train, cv_test):
     folds = split_into_folds(cv_train)
     for train, test in folds:
-        print len(train), len(test)
+        # print len(train), len(test)
         custom_magic_with_update(train, test, update_df=cv_train)
 
     custom_magic_with_update(cv_train, cv_test, update_df=cv_test)
-
 
 
 def add_custom_magic_features_submit(train_df, test_df, folds):
@@ -510,6 +644,63 @@ def add_custom_magic_features_submit(train_df, test_df, folds):
 
     custom_magic_with_update(train_df, test_df, update_df=test_df)
 
+question1_in_q1_train         =      'question1_in_q1_train'
+question1_in_q2_train_test    =      'question1_in_q2_train_test'
+question1_in_q2_train         =      'question1_in_q2_train'
+question1_in_q1_train_test    =      'question1_in_q1_train_test'
+question1_in_q_test           =      'question1_in_q_test'
+question1_in_q2_test          =      'question1_in_q2_test'
+question1_in_q1_test          =      'question1_in_q1_test'
+question1_in_q_train          =      'question1_in_q_train'
+question2_in_q2_train_test    =      'question2_in_q2_train_test'
+question2_in_q1_train         =      'question2_in_q1_train'
+question2_in_q2_train         =      'question2_in_q2_train'
+question2_in_q1_train_test    =      'question2_in_q1_train_test'
+question2_in_q_test           =      'question2_in_q_test'
+question2_in_q2_test          =      'question2_in_q2_test'
+question2_in_q1_test          =      'question2_in_q1_test'
+question2_in_q_train          =      'question2_in_q_train'
+
+def filter_nans(ser):
+    def is_not_nan(s):
+        return not s!=s and not s is None
+
+    return filter(is_not_nan, ser)
+
+def add_big_in_train_test_columns():
+    train_df, test_df = load_train(), load_test()
+
+    q1_train = Counter(train_df[question1])
+    q2_train = Counter(train_df[question2])
+
+    q1_test = Counter(test_df[question1])
+    q2_test = Counter(test_df[question2])
+
+    q_train = Counter(list(train_df[question1]) + list(train_df[question2]))
+    q_test = Counter(list(test_df[question1]) + list(test_df[question2]))
+
+    q1_train_test = Counter(list(train_df[question1]) + list(test_df[question1]))
+    q2_train_test = Counter(list(train_df[question2]) + list(test_df[question2]))
+
+    m = {
+        'q1_train': q1_train,
+        'q2_train': q2_train,
+        'q1_test': q1_test,
+        'q2_test': q2_test,
+        'q_train': q_train,
+        'q_test': q_test,
+        'q1_train_test': q1_train_test,
+        'q2_train_test': q2_train_test
+    }
+
+    for df in [train_df, test_df]:
+        for col in [question1, question2]:
+            for name, counter in m.iteritems():
+                df['{}_in_{}'.format(col, name)] = df[col].apply(lambda s: counter[s])
+                print col, name
 
 
+    return train_df, test_df
 
+
+# train_df, test_df = load_train(), load_test()
