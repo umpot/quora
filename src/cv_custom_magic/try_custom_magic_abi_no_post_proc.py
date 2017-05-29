@@ -840,6 +840,17 @@ def perform_xgb_cv(name, mongo_host):
         print explore_target_ratio(small)
 
         add_custom_magic_features_one_cv_fold(big, small)
+
+        print big[~big[q1_as_q1_dup_freq].isnull()].head()
+        print '=================================================================='
+        print big[~big[q2_as_q2_dup_freq].isnull()].head()
+        print '=================================================================='
+
+        print small[~small[q1_as_q1_dup_freq].isnull()].head()
+        print '=================================================================='
+        print small[~small[q2_as_q2_dup_freq].isnull()].head()
+        print '=================================================================='
+
         drop_qs(big)
         drop_qs(small)
 
