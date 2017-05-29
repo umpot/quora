@@ -537,13 +537,13 @@ q1_dup_freq, q2_dup_freq, q1_q2_dup_freq = 'q1_dup_freq', 'q2_dup_freq', 'q1_q2_
 q1_as_q1_dup_freq, q2_as_q2_dup_freq = 'q1_as_q1_dup_freq', 'q2_as_q2_dup_freq'
 
 
-def split_into_folds(df, random_state=42):
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
-    res = []
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        res.append((df.loc[big_ind], df.loc[small_ind]))
-
-    return res
+# def split_into_folds(df, random_state=42):
+#     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+#     res = []
+#     for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
+#         res.append((df.loc[big_ind], df.loc[small_ind]))
+#
+#     return res
 
 
 big_question1, big_question2 = 'big_question1', 'big_question2'
@@ -772,8 +772,8 @@ def drop_qs(df):
 
 
 def perform_xgb_cv(name, mongo_host):
-    df = load_train_all_xgb_no_drop_qs()
-    # df = load_train()
+    # df = load_train_all_xgb_no_drop_qs()
+    df = load_train()
     folds =5
     seed = 42
 

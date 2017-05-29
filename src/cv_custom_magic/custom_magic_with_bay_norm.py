@@ -434,9 +434,10 @@ q1_as_q1_dup_freq, q2_as_q2_dup_freq = 'q1_as_q1_dup_freq', 'q2_as_q2_dup_freq'
 
 def split_into_folds(df, random_state=42):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
-    res = []
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        res.append((df.loc[big_ind], df.loc[small_ind]))
+    skf.get_n_splits(df, df[TARGET])
+    res=[]
+    for big_ind, small_ind in skf.split(df, df[TARGET]):
+        res.append((df.iloc[big_ind], df.iloc[small_ind]))
 
     return res
 
