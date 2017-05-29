@@ -772,8 +772,8 @@ def drop_qs(df):
 
 
 def perform_xgb_cv(name, mongo_host):
-    # df = load_train_all_xgb_no_drop_qs()
-    df = load_train()
+    df = load_train_all_xgb_no_drop_qs()
+    # df = load_train()
     folds =5
     seed = 42
 
