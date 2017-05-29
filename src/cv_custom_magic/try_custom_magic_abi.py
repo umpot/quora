@@ -661,7 +661,7 @@ def post_process_new_magic(df, train_df):
     df.loc[bl.index, q2_as_q2_dup_freq] = None
 
     for col in new_cols:
-        df[col] = df[col].apply(apply_map)
+        df[col] = df[col].apply(apply_map_gr_6)
 
 def add_big_train__test_col(df, train_df, N=10):
     c_train_q1 = Counter(train_df[question1])
@@ -672,16 +672,32 @@ def add_big_train__test_col(df, train_df, N=10):
     df[big_question2] = df[question2].apply(lambda s: c_train_q2[s]>=N)
 
 
-def apply_map(x):
+# def apply_map(x):
+#     if x is None or x!=x:
+#         return None
+#     if x < 0.25:
+#         return 0
+#     if x < 0.5:
+#         return 1
+#     if x < 0.75:
+#         return 2
+#     return 3
+
+
+def apply_map_gr_6(x):
     if x is None or x!=x:
         return None
-    if x < 0.25:
+    if x < 0.1:
         return 0
-    if x < 0.5:
+    if x<0.25:
         return 1
-    if x < 0.75:
+    if x<0.4:
         return 2
-    return 3
+    if x<0.6:
+        return 3
+    if x<0.9:
+        return 4
+    return 5
 
 
 ############################################################3
@@ -884,7 +900,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean([x['loss'] for x in losses])))
 
 
-name='try_custom_magic_abi_fixed1_0.8_0.8_5'
+name='try_custom_magic_abi_fixed_gr_6_0.8_0.8_5'
 perform_xgb_cv(name, gc_host)
 
 
