@@ -51,7 +51,7 @@ def get_id(question):
 rows = []
 max_lines = 10
 if True:
-    with open('../input/test.csv', 'r', encoding="utf8") as infile:
+    with open(fp_test, 'r') as infile:
         reader = csv.reader(infile, delimiter=",")
         header = next(reader)
         header.append('qid1')
@@ -74,3 +74,14 @@ if True:
                 if pos >= max_lines:
                     break
                 rows.append(row)
+
+
+question1, question2 = 'question1', 'question2'
+qid1, qid2 = 'qid1', 'qid2'
+
+df = pd.DataFrame({
+    question1:[x[1] for x in rows],
+    question2:[x[2] for x in rows],
+    qid1:[x[3] for x in rows],
+    qid2:[x[4] for x in rows]
+}, index=[x[0] for x in rows])
