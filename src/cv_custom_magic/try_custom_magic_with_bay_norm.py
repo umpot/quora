@@ -1,3 +1,5 @@
+from collections import Counter
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -28,7 +30,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2 = 'ner_q1', 'ner_q2'
 postag_q1, postag_q2 = 'postag_q1', 'postag_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -44,6 +46,15 @@ def create_folds(df):
     folds = load_folds()
 
     return [(df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']]) for x in range(len(folds))]
+
+def split_into_folds(df, random_state=42):
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+    skf.get_n_splits(df, df[TARGET])
+    res=[]
+    for big_ind, small_ind in skf.split(df, df[TARGET]):
+        res.append((df.iloc[big_ind], df.iloc[small_ind]))
+
+    return res
 
 
 lemmas_train_fp = os.path.join(data_folder, 'nlp', 'lemmas_train.csv')
@@ -61,8 +72,8 @@ ner_test_fp = os.path.join(data_folder, 'nlp', 'ner_test.csv')
 stems_train_fp = os.path.join(data_folder, 'nlp', 'stems_train.csv')
 stems_test_fp = os.path.join(data_folder, 'nlp', 'stems_test.csv')
 
-tfidf_with_stops_train_fp = os.path.join(data_folder, 'tfidf', 'tokens_with_stop_words_tfidf_train.csv')
-tfidf_with_stops_test_fp = os.path.join(data_folder, 'tfidf', 'tokens_with_stop_words_tfidf_test.csv')
+tfidf_with_stops_train_fp = os.path.join(data_folder, 'tfidf','old', 'tokens_with_stop_words_tfidf_train.csv')
+tfidf_with_stops_test_fp = os.path.join(data_folder, 'tfidf','old', 'tokens_with_stop_words_tfidf_test.csv')
 
 magic_train_fp = os.path.join(data_folder, 'magic', 'magic_train.csv')
 magic_test_fp = os.path.join(data_folder, 'magic', 'magic_test.csv')
@@ -219,7 +230,6 @@ def load_train_tfidf_new():
         [pd.read_csv(fp, index_col='id') for fp in fps],
         axis=1)
 
-
 def load_test_tfidf_new():
     fps = [
         os.path.join(data_folder, 'tfidf', x) for x in ['test_dirty_lower_no_stops.csv',
@@ -360,66 +370,161 @@ def load_wh_test():
     df = pd.read_csv(wh_fp_test, index_col='test_id')
     return df
 
+    ######################################################################################
+    ######################################################################################
+    ######################################################################################
+    ######################################################################################
+
+
+
+
+# df = load_train_all()
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+#WH
+
+wh_fp_train=os.path.join(data_folder, 'wh', 'wh_train.csv')
+wh_fp_test=os.path.join(data_folder, 'wh', 'wh_test.csv')
+
+def load_wh_train():
+    df = pd.read_csv(wh_fp_train, index_col='id')
+    return df
+
+def load_wh_test():
+    df = pd.read_csv(wh_fp_test, index_col='test_id')
+    return df
 
 ######################################################################################
 ######################################################################################
 ######################################################################################
 ######################################################################################
-def get_all_questions_flat_train():
-    df = load_train()
-    l = list(df[question1]) + list(df[question2])
-    return Counter(l)
 
 
-def get_all_questions_flat_test():
-    df = load_test()
-    l = list(df[question1]) + list(df[question2])
-    return Counter(l)
 
 
-def most_common_intersection(N):
-    c_train = get_all_questions_flat_train()
-    c_test = get_all_questions_flat_test()
-
-    a = set([x[0] for x in c_train.most_common(N)])
-    b = set([x[0] for x in c_test.most_common(N)])
-
-    return a.intersection(b)
-
-
-def filter_df_q1_q2(df, s):
-    return df[(df[question1].apply(lambda x: str(x) == s)) | (df[question2].apply(lambda x: str(x) == s))]
-
-
-def filter_df_q1(df, s):
-    return df[(df[question1].apply(lambda x: str(x) == s))]
-
-
-def filter_df_q2(df, s):
-    return df[(df[question1].apply(lambda x: str(x) == s))]
 
 
 ######################################################################################
 ######################################################################################
 ######################################################################################
 ######################################################################################
+upper_keywords_fp_train=os.path.join(data_folder, 'keywords', 'train_upper.csv')
+upper_keywords_test=os.path.join(data_folder, 'keywords', 'test_upper.csv')
+
+def load_upper_keywords_train():
+    df = pd.read_csv(upper_keywords_fp_train, index_col='id')
+    return df
+
+def load_upper_keywords_test():
+    df = pd.read_csv(upper_keywords_test, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+one_upper_fp_train=os.path.join(data_folder, 'keywords', 'train_upper_freq_200.csv')
+one_upper_fp_test=os.path.join(data_folder, 'keywords', 'test_upper_freq_200.csv')
+
+def load_one_upper_train():
+    df = pd.read_csv(one_upper_fp_train, index_col='id')
+    return df
+
+def load_one_upper_test():
+    df = pd.read_csv(one_upper_fp_test, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+import pandas as pd
+import numpy as np
+
+TARGET = 'is_duplicate'
+
+INDEX_PREFIX= 100000000
+#old
+{'pos': 0.369197853026293,
+ 'neg': 0.630802146973707}
+
+
+#new
+r1 = 0.174264424749
+r0 = 0.825754788586
+
+""""
+p_old/(1+delta) = p_new
+
+delta = (p_old/p_new)-1 = 1.1186071314214785
+l = delta*N = 452241
+"""
+
+delta = 1.1186071314214785
+
+def explore_target_ratio(df):
+    return {
+        'pos':1.0*len(df[df[TARGET]==1])/len(df),
+        'neg':1.0*len(df[df[TARGET]==0])/len(df)
+    }
+
+def shuffle_df(df, random_state):
+    np.random.seed(random_state)
+    return df.iloc[np.random.permutation(len(df))]
+
+def oversample_df(df, l, random_state):
+    df_pos = df[df[TARGET]==1]
+    df_neg = df[df[TARGET]==0]
+
+    df_neg_sampl = df_neg.sample(l, random_state=random_state, replace=True)
+
+    df=pd.concat([df_pos, df_neg, df_neg_sampl])
+    df = shuffle_df(df, random_state)
+
+    return df
+
+def oversample(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+    l_test = int(delta * len(test_df))
+
+    return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
+
+
+
+############################################################3
+############################################################3
+############################################################3
+train_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_avg_K_tok_freq.csv')
+
+def load_topNs_avg_tok_freq_train():
+    return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
+
+############################################################3
+############################################################3
+############################################################3
+abi_train_fp = os.path.join(data_folder, 'abishek', 'abi_train.csv')
+abi_test_fp = os.path.join(data_folder, 'abishek', 'abi_test.csv')
+
+
+def load_abi_train():
+    return pd.read_csv(abi_train_fp, index_col='id')
+
+def load_abi_test():
+    return pd.read_csv(abi_test_fp, index_col='test_id')
+
+############################################################3
+############################################################3
+############################################################3
 from collections import Counter
-
-
-def explore_magic_train():
-    return pd.concat([
-        load_train(),
-        load_train_magic()
-    ], axis=1)
-
-
-def explore_magic_test():
-    return pd.concat([
-        load_test(),
-        load_test_magic()
-    ], axis=1)
-
-
 freq_question1, freq_question2, q1_q2_intersect = 'freq_question1', 'freq_question2', 'q1_q2_intersect'
 
 q1_target_ratio, q2_target_ratio = 'q1_target_ratio', 'q2_target_ratio'
@@ -443,59 +548,21 @@ def split_into_folds(df, random_state=42):
 
 big_question1, big_question2 = 'big_question1', 'big_question2'
 
+def add_custom_magic_features_one_cv_fold(cv_train, cv_test):
+    folds = split_into_folds(cv_train)
+    for train, test in folds:
+        # print len(train), len(test)
+        custom_magic_with_update(train, test, update_df=cv_train)
 
-def add_big_train__test_col(df, train_df, N=10):
-    c_train_q1 = Counter(train_df[question1])
-    c_train_q2 = Counter(train_df[question2])
-    # c_test = get_all_questions_flat_test()
-
-    df[big_question1] = df[question1].apply(lambda s: c_train_q1[s]>=N)
-    df[big_question2] = df[question2].apply(lambda s: c_train_q2[s]>=N)
-
-
-def apply_map(x):
-    if x is None or x!=x:
-        return None
-    if x < 0.25:
-        return 0
-    if x < 0.5:
-        return 1
-    if x < 0.75:
-        return 2
-    return 3
+    custom_magic_with_update(cv_train, cv_test, update_df=cv_test)
 
 
-# def post_process_new_magic(df, train_df):
-#     add_big_train__test_col(df, train_df)
-#     new_cols = [q1_dup_freq, q2_dup_freq]
-#     bl = df[~df[big_question1]]
-#     df.loc[bl.index, q1_dup_freq] = None
-#
-#     bl = df[~df[big_question2]]
-#     df.loc[bl.index, q2_dup_freq] = None
-#
-#     for col in new_cols:
-#         df[col] = df[col].apply(apply_map)
+def add_custom_magic_features_submit(train_df, test_df, folds):
+    for train, test in folds:
+        custom_magic_with_update(train, test, update_df=train_df)
 
+    custom_magic_with_update(train_df, test_df, update_df=test_df)
 
-def post_process_new_magic(df, train_df):
-    add_big_train__test_col(df, train_df)
-    new_cols = [q1_as_q1_dup_freq, q2_as_q2_dup_freq]
-    bl = df[~df[big_question1]]
-    df.loc[bl.index, q1_as_q1_dup_freq] = None
-
-    bl = df[~df[big_question2]]
-    df.loc[bl.index, q2_as_q2_dup_freq] = None
-
-    for col in new_cols:
-        df[col] = df[col].apply(apply_map)
-
-"""
-small[hcc_name] = small[hcc_name] * np.random.uniform(1 - r_k, 1 + r_k, len(small))
-k=5, f=1, g=1, r_k=0.01, folds=5
-grouped["lambda"] = 1 / (g + np.exp((k - grouped["size"]) / f))
-grouped[hcc_name] = grouped["lambda"] * grouped["mean"] + (1 - grouped["lambda"]) * prior_prob
-"""
 prior_prob=0.36919785302629299
 
 def apply_bayesian_normalization(df, dups_num_col, all_num_col,new_col, k=5, f=1, g=1, r_k=0.01):
@@ -584,90 +651,215 @@ def custom_magic_with_update(bf_train, bf_test, update_df):
 
     return bf_train, bf_test
 
+############################################################3
+############################################################3
+############################################################3
+import xgboost as xgb
+import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import log_loss
+import json
+from time import sleep
+import traceback
 
-def not_null_q1_dup_freq_cnt(df):
-    if q1_dup_freq in df.columns:
-        return len(df[~df[q1_dup_freq].isnull()])
-    return 0
-
-def not_null_q2_dup_freq_cnt(df):
-    if q2_dup_freq in df.columns:
-        return len(df[~df[q2_dup_freq].isnull()])
-    return 0
-
-
-def add_custom_magic_features_one_cv_fold(cv_train, cv_test):
-    folds = split_into_folds(cv_train)
-    for train, test in folds:
-        # print len(train), len(test)
-        custom_magic_with_update(train, test, update_df=cv_train)
-
-    custom_magic_with_update(cv_train, cv_test, update_df=cv_test)
+gc_host = '104.197.97.20'
+local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
 
 
-def add_custom_magic_features_submit(train_df, test_df, folds):
-    for train, test in folds:
-        custom_magic_with_update(train, test, update_df=train_df)
+def load_train_all_xgb():
+    train_df = pd.concat([
+        load_train(),
+        load_train_lengths(),
+        load_train_common_words(),
+        load__train_metrics(),
+        load_train_tfidf(),
+        load_train_magic(),
+        load_wh_train(),
+        load_one_upper_train(),
+        load_topNs_avg_tok_freq_train(),
+        load_abi_train()
+        # load_upper_keywords_train()
+    ], axis=1)
 
-    custom_magic_with_update(train_df, test_df, update_df=test_df)
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        del train_df[col]
 
-question1_in_q1_train         =      'question1_in_q1_train'
-question1_in_q2_train_test    =      'question1_in_q2_train_test'
-question1_in_q2_train         =      'question1_in_q2_train'
-question1_in_q1_train_test    =      'question1_in_q1_train_test'
-question1_in_q_test           =      'question1_in_q_test'
-question1_in_q2_test          =      'question1_in_q2_test'
-question1_in_q1_test          =      'question1_in_q1_test'
-question1_in_q_train          =      'question1_in_q_train'
-question2_in_q2_train_test    =      'question2_in_q2_train_test'
-question2_in_q1_train         =      'question2_in_q1_train'
-question2_in_q2_train         =      'question2_in_q2_train'
-question2_in_q1_train_test    =      'question2_in_q1_train_test'
-question2_in_q_test           =      'question2_in_q_test'
-question2_in_q2_test          =      'question2_in_q2_test'
-question2_in_q1_test          =      'question2_in_q1_test'
-question2_in_q_train          =      'question2_in_q_train'
+    return train_df
 
-def filter_nans(ser):
-    def is_not_nan(s):
-        return not s!=s and not s is None
 
-    return filter(is_not_nan, ser)
+def load_train_all_xgb_no_drop_qs():
+    train_df = pd.concat([
+        load_train(),
+        load_train_lengths(),
+        load_train_common_words(),
+        load__train_metrics(),
+        load_train_tfidf(),
+        load_train_magic(),
+        load_wh_train(),
+        load_one_upper_train(),
+        load_topNs_avg_tok_freq_train(),
+        load_abi_train()
+        # load_upper_keywords_train()
+    ], axis=1)
 
-def add_big_in_train_test_columns():
-    train_df, test_df = load_train(), load_test()
+    return train_df
 
-    q1_train = Counter(train_df[question1])
-    q2_train = Counter(train_df[question2])
 
-    q1_test = Counter(test_df[question1])
-    q2_test = Counter(test_df[question2])
+def plot_errors(imp):
+    train_runs= [x['train'] for x in imp]
+    test_runs= [x['test'] for x in imp]
 
-    q_train = Counter(list(train_df[question1]) + list(train_df[question2]))
-    q_test = Counter(list(test_df[question1]) + list(test_df[question2]))
+    sz=len(train_runs[0])
+    x_axis=range(sz)
+    y_train = [np.mean([x[j] for x in train_runs]) for j in x_axis]
+    y_test = [np.mean([x[j] for x in test_runs]) for j in x_axis]
 
-    q1_train_test = Counter(list(train_df[question1]) + list(test_df[question1]))
-    q2_train_test = Counter(list(train_df[question2]) + list(test_df[question2]))
+    fig, ax = plt.subplots()
+    ax.plot(x_axis, y_train, label='train')
+    ax.plot(x_axis, y_test, label='test')
+    ax.legend()
+    plt.show()
 
-    m = {
-        'q1_train': q1_train,
-        'q2_train': q2_train,
-        'q1_test': q1_test,
-        'q2_test': q2_test,
-        'q_train': q_train,
-        'q_test': q_test,
-        'q1_train_test': q1_train_test,
-        'q2_train_test': q2_train_test
+def xgboost_per_tree_results(estimator):
+    results_on_test = estimator.evals_result()['validation_1']['logloss']
+    results_on_train = estimator.evals_result()['validation_0']['logloss']
+    return {
+        'train': results_on_train,
+        'test': results_on_test
     }
 
-    for df in [train_df, test_df]:
-        for col in [question1, question2]:
-            for name, counter in m.iteritems():
-                df['{}_in_{}'.format(col, name)] = df[col].apply(lambda s: counter[s])
-                print col, name
+def out_loss(loss):
+    print '====================================='
+    print '====================================='
+    print '====================================='
+    print loss
+    print '====================================='
+    print '====================================='
+    print '====================================='
 
 
-    return train_df, test_df
+def write_results(name,mongo_host, per_tree_res, losses, imp, features):
+    from pymongo import MongoClient
+
+    imp=[x.item() for x in imp]
+    features=list(features)
+
+    client = MongoClient(mongo_host, 27017)
+    client['admin'].authenticate(user, password)
+    db = client['xgb_cv']
+    collection = db[name]
+    try:
+        collection.insert_one({
+            'results': per_tree_res,
+            'losses': losses,
+            'importance':imp,
+            'features':features
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        raise
+        # sleep(20)
+
+def drop_qs(df):
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        if col in df:
+            del df[col]
 
 
-# train_df, test_df = load_train(), load_test()
+def perform_xgb_cv(name, mongo_host):
+    df = load_train_all_xgb_no_drop_qs()
+    # df = load_train()
+    folds =5
+    seed = 42
+
+    # skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
+    losses = []
+    n_est=[]
+
+    folds= create_folds(df)
+
+    for big, small in folds:
+        # big = df.iloc[big_ind]
+        # small = df.iloc[small_ind]
+
+        print explore_target_ratio(big)
+        print explore_target_ratio(small)
+
+        add_custom_magic_features_one_cv_fold(big, small)
+        drop_qs(big)
+        drop_qs(small)
+
+
+        big, small = oversample(big, small, seed)
+
+        print explore_target_ratio(big)
+        print explore_target_ratio(small)
+
+        train_target = big[TARGET]
+        del big[TARGET]
+        train_arr = big
+
+        test_target = small[TARGET]
+        del small[TARGET]
+        test_arr = small
+
+        # estimator = xgb.XGBClassifier(n_estimators=10000,
+        #                               subsample=0.6,
+        #                               # colsample_bytree=0.8,
+        #                               max_depth=7,
+        #                               objective='binary:logistic',
+        #                               learning_rate=0.02,
+        #                               base_score=0.2)
+
+        estimator = xgb.XGBClassifier(n_estimators=10000,
+                                      subsample=0.8,
+                                      colsample_bytree=0.8,
+                                      max_depth=5,
+                                      objective='binary:logistic',
+                                      )
+        print test_arr.columns.values
+        print len(train_arr)
+        print len(test_arr)
+        eval_set = [(train_arr, train_target), (test_arr, test_target)]
+        estimator.fit(
+            train_arr, train_target,
+            eval_set=eval_set,
+            eval_metric='logloss',
+            verbose=True,
+            early_stopping_rounds=150
+        )
+
+        proba = estimator.predict_proba(test_arr)
+
+        loss = log_loss(test_target, proba)
+        out_loss(loss)
+        losses.append(loss)
+        per_tree_res = xgboost_per_tree_results(estimator)
+        ii = estimator.feature_importances_
+        n_est.append(estimator.best_iteration)
+
+
+
+        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
+
+
+    out_loss('avg = {}'.format(np.mean([x['loss'] for x in losses])))
+
+
+name='try_custom_magic_with_bay_norm_0.8_0.8_5'
+perform_xgb_cv(name, gc_host)
+
+
+
+print '============================'
+print 'DONE!'
+print '============================'
+
+
+
+
