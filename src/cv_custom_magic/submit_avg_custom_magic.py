@@ -828,10 +828,10 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 def submit_xgb(name):
     seed=42
-    # big = load_train_all_xgb_no_drop_qs()
-    # small = load_test_all_xgb_no_drop_qs()
-    big=load_train()
-    small = load_test()
+    big = load_train_all_xgb_no_drop_qs()
+    small = load_test_all_xgb_no_drop_qs()
+    # big=load_train()
+    # small = load_test()
 
     print explore_target_ratio(big)
 

@@ -35,6 +35,8 @@ fp_test = data_folder + 'test.csv'
 
 folds_fp = os.path.join(data_folder, 'top_k_freq', 'folds.json')
 
+new_qids_test_fp = os.path.join(data_folder, 'new_quids.csv')
+
 
 def load_folds():
     return json.load(open(folds_fp))
@@ -129,7 +131,11 @@ def load_train():
 
 def load_test():
     return fix_nans(
-        pd.read_csv(fp_test, index_col='test_id')
+        pd.concat(
+            [pd.read_csv(fp_test, index_col='test_id'),
+             pd.read_csv(new_qids_test_fp, index_col='test_id')],
+            axis=1
+        )
     )
 
 
@@ -371,3 +377,5 @@ def load_wh_test():
     ######################################################################################
     ######################################################################################
     ######################################################################################
+
+# train_df, test_df = load_train(), load_test()
