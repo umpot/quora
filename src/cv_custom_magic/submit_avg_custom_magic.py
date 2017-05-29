@@ -836,7 +836,7 @@ def submit_xgb(name):
     print explore_target_ratio(big)
 
 
-    add_custom_magic_features_submit(big, small, create_folds(big))
+    add_custom_magic_features_one_cv_fold(big, small)
     drop_qs(big)
     drop_qs(small)
 
