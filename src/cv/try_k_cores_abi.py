@@ -411,6 +411,20 @@ def load_abi_test():
 ############################################################3
 ############################################################3
 ############################################################3
+max_k_cores_train_fp=os.path.join(data_folder,'magic' ,'max_k_cores_train.csv')
+max_k_cores_test_fp=os.path.join(data_folder,'magic' ,'max_k_cores_test.csv')
+
+
+def load_max_k_cores_train():
+    return pd.read_csv(max_k_cores_train_fp, index_col='id')
+
+
+def load_max_k_cores_test():
+    return pd.read_csv(max_k_cores_test_fp, index_col='test_id')
+
+############################################################3
+############################################################3
+############################################################3
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -436,7 +450,8 @@ def load_train_all_xgb():
         load_wh_train(),
         load_one_upper_train(),
         load_topNs_avg_tok_freq_train(),
-        load_abi_train()
+        load_abi_train(),
+        load_max_k_cores_train()
         # load_upper_keywords_train()
     ], axis=1)
 
@@ -577,7 +592,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='try_abi_0.6__7_eta_0.02'
+name='try_k_cores_abi'
 perform_xgb_cv(name, gc_host)
 
 

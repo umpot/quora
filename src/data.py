@@ -35,8 +35,11 @@ fp_test = data_folder + 'test.csv'
 
 folds_fp = os.path.join(data_folder, 'top_k_freq', 'folds.json')
 
-new_qids_test_fp = os.path.join(data_folder, 'new_quids.csv')
+new_qids_test_fp = os.path.join(data_folder,'magic' ,'new_quids.csv')
+max_k_cores_fp = os.path.join(data_folder,'magic' ,'question_max_kcores.csv')
 
+max_k_cores_train_fp=os.path.join(data_folder,'magic' ,'max_k_cores_train.csv')
+max_k_cores_test_fp=os.path.join(data_folder,'magic' ,'max_k_cores_test.csv')
 
 def load_folds():
     return json.load(open(folds_fp))
@@ -137,6 +140,15 @@ def load_test():
             axis=1
         )
     )
+
+
+
+def load_max_k_cores_train():
+    return pd.read_csv(max_k_cores_train_fp, index_col='id')
+
+
+def load_max_k_cores_test():
+    return pd.read_csv(max_k_cores_test_fp, index_col='test_id')
 
 
 def load__train_metrics():

@@ -490,34 +490,12 @@ def post_process_new_magic(df, train_df):
     for col in new_cols:
         df[col] = df[col].apply(apply_map)
 
-
-def debug_blja(bf):
-    s="What's the easiest way to make money online?"
-    bl = bf[bf[question1] == s]
-    print '11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
-    print bl
-    print '11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
-    if TARGET in bl.columns:
-        df = bl[TARGET]
-        print 'Q1'
-        print 'q1 num={}, freq={}'.format(df.count(), df.mean())
-        print '\n'
-
-    # if q1_dup_freq in bl.columns:
-    #     print 'FREQ1 = {}'.fo
-
-
-    bl = bf[bf[question2] == s]
-    print '2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222'
-    print bl
-    print '2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222'
-    print '\n'
-    if TARGET in bl.columns:
-        df = bl[TARGET]
-        print 'Q2'
-        print '\n'
-        print 'q2 num={}, freq={}'.format(df.count(), df.mean())
-
+"""
+small[hcc_name] = small[hcc_name] * np.random.uniform(1 - r_k, 1 + r_k, len(small))
+k=5, f=1, g=1, r_k=0.01, folds=5
+grouped["lambda"] = 1 / (g + np.exp((k - grouped["size"]) / f))
+grouped[hcc_name] = grouped["lambda"] * grouped["mean"] + (1 - grouped["lambda"]) * prior_prob
+"""
 
 
 def custom_magic_with_update(bf_train, bf_test, update_df):
@@ -542,16 +520,16 @@ def custom_magic_with_update(bf_train, bf_test, update_df):
                         how='left')
 
     bf_train[q1_dup_freq] = (bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num]) / (
-    bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count])
+        bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count])
     bf_train[q2_dup_freq] = (bf_train[q2_as_q1_dups_num] + bf_train[q2_as_q2_dups_num]) / (
-    bf_train[q2_as_q1_count] + bf_train[q2_as_q2_count])
+        bf_train[q2_as_q1_count] + bf_train[q2_as_q2_count])
 
     bf_train[q1_as_q1_dup_freq] = (bf_train[q1_as_q1_dups_num]) / (bf_train[q1_as_q1_count])
     bf_train[q2_as_q2_dup_freq] = (bf_train[q2_as_q2_dups_num]) / (bf_train[q2_as_q2_count])
 
     bf_train[q1_q2_dup_freq] = (
-                               bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num] + bf_train[q2_as_q1_dups_num] +
-                               bf_train[q2_as_q2_dups_num]) / \
+                                   bf_train[q1_as_q1_dups_num] + bf_train[q1_as_q2_dups_num] + bf_train[q2_as_q1_dups_num] +
+                                   bf_train[q2_as_q2_dups_num]) / \
                                (bf_train[q1_as_q1_count] + bf_train[q1_as_q2_count] + bf_train[q2_as_q1_count] +
                                 bf_train[q2_as_q2_count])
 
@@ -566,10 +544,10 @@ def custom_magic_with_update(bf_train, bf_test, update_df):
 
 
     bf_test[q1_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num]) / (
-    bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count])
+        bf_test[q1_as_q1_count] + bf_test[q1_as_q2_count])
 
     bf_test[q2_dup_freq] = (bf_test[q2_as_q1_dups_num] + bf_test[q2_as_q2_dups_num]) / (
-    bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])
+        bf_test[q2_as_q1_count] + bf_test[q2_as_q2_count])
 
     bf_test[q1_q2_dup_freq] = (bf_test[q1_as_q1_dups_num] + bf_test[q1_as_q2_dups_num] + bf_test[q2_as_q1_dups_num] +
                                bf_test[q2_as_q2_dups_num]) / \
