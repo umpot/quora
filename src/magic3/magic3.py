@@ -1,6 +1,10 @@
 import pandas as pd
 import networkx as nx
 
+
+
+
+
 def run_kcore():
     df_train = pd.read_csv(DATA_DIR + "train.csv", usecols=["qid1", "qid2"])
 
