@@ -497,6 +497,10 @@ grouped["lambda"] = 1 / (g + np.exp((k - grouped["size"]) / f))
 grouped[hcc_name] = grouped["lambda"] * grouped["mean"] + (1 - grouped["lambda"]) * prior_prob
 """
 
+def apply_bayesian_normalization(df, dups_num_col, all_num_col, k=5, f=1, g=1, r_k=0.01):
+    df["lambda"]=1 / (g + np.exp((k - df["all_num_col"]) / f))
+
+
 
 def custom_magic_with_update(bf_train, bf_test, update_df):
     train_df = load_train()
