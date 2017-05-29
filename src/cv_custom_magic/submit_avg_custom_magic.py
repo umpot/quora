@@ -26,7 +26,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -877,7 +877,7 @@ def submit_xgb(name):
 
 
 name='submit_avg_custom_magic'
-# submit_xgb(name)
+submit_xgb(name)
 
 
 #894, 729
