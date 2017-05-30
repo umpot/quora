@@ -79,10 +79,10 @@ test_orig['q1_q2_intersect'] = test_orig.apply(q1_q2_intersect, axis=1, raw=True
 #################################################
 import os
 q1_q2_word_match_ratio_train_fp=os.path.join(data_folder,'magic', 'q1_q2_word_match_ratio_train.csv')
-train_orig['q1_q2_wm_ratio'].to_csv(q1_q2_word_match_ratio_train_fp, index_label='id')
+train_orig[['q1_q2_wm_ratio']].to_csv(q1_q2_word_match_ratio_train_fp, index_label='id')
 
 q1_q2_word_match_ratio_test_fp=os.path.join(data_folder,'magic', 'q1_q2_word_match_ratio_test.csv')
-test_orig['q1_q2_wm_ratio'].to_csv(q1_q2_word_match_ratio_test_fp, index_label='test_id')
+test_orig[['q1_q2_wm_ratio']].to_csv(q1_q2_word_match_ratio_test_fp, index_label='test_id')
 #################################################
 
 import matplotlib.pyplot as plt
