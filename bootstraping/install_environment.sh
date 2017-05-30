@@ -18,15 +18,15 @@ cd git-lfs-2.1.0/
 bash install.sh
 cd ..
 
-echo "Checking for CUDA and installing."
-# Check for CUDA and try to install.
-if ! dpkg-query -W cuda; then
-  curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
-  dpkg -i ./cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
-  apt-get update
-  apt-get install cuda -y
-  apt-get install linux-headers-$(uname -r) -y
-fi
+#echo "Checking for CUDA and installing."
+## Check for CUDA and try to install.
+#if ! dpkg-query -W cuda; then
+#  curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
+#  dpkg -i ./cuda-repo-ubuntu1404_8.0.61-1_amd64.deb
+#  apt-get update
+#  apt-get install cuda -y
+#  apt-get install linux-headers-$(uname -r) -y
+#fi
 
 #gcloud compute copy-files ~/Desktop/libcudnn5_5.1.10-1+cuda8.0_amd64.deb kg1:/home/dd_petrovskiy/tmp
 #sudo dpkg -i libcudnn5_5.1.10-1+cuda8.0_amd64.deb
