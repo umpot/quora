@@ -14,6 +14,8 @@ from nltk.corpus import stopwords
 from tqdm import tqdm
 from scipy.stats import skew, kurtosis
 from scipy.spatial.distance import cosine, cityblock, jaccard, canberra, euclidean, minkowski, braycurtis
+import sys
+
 
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 5000)
@@ -73,10 +75,10 @@ def load_test_lemmas():
     return df
 
 
-def load_train_glove():
+def load_train_for_embeddings():
     return pd.concat([load_train(), load_train_lemmas()], axis=1)
 
-def load_test_glove():
+def load_test_for_embeddings():
     return pd.concat([load_test(), load_test_lemmas()], axis=1)
 ##########################################################################
 ##########################################################################
@@ -147,8 +149,9 @@ def process_wmd(df, model, norm_model):
     df[glove_norm_wmd_tokens] = df.apply(lambda row: wmd(row[question1], row[question2], norm_model), axis=1)
     df[glove_norm_wmd_lemmas] = df.apply(lambda row: wmd(row[lemmas_q1], row[lemmas_q2], norm_model), axis=1)
 
-def process_wmd_one_model(df, model, col1, col2, new_col):
+def process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols):
     print 'wmd'
+    new_col = '{}_{}_{}'.format(embed_name, operation, type_of_cols)
     df[new_col] = df.apply(lambda row: wmd(row[col1], row[col2], model), axis=1)
 
 glove_train_fp = os.path.join(data_folder, 'embeddings', 'glove_train.csv')
@@ -163,7 +166,7 @@ def write_test(test_df, fp_test):
     del_trash_cols(test_df)
     test_df.to_csv(fp_test, index_label='test_id')
 
-def process_metrics(data, col1, col2, pref1, pref2, model):
+def process_metrics(data, col1, col2, type_of_cols, embed_name, model):
     question1_vectors = np.zeros((data.shape[0], 300))
     error_count = 0
 
@@ -174,54 +177,54 @@ def process_metrics(data, col1, col2, pref1, pref2, model):
     for i, q in tqdm(enumerate(data[col2].values)):
         question2_vectors[i, :] = sent2vec(q, model)
 
-    col = 'cosine_distance_{}_{}'.format(pref1, pref2)
+    col = 'cosine_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [cosine(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                 np.nan_to_num(question2_vectors))]
 
-    col = 'cityblock_distance_{}_{}'.format(pref1, pref2)
+    col = 'cityblock_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [cityblock(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                    np.nan_to_num(question2_vectors))]
 
-    col = 'jaccard_distance_{}_{}'.format(pref1, pref2)
+    col = 'jaccard_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [jaccard(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                  np.nan_to_num(question2_vectors))]
 
-    col = 'canberra_distance_{}_{}'.format(pref1, pref2)
+    col = 'canberra_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [canberra(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                   np.nan_to_num(question2_vectors))]
 
-    col = 'euclidean_distance_{}_{}'.format(pref1, pref2)
+    col = 'euclidean_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [euclidean(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                    np.nan_to_num(question2_vectors))]
 
-    col = 'minkowski_distance_{}_{}'.format(pref1, pref2)
+    col = 'minkowski_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [minkowski(x, y, 3) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                       np.nan_to_num(question2_vectors))]
 
-    col = 'braycurtis_distance_{}_{}'.format(pref1, pref2)
+    col = 'braycurtis_distance_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [braycurtis(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
                                                                     np.nan_to_num(question2_vectors))]
 
-    col = 'skew_q1vec_{}_{}'.format(pref1, pref2)
+    col = 'skew_q1vec_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [skew(x) for x in np.nan_to_num(question1_vectors)]
 
-    col = 'skew_q2vec_{}_{}'.format(pref1, pref2)
+    col = 'skew_q2vec_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [skew(x) for x in np.nan_to_num(question2_vectors)]
 
-    col = 'kur_q1vec_{}_{}'.format(pref1, pref2)
+    col = 'kur_q1vec_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [kurtosis(x) for x in np.nan_to_num(question1_vectors)]
 
-    col = 'kur_q2vec_{}_{}'.format(pref1, pref2)
+    col = 'kur_q2vec_{}_{}'.format(type_of_cols, embed_name)
     print col
     data[col] = [kurtosis(x) for x in np.nan_to_num(question2_vectors)]
 
@@ -231,7 +234,7 @@ def del_trash_cols(df):
             del df[col]
 
 def process_train_test(model, norm_model, name, fp_train, fp_test):
-    train_df, test_df = load_train_glove(), load_test_glove()
+    train_df, test_df = load_train_for_embeddings(), load_test_for_embeddings()
     # train_df, test_df = train_df.head(1000), test_df.head(1000)
 
     for df in [train_df]:
@@ -253,21 +256,78 @@ def process_train_test_glove():
 
     print 'Loading norm Glove...'
     norm_model = load_norm_glove()
-    process_train_test(model, norm_model, glove_train_fp, glove_test_fp)
+    process_train_test(model, norm_model, 'glove', glove_train_fp, glove_test_fp)
 
-def process_paralell(train_test, name, norm_or_not, type_of_cols):
-    if norm_or_not not in ['full', 'norm', 'metrics', 'combine']:
-        raise Exception('{} blja!'.format(norm_or_not))
-    if type_of_cols not in ['q', 'lemmas']:
+def process_paralell(train_test, embed_name, operation, type_of_cols):
+    embed_name = 'glove'
+
+    if embed_name=='glove':
+        res_train_fp, res_test_fp = glove_train_fp, glove_test_fp
+
+    if operation not in ['wmd', 'norm_wmd', 'metrics', 'combine']:
+        raise Exception('{} blja!'.format(operation))
+    if type_of_cols not in ['tokens', 'lemmas']:
         raise Exception('{} blja!'.format(type_of_cols))
 
     if train_test not in ['train', 'test']:
         raise Exception('{} blja!'.format(train_test))
 
-    df = load_train_glove() if train_test=='train' else load_test_glove()
+    df = load_train_for_embeddings() if train_test == 'train' else load_test_for_embeddings()
+    index='id' if train_test=='train' else 'test_id'
 
-    if norm_or_not == 'metrics':
+    if type_of_cols == 'tokens':
+        col1, col2 = question1, question2
+    else:
+        col1, col2 = lemmas_q1, lemmas_q2
 
+    if operation == 'metrics':
+        model = load_glove()
+        process_metrics(df, col1, col2, type_of_cols, embed_name, model)
+        del_trash_cols(df)
+        df.to_csv('blja_{}_metrics.csv'.format(train_test), index_label=index)
+
+    elif operation=='norm_wmd':
+        model = load_glove()
+        process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols)
+        del_trash_cols(df)
+        df.to_csv('blja_{}_{}_norm_wmd.csv'.format(train_test, type_of_cols), index_label=index)
+
+    elif operation=='wmd':
+        model = load_glove()
+        process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols)
+        del_trash_cols(df)
+        df.to_csv('blja_{}_{}_wmd.csv'.format(train_test, type_of_cols), index_label=index)
+
+    elif operation=='combine':
+        if train_test=='train':
+            train_files = [
+                              'blja_train_metrics.csv'
+                          ]+[
+                              'blja_{}_{}_wmd.csv'.format(x, 'train') for x in ['tokens', 'lemmas']
+                              ]+[
+                              'blja_{}_{}_norm_wmd.csv'.format(x, 'train') for x in ['tokens', 'lemmas']
+                              ]
+
+            dfs = [pd.read_csv(fp, index_col=index) for fp in train_files]
+            df = pd.concat(dfs, axis=1)
+            df.to_csv(res_train_fp, index_label='id')
+
+
+        elif train_test=='test':
+            test_files = [
+                             'blja_test_metrics.csv'
+                         ]+[
+                             'blja_{}_{}_wmd.csv'.format(x, 'test') for x in ['tokens', 'lemmas']
+                             ]+[
+                             'blja_{}_{}_norm_wmd.csv'.format(x, 'test') for x in ['tokens', 'lemmas']
+                             ]
+
+            dfs = [pd.read_csv(fp, index_col=index) for fp in test_files]
+            df = pd.concat(dfs, axis=1)
+            df.to_csv(res_test_fp, index_label='test_id')
+
+
+process_paralell(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
 
 
