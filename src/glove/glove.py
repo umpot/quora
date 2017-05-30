@@ -20,7 +20,7 @@ pd.set_option('display.width', 5000)
 pd.set_option('display.max_rows', 5000)
 pd.set_option('display.max_colwidth', 100)
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
 lemmas_train_fp = os.path.join(data_folder, 'nlp', 'lemmas_train.csv')
@@ -147,6 +147,9 @@ def process_wmd(df, model, norm_model):
     df[glove_norm_wmd_tokens] = df.apply(lambda row: wmd(row[question1], row[question2], norm_model), axis=1)
     df[glove_norm_wmd_lemmas] = df.apply(lambda row: wmd(row[lemmas_q1], row[lemmas_q2], norm_model), axis=1)
 
+def process_wmd_one_model(df, model, col1, col2, new_col):
+    print 'wmd'
+    df[new_col] = df.apply(lambda row: wmd(row[col1], row[col2], model), axis=1)
 
 glove_train_fp = os.path.join(data_folder, 'embeddings', 'glove_train.csv')
 glove_test_fp = os.path.join(data_folder, 'embeddings', 'glove_test.csv')
@@ -252,5 +255,13 @@ def process_train_test_glove():
     norm_model = load_norm_glove()
     process_train_test(model, norm_model, glove_train_fp, glove_test_fp)
 
+def process_test_paralell(name, norm_or_not, type_of_cols):
+    if norm_or_not not in ['full', 'norm', 'metrics']:
+        raise Exception('{} blja!'.format(norm_or_not))
+    if type_of_cols not in ['q', 'lemmas']:
+        raise Exception('{} blja!'.format(type_of_cols))
+
+    test_df = load_test_glove()
+    if
 
 

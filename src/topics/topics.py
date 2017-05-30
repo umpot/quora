@@ -2,6 +2,8 @@ import gensim
 import os
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+from tqdm import tqdm
+
 stop_words = stopwords.words('english')
 import numpy as np
 import pandas as pd
@@ -20,6 +22,17 @@ pd.set_option('display.max_colwidth', 100)
 data_folder = '../../data/'
 
 topics_folder_fp = os.path.join(data_folder, '101 topics')
+topics_word2vec_fp =  os.path.join(data_folder, 'topics', 'topics_word2vec.csv')
+
+data_folder = '../../data/'
+
+fp_word2vec_model = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
+
+def load_word2vec():
+    model= gensim.models.KeyedVectors.load_word2vec_format(fp_word2vec_model, binary=True)
+    # model.init_sims(replace=True) # normalizes vectors
+
+    return model
 
 topics_files=['Business-Strategy.txt',
               'Humor.txt',
@@ -138,3 +151,28 @@ def load_topics():
 
     return pd.DataFrame({'text':texts, 'label':labels})
 
+def sent2vec(s, model):
+    words = str(s).lower().decode('utf-8')
+    words = word_tokenize(words)
+    words = [w for w in words if not w in stop_words]
+    words = [w for w in words if w.isalpha()]
+    M = []
+    for w in words:
+        try:
+            M.append(model[w])
+        except:
+            continue
+    M = np.array(M)
+    v = M.sum(axis=0)
+    return v / np.sqrt((v ** 2).sum())
+
+def create_vectors(model, df):
+    dim = 300
+    vectors = np.zeros((df.shape[0], dim))
+    for i, q in tqdm(enumerate(df[text].values)):
+        vectors[i, :] = sent2vec(q, model)
+
+    bl = pd.DataFrame(vectors, columns=['w_{}'.format(i) for i in range(dim)])
+    bl[label] = df[label]
+
+    bl.to_csv(topics_word2vec_fp)

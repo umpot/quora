@@ -1,0 +1,4 @@
+1)to create a bucket:
+gsutil mb gs://my-awesome-bucket/
+
+2)
