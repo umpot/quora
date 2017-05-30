@@ -41,8 +41,8 @@ pip install dill
 pip install seaborn
 pip install matplotlib
 pip install gensim
-pip install tensorflow-gpu
-pip install keras
+#pip install tensorflow-gpu
+#pip install keras
 pip install -U nltk
 pip install h5py
 pip install distance
