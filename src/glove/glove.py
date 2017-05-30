@@ -255,13 +255,19 @@ def process_train_test_glove():
     norm_model = load_norm_glove()
     process_train_test(model, norm_model, glove_train_fp, glove_test_fp)
 
-def process_test_paralell(name, norm_or_not, type_of_cols):
-    if norm_or_not not in ['full', 'norm', 'metrics']:
+def process_paralell(train_test, name, norm_or_not, type_of_cols):
+    if norm_or_not not in ['full', 'norm', 'metrics', 'combine']:
         raise Exception('{} blja!'.format(norm_or_not))
     if type_of_cols not in ['q', 'lemmas']:
         raise Exception('{} blja!'.format(type_of_cols))
 
-    test_df = load_test_glove()
-    if
+    if train_test not in ['train', 'test']:
+        raise Exception('{} blja!'.format(train_test))
+
+    df = load_train_glove() if train_test=='train' else load_test_glove()
+
+    if norm_or_not == 'metrics':
+
+
 
 

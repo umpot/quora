@@ -38,7 +38,7 @@ def get_glove_info(glove_file_name):
 
 data_folder = '../../data/'
 in_file = os.path.join(data_folder, 'glove.840B.300d.txt')
-out_file = os.path.join('/dev', 'glove.840B.300d_w2v.txt')
+out_file = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
 
 def glove2word2vec(glove_input_file, word2vec_output_file):
     """Convert `glove_input_file` in GloVe format into `word2vec_output_file in word2vec format."""
