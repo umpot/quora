@@ -117,6 +117,11 @@ def wmd(s1, s2, model):
 
 
 def norm_wmd(s1, s2, norm_model):
+    global counter
+    counter+=1
+    print counter
+
+
     s1 = str(s1).lower().split()
     s2 = str(s2).lower().split()
     stop_words = stopwords.words('english')
