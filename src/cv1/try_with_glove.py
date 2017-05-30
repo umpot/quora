@@ -544,8 +544,8 @@ def perform_xgb_cv(name, mongo_host):
     for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
         if counter!=4:
             print 'Skipping {}'.format(counter)
+            counter+=1
             continue
-        counter+=1
 
         big = df.iloc[big_ind]
         small = df.iloc[small_ind]
