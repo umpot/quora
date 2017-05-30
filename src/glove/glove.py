@@ -286,19 +286,25 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
         col1, col2 = lemmas_q1, lemmas_q2
 
     if operation == 'metrics':
+        print 'Loading model...'
         model = load_glove()
+        print 'Loaded!!'
         process_metrics(df, col1, col2, type_of_cols, embed_name, model)
         del_trash_cols(df)
         df.to_csv('blja_{}_metrics.csv'.format(train_test), index_label=index)
 
     elif operation=='norm_wmd':
-        model = load_glove()
+        print 'Loading model...'
+        model = load_norm_glove()
+        print 'Loaded!!'
         process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols)
         del_trash_cols(df)
         df.to_csv('blja_{}_{}_norm_wmd.csv'.format(train_test, type_of_cols), index_label=index)
 
     elif operation=='wmd':
+        print 'Loading model...'
         model = load_glove()
+        print 'Loaded!!'
         process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols)
         del_trash_cols(df)
         df.to_csv('blja_{}_{}_wmd.csv'.format(train_test, type_of_cols), index_label=index)
