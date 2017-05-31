@@ -42,7 +42,10 @@ def load_topics_w2v():
     return df
 
 
-def perform_xgb_cv(df):
+
+
+def perform_xgb_cv():
+    df = load_topics_w2v()
     folds =5
     seed = 42
 
