@@ -1,734 +1,351 @@
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import re
-import os
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
-sns.set(color_codes=True)
-sns.set(style="whitegrid", color_codes=True)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 5000)
-pd.set_option('display.max_rows', 5000)
-pd.set_option('display.max_colwidth', 100)
-
-TARGET = 'is_duplicate'
-qid1, qid2 = 'qid1', 'qid2'
-
-question1, question2 = 'question1', 'question2'
-lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
-stems_q1, stems_q2 = 'stems_q1', 'stems_q2'
-tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
-ner_q1, ner_q2='ner_q1', 'ner_q2'
-postag_q1, postag_q2='postag_q1', 'postag_q2'
-
-data_folder = '../../data/'
-
-fp_train = data_folder + 'train.csv'
-fp_test = data_folder + 'test.csv'
-
-lemmas_train_fp = os.path.join(data_folder,'nlp','lemmas_train.csv')
-lemmas_test_fp = os.path.join(data_folder,'nlp','lemmas_test.csv')
-
-tokens_train_fp = os.path.join(data_folder,'nlp','tokens_train.csv')
-tokens_test_fp = os.path.join(data_folder,'nlp','tokens_test.csv')
-
-postag_train_fp = os.path.join(data_folder,'nlp','postag_train.csv')
-postag_test_fp = os.path.join(data_folder,'nlp','postag_test.csv')
-
-ner_train_fp = os.path.join(data_folder,'nlp','ner_train.csv')
-ner_test_fp = os.path.join(data_folder,'nlp','ner_test.csv')
-
-stems_train_fp = os.path.join(data_folder,'nlp','stems_train.csv')
-stems_test_fp = os.path.join(data_folder,'nlp','stems_test.csv')
-
-tfidf_with_stops_train_fp = os.path.join(data_folder,'tfidf','old' ,'tokens_with_stop_words_tfidf_train.csv')
-tfidf_with_stops_test_fp = os.path.join(data_folder,'tfidf','old','tokens_with_stop_words_tfidf_test.csv')
-
-magic_train_fp=os.path.join(data_folder, 'magic', 'magic_train.csv')
-magic_test_fp=os.path.join(data_folder, 'magic', 'magic_test.csv')
-
-magic2_train_fp = os.path.join(data_folder, 'magic', 'magic2_train.csv')
-magic2_test_fp = os.path.join(data_folder, 'magic', 'magic2_test.csv')
-
-
-common_words_train_fp = os.path.join(data_folder, 'basic','common_words_train.csv')
-length_train_fp = os.path.join(data_folder, 'basic','lens_train.csv')
-
-common_words_test_fp = os.path.join(data_folder, 'basic','common_words_test.csv')
-length_test_fp = os.path.join(data_folder, 'basic','lens_test.csv')
-
-TRAIN_METRICS_FP = [
-    data_folder + 'distances/'+ 'train_metrics_bool_lemmas.csv',
-    data_folder + 'distances/'+'train_metrics_bool_stems.csv',
-    data_folder + 'distances/'+'train_metrics_bool_tokens.csv',
-    data_folder + 'distances/'+'train_metrics_fuzzy_lemmas.csv',
-    data_folder + 'distances/'+'train_metrics_fuzzy_stems.csv',
-    data_folder + 'distances/'+'train_metrics_fuzzy_tokens.csv',
-    data_folder + 'distances/'+'train_metrics_sequence_lemmas.csv',
-    data_folder + 'distances/'+'train_metrics_sequence_stems.csv',
-    data_folder + 'distances/'+'train_metrics_sequence_tokens.csv'
-]
-
-TEST_METRICS_FP = [
-    data_folder + 'distances/'+ 'test_metrics_bool_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_bool_stems.csv',
-    data_folder + 'distances/'+'test_metrics_bool_tokens.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_stems.csv',
-    data_folder + 'distances/'+'test_metrics_fuzzy_tokens.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_lemmas.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_stems.csv',
-    data_folder + 'distances/'+'test_metrics_sequence_tokens.csv'
-]
-
-trash_cols = [
-    "w_share_ratio_2_std_idf_dirty_lower_no_stops",
-    "w_share_ratio_2_smooth_idf_dirty_upper",
-    "w_share_ratio_2_std_idf_tokens_lower_no_stops",
-    "abi_jaccard_distance",
-    "len_char_diff_log",
-    "len_word_diff_log",
-    "len_word_expt_stop_diff_log",
-    "stop_words_num_q1",
-    "stop_words_num_q2",
-    "lemmas_kulsinski",
-    "lemmas_dice",
-    "lemmas_jaccard",
-    "stems_kulsinski",
-    "stems_dice",
-    "stems_jaccard",
-    "tokens_dice",
-    "tokens_jaccard",
-    "lemmas_partial_token_set_ratio",
-    "stems_partial_token_set_ratio",
-    "tokens_partial_token_set_ratio",
-    "lemmas_distance.jaccard",
-    "stems_distance.jaccard",
-    "tokens_distance.jaccard",
-    "w_share_ratio_2_smooth_idf_dirty_lower_no_stops",
-    "w_share_ratio_2_std_idf_dirty_upper",
-    "w_share_ratio_2_smooth_idf_tokens_lower",
-    "w_share_ratio_2_std_idf_tokens_lower",
-    "w_share_ratio_2_smooth_idf_tokens_lower_no_stops"
-]
-
-
-def del_trash_cols(df):
-    for col in trash_cols:
-        if col in df:
-            del df[col]
-
-def load_train():
-    return pd.read_csv(fp_train, index_col='id')
-
-def load_test():
-    return pd.read_csv(fp_test, index_col='test_id')
-
-
-def load__train_metrics():
-    dfs = [pd.read_csv(fp, index_col='id') for fp in TRAIN_METRICS_FP]
-    return pd.concat(dfs, axis=1)
-
-def load__test_metrics():
-    dfs = [pd.read_csv(fp, index_col='test_id') for fp in TEST_METRICS_FP]
-    return pd.concat(dfs, axis=1)
-
-
-def load_train_all():
-    return pd.concat([
-        load_train(),
-        load_train_lemmas(),
-        load_train_stems(),
-        load_train_tokens(),
-        load_train_lengths(),
-        load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf()
-    ], axis=1)
-
-def load_train_nlp():
-    return pd.concat([
-        load_train(),
-        load_train_postag(),
-        load_train_lemmas(),
-        load_train_stems(),
-        load_train_tokens(),
-        load_train_ner()
-    ], axis=1)
-
-def load_test_nlp():
-    return pd.concat([
-        load_test(),
-        load_test_postag(),
-        load_test_lemmas(),
-        load_test_stems(),
-        load_test_tokens(),
-        load_test_ner()
-    ], axis=1)
-
-def load_test_all():
-    return pd.concat([
-        load_test(),
-        load_test_lemmas(),
-        load_test_stems(),
-        load_test_tokens(),
-        load_test_lengths(),
-        load_test_common_words(),
-        load__test_metrics(),
-        load_test_tfidf()
-    ], axis=1)
-
-
-def load_train_test():
-    return pd.read_csv(fp_train, index_col='id'), pd.read_csv(fp_test, index_col='test_id')
-
-
-def load_train_lemmas():
-    df = pd.read_csv(lemmas_train_fp, index_col='id')
-    df = df.fillna('')
-    for col in [lemmas_q1, lemmas_q2]:
-        df[col]=df[col].apply(str)
-    return df
-
-def load_test_lemmas():
-    df = pd.read_csv(lemmas_test_fp, index_col='test_id')
-    df = df.fillna('')
-    for col in [lemmas_q1, lemmas_q2]:
-        df[col]=df[col].apply(str)
-    return df
-
-
-def load_train_tfidf():
-    df = pd.read_csv(tfidf_with_stops_train_fp, index_col='id')
-    return df
-
-def load_test_tfidf():
-    df = pd.read_csv(tfidf_with_stops_test_fp, index_col='test_id')
-    return df
-
-
-def load_train_tokens():
-    df = pd.read_csv(tokens_train_fp, index_col='id')
-    df = df.fillna('')
-    return df
-
-def load_test_tokens():
-    df = pd.read_csv(tokens_test_fp, index_col='test_id')
-    df = df.fillna('')
-    return df
-
-def load_train_postag():
-    df = pd.read_csv(postag_train_fp, index_col='id')
-    return df
-
-def load_test_postag():
-    df = pd.read_csv(postag_test_fp, index_col='test_id')
-    return df
-
-def load_train_ner():
-    df = pd.read_csv(ner_train_fp, index_col='id')
-    return df
-
-def load_test_ner():
-    df = pd.read_csv(ner_test_fp, index_col='test_id')
-    return df
-
-def load_train_magic():
-    df = pd.concat([
-        pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
-        pd.read_csv(magic2_train_fp, index_col='id')],
-        axis=1
-    )
-    return df
-
-def load_test_magic():
-    df = pd.concat([
-        pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
-        pd.read_csv(magic2_test_fp, index_col='test_id')],
-        axis=1
-    )
-    return df
-
-
-def load_train_stems():
-    df = pd.read_csv(stems_train_fp, index_col='id')
-    df = df[['question1_porter', 'question2_porter']]
-    df = df.rename(columns={'question1_porter': 'stems_q1', 'question2_porter': 'stems_q2'})
-    df = df.fillna('')
-    for col in [stems_q1, stems_q2]:
-        df[col]=df[col].apply(str)
-    return df
-
-def load_test_stems():
-    df = pd.read_csv(stems_test_fp, index_col='test_id')
-    df = df[['question1_porter', 'question2_porter']]
-    df = df.rename(columns={'question1_porter': 'stems_q1', 'question2_porter': 'stems_q2'})
-    df = df.fillna('')
-    for col in [stems_q1, stems_q2]:
-        df[col]=df[col].apply(str)
-    return df
-
-
-def load_train_common_words():
-    df = pd.read_csv(common_words_train_fp, index_col='id')
-    return df
-
-def load_test_common_words():
-    df = pd.read_csv(common_words_test_fp, index_col='test_id')
-    return df
-
-
-def load_train_lengths():
-    df = pd.read_csv(length_train_fp, index_col='id')
-    return df
-
-def load_test_lengths():
-    df = pd.read_csv(length_test_fp, index_col='test_id')
-    return df
-
-def shuffle_df(df, random_state=42):
-    np.random.seed(random_state)
-    return df.iloc[np.random.permutation(len(df))]
-
-def explore_target_ratio(df):
-    return {
-        'pos':1.0*len(df[df[TARGET]==1])/len(df),
-        'neg':1.0*len(df[df[TARGET]==0])/len(df)
-    }
-
-
-
-# df = load_train_all()
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-
-#WH
-
-wh_fp_train=os.path.join(data_folder, 'wh', 'wh_train.csv')
-wh_fp_test=os.path.join(data_folder, 'wh', 'wh_test.csv')
-
-def load_wh_train():
-    df = pd.read_csv(wh_fp_train, index_col='id')
-    return df
-
-def load_wh_test():
-    df = pd.read_csv(wh_fp_test, index_col='test_id')
-    return df
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-
-
-
-
-
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-upper_keywords_fp_train=os.path.join(data_folder, 'keywords', 'train_upper.csv')
-upper_keywords_test=os.path.join(data_folder, 'keywords', 'test_upper.csv')
-
-def load_upper_keywords_train():
-    df = pd.read_csv(upper_keywords_fp_train, index_col='id')
-    return df
-
-def load_upper_keywords_test():
-    df = pd.read_csv(upper_keywords_test, index_col='test_id')
-    return df
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-one_upper_fp_train=os.path.join(data_folder, 'keywords', 'train_upper_freq_200.csv')
-one_upper_fp_test=os.path.join(data_folder, 'keywords', 'test_upper_freq_200.csv')
-
-def load_one_upper_train():
-    df = pd.read_csv(one_upper_fp_train, index_col='id')
-    return df
-
-def load_one_upper_test():
-    df = pd.read_csv(one_upper_fp_test, index_col='test_id')
-    return df
-
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-import pandas as pd
-import numpy as np
-
-TARGET = 'is_duplicate'
-
-INDEX_PREFIX= 100000000
-#old
-{'pos': 0.369197853026293,
- 'neg': 0.630802146973707}
-
-
-#new
-r1 = 0.174264424749
-r0 = 0.825754788586
-
-""""
-p_old/(1+delta) = p_new
-
-delta = (p_old/p_new)-1 = 1.1186071314214785
-l = delta*N = 452241
-"""
-
-delta = 1.1186071314214785
-
-def explore_target_ratio(df):
-    return {
-        'pos':1.0*len(df[df[TARGET]==1])/len(df),
-        'neg':1.0*len(df[df[TARGET]==0])/len(df)
-    }
-
-def shuffle_df(df, random_state):
-    np.random.seed(random_state)
-    return df.iloc[np.random.permutation(len(df))]
-
-def oversample_df(df, l, random_state):
-    df_pos = df[df[TARGET]==1]
-    df_neg = df[df[TARGET]==0]
-
-    df_neg_sampl = df_neg.sample(l, random_state=random_state, replace=True)
-
-    df=pd.concat([df_pos, df_neg, df_neg_sampl])
-    df = shuffle_df(df, random_state)
-
-    return df
-
-def oversample(train_df, test_df, random_state=42):
-    l_train = int(delta * len(train_df))
-    l_test = int(delta * len(test_df))
-
-    return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
-
-
-
-############################################################3
-############################################################3
-############################################################3
-train_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'train_avg_K_tok_freq.csv')
-test_avg_tokK_freq_fp=os.path.join(data_folder, 'top_k_freq', 'test_avg_K_tok_freq.csv')
-
-def load_topNs_avg_tok_freq_train():
-    return pd.read_csv(train_avg_tokK_freq_fp, index_col='id')
-
-def load_topNs_avg_tok_freq_test():
-    return pd.read_csv(test_avg_tokK_freq_fp, index_col='test_id')
-
-############################################################3
-############################################################3
-############################################################3
-abi_train_fp = os.path.join(data_folder, 'abishek', 'abi_train.csv')
-abi_test_fp = os.path.join(data_folder, 'abishek', 'abi_test.csv')
-
-
-def load_abi_train():
-    return pd.read_csv(abi_train_fp, index_col='id')
-
-def load_abi_test():
-    return pd.read_csv(abi_test_fp, index_col='test_id')
-
-############################################################3
-############################################################3
-############################################################3
-max_k_cores_train_fp=os.path.join(data_folder,'magic' ,'max_k_cores_train.csv')
-max_k_cores_test_fp=os.path.join(data_folder,'magic' ,'max_k_cores_test.csv')
-
-
-def load_max_k_cores_train():
-    return pd.read_csv(max_k_cores_train_fp, index_col='id')
-
-
-def load_max_k_cores_test():
-    return pd.read_csv(max_k_cores_test_fp, index_col='test_id')
-
-############################################################3
-############################################################3
-############################################################3
-glove_train_fp = os.path.join(data_folder, 'embeddings', 'glove_train.csv')
-glove_test_fp = os.path.join(data_folder, 'embeddings', 'glove_test.csv')
-
-def load_glove_metrics_train():
-    return pd.read_csv(glove_train_fp, index_col='id')
-
-
-def load_glove_metrics_test():
-    return pd.read_csv(glove_test_fp, index_col='test_id')
-############################################################3
-############################################################3
-############################################################3
-lex_train_fp = os.path.join(data_folder, 'embeddings', 'lex_train.csv')
-lex_test_fp = os.path.join(data_folder, 'embeddings', 'lex_test.csv')
-
-def load_lex_metrics_train():
-    return pd.read_csv(lex_train_fp, index_col='id')
-
-
-def load_lex_metrics_test():
-    return pd.read_csv(lex_test_fp, index_col='test_id')
-############################################################3
-############################################################3
-############################################################3
-word2vec_train_fp = os.path.join(data_folder, 'embeddings', 'word2vec_train.csv')
-word2vec_test_fp = os.path.join(data_folder, 'embeddings', 'word2vec_test.csv')
-
-
-def load_word2vec_metrics_train():
-    return pd.read_csv(word2vec_train_fp, index_col='id')
-
-
-def load_word2vec_metrics_test():
-    return pd.read_csv(word2vec_test_fp, index_col='test_id')
-############################################################3
-############################################################3
-############################################################3
-embedings_list=['glove']
-column_types = ['tokens', 'lemmas']
-kur_pairs=[
-    ('kur_q1vec_{}_{}'.format(col_type,emb), 'kur_q2vec_{}_{}'.format(col_type,emb))
-    for col_type in column_types for emb in embedings_list
-    ]
-
-skew_pairs=[
-    ('skew_q1vec_{}_{}'.format(col_type,emb), 'skew_q2vec_{}_{}'.format(col_type,emb))
-    for col_type in column_types for emb in embedings_list
-    ]
-
-
-def add_kur_combinations(df):
-    for col1, col2 in kur_pairs+skew_pairs:
-        print col1, col2
-        name = col1.replace('q1', '')
-        df['{}_abs_diff'.format(name)]=np.abs(df[col1]-df[col2])
-        df['{}_1div2_ratio'.format(name)]= df[col1]/df[col2]
-        df['{}_log_ratio'.format(name)]= np.abs(np.log(df[col1]/df[col2]))
-        df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
-        df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
-
-############################################################3
-############################################################3
-############################################################3
-train_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'train_pos_metrics.csv')
-test_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'test_pos_metrics.csv')
-
-def load_metrics_on_pos_train():
-    return pd.read_csv(train_pos_metrics_fp, index_col='id')
-
-def load_metrics_on_pos_test():
-    return pd.read_csv(train_pos_metrics_fp, index_col='test_id')
-
-############################################################3
-############################################################3
-############################################################3
-import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import log_loss
-import json
-from time import sleep
-import traceback
-
-gc_host = '104.197.97.20'
-local_host = '10.20.0.144'
-user='ubik'
-password='nfrf[eqyz'
-
-
-def load_train_all_xgb():
-    train_df = pd.concat([
-        # load_word2vec_metrics_train(),
-        load_glove_metrics_train(),
-        # load_lex_metrics_train(),
-        # load_metrics_on_pos_train()
-        # load_upper_keywords_train()
-    ], axis=1)
-
-    # cols_to_del = [qid1, qid2, question1, question2]
-    # for col in cols_to_del:
-    #     del train_df[col]
-
-    return train_df
-
-# def load_test_all_xgb():
-#     test_df = pd.concat([
-#         load_test_lengths(),
-#         load_test_common_words(),
-#         load__test_metrics(),
-#         load_train_tfidf(),
-#         load_test_magic(),
-#         load_wh_test(),
-#         load_one_upper_test(),
-#         load_topNs_avg_tok_freq_test(),
-#         # load_abi_test(),
-#         load_max_k_cores_test(),
-#         load_word2vec_metrics_test(),
-#         load_glove_metrics_test(),
-#         load_lex_metrics_test(),
-#     load_metrics_on_pos_train()
-#     ], axis=1)
-#
-#
-#     return test_df
-
-def plot_errors(imp):
-    train_runs= [x['train'] for x in imp]
-    test_runs= [x['test'] for x in imp]
-
-    sz=len(train_runs[0])
-    x_axis=range(sz)
-    y_train = [np.mean([x[j] for x in train_runs]) for j in x_axis]
-    y_test = [np.mean([x[j] for x in test_runs]) for j in x_axis]
-
-    fig, ax = plt.subplots()
-    ax.plot(x_axis, y_train, label='train')
-    ax.plot(x_axis, y_test, label='test')
-    ax.legend()
-    plt.show()
-
-def xgboost_per_tree_results(estimator):
-    results_on_test = estimator.evals_result()['validation_1']['logloss']
-    results_on_train = estimator.evals_result()['validation_0']['logloss']
-    return {
-        'train': results_on_train,
-        'test': results_on_test
-    }
-
-def out_loss(loss):
-    print '====================================='
-    print '====================================='
-    print '====================================='
-    print loss
-    print '====================================='
-    print '====================================='
-    print '====================================='
-
-
-def write_results(name,mongo_host, per_tree_res, losses, imp, features):
-    from pymongo import MongoClient
-
-    imp=[x.item() for x in imp]
-    features=list(features)
-
-    client = MongoClient(mongo_host, 27017)
-    client['admin'].authenticate(user, password)
-    db = client['xgb_cv']
-    collection = db[name]
-    try:
-        collection.insert_one({
-            'results': per_tree_res,
-            'losses': losses,
-            'importance':imp,
-            'features':features
-        })
-    except:
-        print 'error in mongo'
-        traceback.print_exc()
-        raise
-        # sleep(20)
-
-
-
-def perform_xgb_cv(name=None, mongo_host=None):
-    df = load_train_all_xgb()
-    # del_trash_cols(df)
-    add_kur_combinations(df)
-
-    return df
-    folds =5
-    seed = 42
-
-    skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=seed)
-    losses = []
-    n_est=[]
-    counter = 0
-    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
-
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
-
-        big, small = oversample(big, small, seed)
-
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
-
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
-
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
-
-        # estimator = xgb.XGBClassifier(n_estimators=10000,
-        #                               subsample=0.6,
-        #                               # colsample_bytree=0.8,
-        #                               max_depth=7,
-        #                               objective='binary:logistic',
-        #                               learning_rate=0.02,
-        #                               base_score=0.2)
-
-        estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr)
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
-        estimator.fit(
-            train_arr, train_target,
-            eval_set=eval_set,
-            eval_metric='logloss',
-            verbose=True,
-            early_stopping_rounds=150
-        )
-
-        proba = estimator.predict_proba(test_arr)
-
-        loss = log_loss(test_target, proba)
-        out_loss(loss)
-        losses.append({'loss':loss, 'best_score':estimator.best_score, 'best_iteration':estimator.best_iteration})
-        per_tree_res = xgboost_per_tree_results(estimator)
-        ii = estimator.feature_importances_
-        n_est.append(estimator.best_iteration)
-
-        # xgb.plot_importance(estimator)
-        # plot_errors(stats)
-
-
-        write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
-
-
-    out_loss('avg = {}'.format(np.mean(losses)))
-
-
-
-
-
-
-
+freq_question2 0.0124287931249
+q1_q2_intersect 0.0121241658926
+tokens_with_stop_words_tfidf_share_ratio 0.0105096418411
+freq_question1 0.00962622277439
+freq_1000_minus_min 0.00901696737856
+q1_k_max_core 0.00837725028396
+tokens_with_stop_words_tfidf_share 0.00801169779152
+q2_k_max_core 0.00776799581945
+nouns_tfidf_share 0.00755475694314
+freq_100_minus_min 0.00740244332701
+kur_q2vec_lemmas_lex 0.00740244332701
+freq_50_minus_min 0.00734151760116
+tokens_with_stop_words_tfidf_mean_q1 0.00725012924522
+skew_q2vec_lemmas_lex 0.00725012924522
+tokens_with_stop_words_tfidf_mean_q2 0.00703689036891
+tokens_nlevenshtein 0.00697596510872
+common_lemmas_ratio_no_stops 0.00685411412269
+kur_q2vec_tokens_lex 0.00685411412269
+freq_500_minus_min 0.0068236514926
+skew_q1vec_tokens_lex 0.00654948689044
+skew_q1vec_lemmas_word2vec 0.00651902379468
+freq_1000_plus_max 0.00648856116459
+freq_1000_minus_g_mean 0.00639717327431
+skew_q1vec_lemmas_glove 0.00636671017855
+aux_pair_target_freq 0.00627532228827
+len_char_ratio 0.00621439656243
+skew_q2vec_lemmas_word2vec 0.00621439656243
+kur_q2vec_lemmas_word2vec 0.00621439656243
+lex_norm_wmd_tokens 0.00618393393233
+skew_q2vec_tokens_lex 0.00615347130224
+kur_q1vec_tokens_lex 0.00612300867215
+freq_200_minus_min 0.0060620829463
+skew_q1vec_lemmas_lex 0.0060620829463
+kur_q1vec_lemmas_word2vec 0.00603162031621
+lemmas_nlevenshtein 0.00597069505602
+freq_1000_plus_g_mean 0.00597069505602
+glove_wmd_tokens 0.00597069505602
+skew_q1vec_tokens_glove 0.00597069505602
+glove_wmd_lemmas 0.00594023196027
+tokens_with_stop_words_tfidf_sum_q1 0.00587930670008
+tokens_with_stop_words_tfidf_sum_q2 0.00581838143989
+freq_1000_minus_mean 0.00575745571405
+upper_plus_freq_200 0.00572699308395
+abi_skew_q2vec 0.00572699308395
+skew_q2vec_lemmas_glove 0.00569653045386
+tokens_kulsinski 0.00566606735811
+stems_nlevenshtein 0.00566606735811
+kur_q1vec_lemmas_lex 0.00563560472801
+lex_norm_wmd_lemmas 0.00563560472801
+abi_norm_wmd 0.00560514209792
+skew_q2vec_tokens_glove 0.00560514209792
+kur_vec_lemmas_lex_log_ratio 0.00557467946783
+kur_vec_tokens_lex_log_ratio 0.00551375374198
+kur_q1vec_lemmas_glove 0.00548329111189
+nouns_tfidf_share_ratio 0.0054223658517
+freq_1000_plus_min 0.00539190322161
+kur_q1vec_tokens_glove 0.00539190322161
+kur_vec_tokens_word2vec_log_ratio 0.00539190322161
+freq_50_plus_max 0.00530051486567
+len_char_q1 0.00520912650973
+tokens_sorensen 0.00520912650973
+freq_50_minus_max 0.00520912650973
+abi_kur_q1vec 0.00511773861945
+upper_minus_freq_200 0.00508727552369
+kur_q2vec_lemmas_glove 0.0050568128936
+kur_vec_tokens_lex_abs_diff 0.0050568128936
+kur_q2vec_tokens_glove 0.00502635026351
+freq_50_minus_std 0.00499588763341
+abi_kur_q2vec 0.00499588763341
+tokens_partial_ratio 0.00496542500332
+freq_1000_plus_std 0.00496542500332
+lemmas_sorensen 0.00493496190757
+freq_1000_minus_max 0.00493496190757
+stop_words_ratio_q1 0.00490449927747
+kur_vec_tokens_glove_abs_diff 0.00484357401729
+stop_words_ratio_q2 0.00481311138719
+freq_200_plus_max 0.00478264829144
+freq_1000_plus_max_min_ratio 0.00475218566135
+glove_norm_wmd_tokens 0.00475218566135
+kur_vec_tokens_lex_1div2_ratio 0.00475218566135
+word2vec_norm_wmd_lemmas 0.00472172303125
+freq_50_plus_min 0.00469126040116
+freq_100_plus_min 0.00469126040116
+freq_500_plus_max 0.00469126040116
+kur_vec_tokens_word2vec_1div2_ratio 0.00469126040116
+kur_vec_tokens_lex_q1_ratio 0.00469126040116
+stems_token_set_ratio 0.00466079730541
+freq_50_minus_max_min_ratio 0.00466079730541
+freq_100_minus_max 0.00463033467531
+freq_200_plus_min 0.00459987204522
+kur_vec_lemmas_word2vec_q1_ratio 0.00459987204522
+nouns_norm_wmd 0.00456940941513
+kur_vec_lemmas_word2vec_log_ratio 0.00453894678503
+freq_50_minus_mean 0.00450848368928
+kur_vec_lemmas_lex_1div2_ratio 0.00450848368928
+kur_vec_lemmas_word2vec_abs_diff 0.00444755842909
+stems_partial_ratio 0.004417095799
+kur_vec_lemmas_glove_log_ratio 0.004417095799
+kur_vec_tokens_word2vec_q1_ratio 0.00438663316891
+kur_vec_lemmas_lex_q1_ratio 0.00438663316891
+freq_100_minus_mean 0.00435617007315
+lemmas_partial_ratio 0.00429524481297
+freq_50_plus_g_mean 0.00429524481297
+freq_50_plus_max_min_ratio 0.00429524481297
+freq_500_plus_mean 0.00429524481297
+freq_1000_plus_mean 0.00429524481297
+freq_1000_minus_std 0.00429524481297
+freq_1000_minus_max_min_ratio 0.00429524481297
+lex_wmd_tokens 0.00429524481297
+freq_50_minus_g_mean 0.00426478218287
+freq_50_plus_std 0.00423431908712
+len_char_q2 0.00414293119684
+abi_skew_q1vec 0.00414293119684
+freq_100_minus_std 0.00411246856675
+freq_200_minus_max_min_ratio 0.0040515428409
+freq_500_minus_std 0.0040515428409
+freq_100_minus_max_min_ratio 0.0040210802108
+kur_vec_tokens_word2vec_abs_diff 0.00399061758071
+freq_500_plus_g_mean 0.00396015495062
+freq_100_plus_max 0.00392969185486
+kur_vec_lemmas_word2vec_1div2_ratio 0.00392969185486
+freq_200_minus_std 0.00389922922477
+freq_500_minus_g_mean 0.00389922922477
+kur_vec_lemmas_lex_abs_diff 0.00389922922477
+stems_token_sort_ratio 0.00386876659468
+kur_vec_lemmas_glove_abs_diff 0.00386876659468
+freq_500_minus_mean 0.00383830373175
+len_word_ratio 0.00380784110166
+freq_200_minus_max 0.00377737847157
+freq_500_plus_max_min_ratio 0.00374691560864
+freq_50_plus_mean 0.00371645297855
+freq_500_minus_max_min_ratio 0.00371645297855
+tokens_token_set_ratio 0.00368599011563
+stems_sorensen 0.00365552748553
+tokens_levenshtein 0.00365552748553
+common_stems_ratio 0.00362506462261
+freq_100_plus_std 0.00362506462261
+freq_100_plus_max_min_ratio 0.00362506462261
+freq_500_plus_min 0.00362506462261
+freq_500_minus_max 0.00362506462261
+kur_vec_tokens_glove_log_ratio 0.00362506462261
+freq_100_plus_mean 0.0035336764995
+canberra_distance_lemmas_glove 0.00350321386941
+freq_200_plus_g_mean 0.00347275100648
+stems_QRatio 0.00344228837639
+freq_100_minus_g_mean 0.00344228837639
+len_char_diff 0.0034118257463
+freq_200_plus_max_min_ratio 0.0034118257463
+freq_500_plus_std 0.00338136288337
+lemmas_partial_token_sort_ratio 0.00332043739036
+freq_200_minus_mean 0.00328997476026
+word2vec_wmd_lemmas 0.00325951189734
+abi_wmd 0.00322904926725
+lemmas_token_set_ratio 0.00319858663715
+freq_200_plus_std 0.00319858663715
+canberra_distance_tokens_glove 0.00319858663715
+glove_norm_wmd_lemmas 0.00316812377423
+verbs_tfidf_share 0.00316812377423
+lemmas_levenshtein 0.00310719828121
+minkowski_distance_tokens_glove 0.00310719828121
+common_lemmas_ratio 0.0030462727882
+kur_q1vec_tokens_word2vec 0.0030462727882
+lex_wmd_lemmas 0.0030462727882
+freq_200_minus_g_mean 0.0030158101581
+lemmas_token_sort_ratio 0.00298534752801
+tokens_token_sort_ratio 0.00298534752801
+freq_200_plus_mean 0.00298534752801
+freq_100_plus_g_mean 0.00295488466509
+kur_vec_lemmas_glove_1div2_ratio 0.00295488466509
+skew_q2vec_tokens_word2vec 0.00292442203499
+tokens_QRatio 0.00289395917207
+wh1 0.00286349654198
+freq_1000_minus_len 0.00280257104896
+nouns_wmd 0.00280257104896
+len_word_expt_stop_ratio 0.00274164555594
+stems_levenshtein 0.00271118292585
+kur_vec_tokens_glove_1div2_ratio 0.00271118292585
+skew_q1vec_tokens_word2vec 0.00265025743283
+braycurtis_distance_tokens_glove 0.00261979456991
+cosine_distance_lemmas_glove 0.00261979456991
+canberra_distance_tokens_lex 0.00261979456991
+tokens_WRatio 0.00258933193982
+wh2 0.00258933193982
+common_stems_num 0.00255886930972
+canberra_distance_lemmas_lex 0.00255886930972
+braycurtis_distance_lemmas_glove 0.0025284064468
+kur_q2vec_tokens_word2vec 0.00249794381671
+stems_partial_token_sort_ratio 0.00246748095378
+minkowski_distance_lemmas_glove 0.00246748095378
+lemmas_WRatio 0.00243701832369
+cityblock_distance_lemmas_glove 0.00243701832369
+kur_vec_tokens_glove_q1_ratio 0.00243701832369
+cosine_distance_tokens_lex 0.0024065556936
+nouns_common_ratio 0.00237609283067
+verbs_tfidf_share_ratio 0.00231516733766
+kur_vec_lemmas_glove_q1_ratio 0.00228470470756
+tokens_partial_token_sort_ratio 0.00225424184464
+cosine_distance_tokens_glove 0.00225424184464
+cosine_distance_lemmas_word2vec 0.00219331658445
+abi_canberra_distance 0.00216285372153
+word2vec_norm_wmd_tokens 0.00207146559842
+stems_WRatio 0.0020410027355
+cosine_distance_lemmas_lex 0.0020105401054
+len_word_q1 0.00191915186588
+lemmas_QRatio 0.00191915186588
+minkowski_distance_tokens_lex 0.00191915186588
+minkowski_distance_lemmas_lex 0.00188868923578
+len_word_q2 0.00182776374277
+canberra_distance_lemmas_word2vec 0.00179730099626
+wh_same 0.00176683824975
+braycurtis_distance_tokens_lex 0.00176683824975
+verbs_norm_wmd 0.00176683824975
+abi_cosine_distance 0.00170591287315
+nouns_num_q2 0.00170591287315
+len_word_expt_stop_diff 0.00164498738013
+cityblock_distance_tokens_glove 0.00164498738013
+freq_1000_plus_len 0.00161452463362
+braycurtis_distance_lemmas_word2vec 0.0015231363941
+verbs_wmd 0.0015231363941
+common_lemmas_num_no_stops 0.0014622110175
+freq_50_plus_len 0.0014622110175
+nouns_num_q1 0.00137082277797
+canberra_distance_tokens_word2vec 0.00134036003146
+cityblock_distance_lemmas_word2vec 0.00134036003146
+cityblock_distance_tokens_lex 0.00134036003146
+braycurtis_distance_lemmas_lex 0.00134036003146
+word2vec_wmd_tokens 0.00127943465486
+len_word_expt_stop_q2 0.00124897190835
+len_word_expt_stop_q1 0.00121850916184
+freq_500_minus_len 0.00118804641534
+kur_vec_tokens_word2vec_q2_ratio 0.00112712092232
+minkowski_distance_lemmas_word2vec 0.00109665829223
+cityblock_distance_lemmas_lex 0.00109665829223
+len_word_diff 0.00106619554572
+cosine_distance_tokens_word2vec 0.00103573279921
+kur_vec_tokens_lex_q2_ratio 0.00103573279921
+freq_50_minus_len 0.0010052700527
+freq_500_plus_len 0.0010052700527
+common_lemmas_num 0.000974807306193
+freq_100_minus_len 0.000974807306193
+kur_vec_lemmas_lex_q2_ratio 0.000974807306193
+freq_100_plus_len 0.000944344617892
+abi_cityblock_distance 0.000852956436574
+abi_braycurtis_distance 0.000822493690066
+braycurtis_distance_tokens_word2vec 0.000822493690066
+abi_minkowski_distance 0.000792030943558
+verbs_common_num 0.000792030943558
+cityblock_distance_tokens_word2vec 0.000761568197049
+minkowski_distance_tokens_word2vec 0.000761568197049
+kur_vec_lemmas_word2vec_q2_ratio 0.000731105508748
+freq_200_plus_len 0.00070064276224
+freq_200_minus_len 0.000670180015732
+nouns_common_num 0.000670180015732
+verbs_common_ratio 0.000609254580922
+euclidean_distance_tokens_glove 0.000548329146113
+verbs_num_q1 0.000548329146113
+euclidean_distance_lemmas_lex 0.000517866399605
+aux_p_do##do 0.000517866399605
+verbs_num_q2 0.000487403653096
+aux_p_## 0.000426478218287
+euclidean_distance_lemmas_glove 0.000396015471779
+aux_p_is##is 0.000396015471779
+kur_vec_tokens_glove_q2_ratio 0.000396015471779
+kur_vec_lemmas_glove_q2_ratio 0.000396015471779
+aux_p_are##are 0.000335090007866
+euclidean_distance_lemmas_word2vec 0.000304627290461
+aux_p_do##are 0.000304627290461
+aux_p_is##is is 0.000304627290461
+abi_euclidean_distance 0.000274164573057
+euclidean_distance_tokens_lex 0.000274164573057
+aux_p_are## 0.000274164573057
+aux_p_is##are 0.000243701826548
+aux_p_do##can 0.000243701826548
+aux_p_should##do 0.000243701826548
+aux_p_was##was 0.000243701826548
+aux_p_is## 0.000213239109144
+aux_p_do## 0.000213239109144
+aux_p_do##should 0.000213239109144
+aux_p_does##does 0.000182776377187
+aux_p_##is 0.000182776377187
+aux_p_##do 0.000182776377187
+euclidean_distance_tokens_word2vec 0.000152313645231
+aux_p_does##is 0.000152313645231
+aux_p_is is##is 0.000152313645231
+aux_p_do##does 0.000121850913274
+aux_p_does## 0.000121850913274
+aux_p_does##are 0.000121850913274
+jaccard_distance_lemmas_glove 9.13881885936e-05
+aux_p_can##can 9.13881885936e-05
+aux_p_are##do 9.13881885936e-05
+aux_p_did##did 9.13881885936e-05
+aux_p_can## 9.13881885936e-05
+aux_p_would##would 9.13881885936e-05
+aux_p_is##does 6.09254566371e-05
+aux_p_##are 6.09254566371e-05
+aux_p_should##should 6.09254566371e-05
+aux_p_can##are 6.09254566371e-05
+aux_p_##can 6.09254566371e-05
+aux_p_will##will 6.09254566371e-05
+aux_p_does##can 6.09254566371e-05
+aux_p_##does 6.09254566371e-05
+jaccard_distance_tokens_glove 3.04627283185e-05
+jaccard_distance_lemmas_lex 3.04627283185e-05
+aux_p_are##is 3.04627283185e-05
+aux_p_can##do 3.04627283185e-05
+aux_p_do##is 3.04627283185e-05
+aux_p_is##can 3.04627283185e-05
+aux_p_does##do 3.04627283185e-05
+aux_p_is##should 3.04627283185e-05
+aux_p_is##was 3.04627283185e-05
+jaccard_distance_tokens_word2vec 0.0
+jaccard_distance_lemmas_word2vec 0.0
+jaccard_distance_tokens_lex 0.0
+aux_p_is##do 0.0
+aux_p_can##is 0.0
+aux_p_are##can 0.0
+aux_p_should##is 0.0
+aux_p_can##does 0.0
+aux_p_are should##are should 0.0
+aux_p_are##does 0.0
+aux_p_was##is 0.0
+skew_vec_tokens_word2vec_abs_diff 0.0
+skew_vec_tokens_word2vec_1div2_ratio 0.0
+skew_vec_tokens_word2vec_log_ratio 0.0
+skew_vec_tokens_word2vec_q1_ratio 0.0
+skew_vec_tokens_word2vec_q2_ratio 0.0
+skew_vec_tokens_glove_abs_diff 0.0
+skew_vec_tokens_glove_1div2_ratio 0.0
+skew_vec_tokens_glove_log_ratio 0.0
+skew_vec_tokens_glove_q1_ratio 0.0
+skew_vec_tokens_glove_q2_ratio 0.0
+skew_vec_tokens_lex_abs_diff 0.0
+skew_vec_tokens_lex_1div2_ratio 0.0
+skew_vec_tokens_lex_log_ratio 0.0
+skew_vec_tokens_lex_q1_ratio 0.0
+skew_vec_tokens_lex_q2_ratio 0.0
+skew_vec_lemmas_word2vec_abs_diff 0.0
+skew_vec_lemmas_word2vec_1div2_ratio 0.0
+skew_vec_lemmas_word2vec_log_ratio 0.0
+skew_vec_lemmas_word2vec_q1_ratio 0.0
+skew_vec_lemmas_word2vec_q2_ratio 0.0
+skew_vec_lemmas_glove_abs_diff 0.0
+skew_vec_lemmas_glove_1div2_ratio 0.0
+skew_vec_lemmas_glove_log_ratio 0.0
+skew_vec_lemmas_glove_q1_ratio 0.0
+skew_vec_lemmas_glove_q2_ratio 0.0
+skew_vec_lemmas_lex_abs_diff 0.0
+skew_vec_lemmas_lex_1div2_ratio 0.0
+skew_vec_lemmas_lex_log_ratio 0.0
+skew_vec_lemmas_lex_q1_ratio 0.0
+skew_vec_lemmas_lex_q2_ratio 0.0
