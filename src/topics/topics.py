@@ -24,7 +24,6 @@ data_folder = '../../../data/'
 topics_folder_fp = os.path.join(data_folder, '101_topics')
 topics_word2vec_fp =  os.path.join(data_folder, 'topics', 'topics_word2vec.csv')
 
-data_folder = '../../data/'
 
 fp_word2vec_model = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
 
