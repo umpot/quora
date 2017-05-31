@@ -636,15 +636,14 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 def fix_train_columns(train_df, test_df):
     new_test=test_df.copy()
-    new_test['tmp']=1
     for col in train_df.columns:
-        del new_test[col]
+        if col !=TARGET:
+            del new_test[col]
     for col in test_df.columns:
         new_test[col]=train_df[col]
 
-    del new_test['tmp']
 
-    ok = list(test_df.columns)==list(new_test.columns)
+    ok = list(test_df.columns[1:])==list(new_test.columns)
     if not ok:
         raise Exception('Features lists for train/test are different')
 
