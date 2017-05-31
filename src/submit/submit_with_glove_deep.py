@@ -655,7 +655,7 @@ def submit_xgb(name):
     print big.columns.values
     test_arr = small
 
-    estimator = xgb.XGBClassifier(n_estimators=2620,
+    estimator = xgb.XGBClassifier(n_estimators=2800,
                                   subsample=0.6,
                                   # colsample_bytree=0.8,
                                   max_depth=7,
