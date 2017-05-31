@@ -166,8 +166,10 @@ def sent2vec(s, model):
     v = M.sum(axis=0)
     return v / np.sqrt((v ** 2).sum())
 
-def create_vectors(model, df):
+def create_vectors():
     dim = 300
+    df = load_topics()
+    model = load_word2vec()
     vectors = np.zeros((df.shape[0], dim))
     for i, q in tqdm(enumerate(df[text].values)):
         vectors[i, :] = sent2vec(q, model)
@@ -176,3 +178,5 @@ def create_vectors(model, df):
     bl[label] = df[label]
 
     bl.to_csv(topics_word2vec_fp)
+
+
