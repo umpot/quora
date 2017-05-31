@@ -284,6 +284,9 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
         raise Exception('{} blja!'.format(train_test))
 
     df = load_train_for_embeddings() if train_test == 'train' else load_test_for_embeddings()
+
+    df=df.head(15000)
+
     index='id' if train_test=='train' else 'test_id'
 
     if type_of_cols == 'tokens':
