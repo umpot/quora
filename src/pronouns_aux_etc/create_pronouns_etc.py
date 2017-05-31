@@ -267,6 +267,7 @@ def write_aux_pairs_features():
         df[aux_pair_target_freq] = df[aux_pair].apply(get_aux_pair_freq)
         for s in pairs_list:
             col = 'aux_p_{}'.format(s)
+            print col, is_train
             if is_train:
                 new_cols.append(col)
             df[col]= df[aux_pair].apply(lambda x: 1 if x == s else 0)
