@@ -639,6 +639,8 @@ def get_all_cols_except_target(df):
 def fix_train_columns(train_df, test_df):
     if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
         raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
 
     new_test=test_df.copy()
     for col in train_df.columns:
