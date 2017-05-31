@@ -19,7 +19,7 @@ pd.set_option('display.width', 5000)
 pd.set_option('display.max_rows', 5000)
 pd.set_option('display.max_colwidth', 100)
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 topics_folder_fp = os.path.join(data_folder, '101_topics')
 topics_word2vec_fp =  os.path.join(data_folder, 'topics', 'topics_word2vec.csv')
