@@ -25,7 +25,7 @@ TARGET = 'label'
 qid1, qid2 = 'qid1', 'qid2'
 
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 topics_word2vec_fp=os.path.join(data_folder, 'topics', 'topics_word2vec.csv')
 
