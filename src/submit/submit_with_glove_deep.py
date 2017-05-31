@@ -661,7 +661,7 @@ def submit_xgb(name):
 
     train_df = fix_train_columns(train_df, test_df)
 
-    train_df, test_df = train_df.head(5000), test_df.head(5000)
+    # train_df, test_df = train_df.head(5000), test_df.head(5000)
 
 
     print explore_target_ratio(train_df)
