@@ -527,6 +527,18 @@ def add_kur_combinations(df):
 ############################################################3
 ############################################################3
 ############################################################3
+train_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'train_pos_metrics.csv')
+test_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'test_pos_metrics.csv')
+
+def load_metrics_on_pos_train():
+    return pd.read_csv(train_pos_metrics_fp, index_col='id')
+
+def load_metrics_on_pos_test():
+    return pd.read_csv(train_pos_metrics_fp, index_col='test_id')
+
+############################################################3
+############################################################3
+############################################################3
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -557,6 +569,7 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
+        load_metrics_on_pos_train()
         # load_upper_keywords_train()
     ], axis=1)
 
@@ -580,7 +593,8 @@ def load_train_all_xgb():
 #         load_max_k_cores_test(),
 #         load_word2vec_metrics_test(),
 #         load_glove_metrics_test(),
-#         load_lex_metrics_test()
+#         load_lex_metrics_test(),
+#     load_metrics_on_pos_train()
 #     ], axis=1)
 #
 #
