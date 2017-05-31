@@ -335,9 +335,9 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
             train_files = [
                               'blja_train_{}_metrics.csv'.format(x) for x in ['tokens', 'lemmas']
                           ]+[
-                              'blja_{}_{}_wmd.csv'.format(x, 'train') for x in ['tokens', 'lemmas']
+                              'blja_{}_{}_wmd.csv'.format('train', x) for x in ['tokens', 'lemmas']
                               ]+[
-                              'blja_{}_{}_norm_wmd.csv'.format(x, 'train') for x in ['tokens', 'lemmas']
+                              'blja_{}_{}_norm_wmd.csv'.format('train', x) for x in ['tokens', 'lemmas']
                               ]
 
             dfs = [pd.read_csv(fp, index_col=index) for fp in train_files]
@@ -349,9 +349,9 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
             test_files = [
                              'blja_test_{}_metrics.csv'.format(x) for x in ['tokens', 'lemmas']
                          ]+[
-                             'blja_{}_{}_wmd.csv'.format(x, 'test') for x in ['tokens', 'lemmas']
+                             'blja_{}_{}_wmd.csv'.format('test', x) for x in ['tokens', 'lemmas']
                              ]+[
-                             'blja_{}_{}_norm_wmd.csv'.format(x, 'test') for x in ['tokens', 'lemmas']
+                             'blja_{}_{}_norm_wmd.csv'.format('test', x) for x in ['tokens', 'lemmas']
                              ]
 
             dfs = [pd.read_csv(fp, index_col=index) for fp in test_files]
