@@ -206,6 +206,20 @@ Or I can multiply by some L and get better LB?
     1)Add features_like , skew1/(sk1+sk2), abs(sk1-sk2), sk1/sk2, sk2/sk1, abs(log(sk1/sk2))
     2)Read about skew + kur, why they are so important???
 
+
+70)q1_freq/q2_freq feature q1_freq-q2_freq etc
+freq in train/test
+
+71)upper_plus_freq_200 in top20 leverage!
+
+72)New basics
+
+73)New metrics on embedings L1, q1_l1, q2_l1, q1-g2
+Percentiles???
+mean\meadian ???, std
+Galton skewness
+Moments!!!!!!
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

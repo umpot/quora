@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 import json
-from time import sleep
+from time import sleep, time
 import traceback
 
 sns.set(color_codes=True)
@@ -45,7 +45,11 @@ def load_topics_w2v():
 
 
 def perform_xgb_cv():
+    t =time()
+    print "Loading data...."
     df = load_topics_w2v()
+    print "Loaded!"
+    print 'Time {}'.format(time()-t)
     folds =5
     seed = 42
 
@@ -79,6 +83,7 @@ def perform_xgb_cv():
                                       colsample_bytree=0.8,
                                       max_depth=5,
                                       objective='binary:logistic',
+                                      nthread=-1
                                       )
         print test_arr.columns.values
         print len(train_arr)
