@@ -304,7 +304,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
 
         process_metrics(df, col1, col2, type_of_cols, embed_name, model)
         del_trash_cols(df)
-        df.to_csv('blja_{}_metrics.csv'.format(train_test), index_label=index)
+        df.to_csv('blja_{}_{}_metrics.csv'.format(train_test, type_of_cols), index_label=index)
 
     elif operation=='norm_wmd':
 
@@ -333,7 +333,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
     elif operation=='combine':
         if train_test=='train':
             train_files = [
-                              'blja_train_metrics.csv'
+                              'blja_train_{}_metrics.csv'.format(x) for x in ['tokens', 'lemmas']
                           ]+[
                               'blja_{}_{}_wmd.csv'.format(x, 'train') for x in ['tokens', 'lemmas']
                               ]+[
@@ -347,7 +347,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
 
         elif train_test=='test':
             test_files = [
-                             'blja_test_metrics.csv'
+                             'blja_test_{}_metrics.csv'.format(x) for x in ['tokens', 'lemmas']
                          ]+[
                              'blja_{}_{}_wmd.csv'.format(x, 'test') for x in ['tokens', 'lemmas']
                              ]+[
