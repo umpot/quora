@@ -642,19 +642,15 @@ def fix_train_columns(train_df, test_df):
     else:
         print 'SETS of cols are equal'
 
-    new_test=test_df.copy()
-    for col in train_df.columns:
-        if col !=TARGET:
-            del new_test[col]
-    for col in test_df.columns:
-        new_test[col]=train_df[col]
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
 
 
-    ok = list(test_df.columns[1:])==list(new_test.columns)
+    ok = list(test_df.columns[1:])==list(train_df.columns)
     if not ok:
         raise Exception('Features LISTS for train/test are different')
 
-    return new_test
+    return train_df
 
 
 
