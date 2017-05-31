@@ -679,7 +679,7 @@ def submit_xgb(name):
     print train_df.columns.values
     test_arr = test_df
 
-    estimator = xgb.XGBClassifier(n_estimators=100,#2800
+    estimator = xgb.XGBClassifier(n_estimators=2800,
                                   subsample=0.6,
                                   # colsample_bytree=0.8,
                                   max_depth=7,
