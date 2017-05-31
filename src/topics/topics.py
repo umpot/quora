@@ -179,4 +179,6 @@ def create_vectors():
 
     bl.to_csv(topics_word2vec_fp)
 
+create_vectors()
+
 
