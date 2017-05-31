@@ -242,7 +242,7 @@ aux_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_test.
 def write_aux_pairs_features():
     train_df, test_df = pd.concat([load_train_tokens(), load_train()], axis=1), load_test_tokens()
 
-    train_df, test_df = train_df.head(5000), test_df.head(5000)
+    # train_df, test_df = train_df.head(5000), test_df.head(5000)
 
     create_aux_features_df(train_df)
     create_aux_features_df(test_df)
