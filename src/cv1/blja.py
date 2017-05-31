@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../../data/'
+data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -502,12 +502,12 @@ def load_word2vec_metrics_test():
 ############################################################3
 ############################################################3
 ############################################################3
-embedings_list=['word2vec', 'glove', 'lex']
+embedings_list=['glove']
 column_types = ['tokens', 'lemmas']
 kur_pairs=[
     ('kur_q1vec_{}_{}'.format(col_type,emb), 'kur_q2vec_{}_{}'.format(col_type,emb))
     for col_type in column_types for emb in embedings_list
-]
+    ]
 
 skew_pairs=[
     ('skew_q1vec_{}_{}'.format(col_type,emb), 'skew_q2vec_{}_{}'.format(col_type,emb))
@@ -517,6 +517,7 @@ skew_pairs=[
 
 def add_kur_combinations(df):
     for col1, col2 in kur_pairs+skew_pairs:
+        print col1, col2
         name = col1.replace('q1', '')
         df['{}_abs_diff'.format(name)]=np.abs(df[col1]-df[col2])
         df['{}_1div2_ratio'.format(name)]= df[col1]/df[col2]
@@ -555,27 +556,16 @@ password='nfrf[eqyz'
 
 def load_train_all_xgb():
     train_df = pd.concat([
-        load_train(),
-        load_train_lengths(),
-        load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf(),
-        load_train_magic(),
-        load_wh_train(),
-        load_one_upper_train(),
-        load_topNs_avg_tok_freq_train(),
-        load_abi_train(),
-        load_max_k_cores_train(),
-        load_word2vec_metrics_train(),
+        # load_word2vec_metrics_train(),
         load_glove_metrics_train(),
-        load_lex_metrics_train(),
-        load_metrics_on_pos_train()
+        # load_lex_metrics_train(),
+        # load_metrics_on_pos_train()
         # load_upper_keywords_train()
     ], axis=1)
 
-    cols_to_del = [qid1, qid2, question1, question2]
-    for col in cols_to_del:
-        del train_df[col]
+    # cols_to_del = [qid1, qid2, question1, question2]
+    # for col in cols_to_del:
+    #     del train_df[col]
 
     return train_df
 
@@ -658,10 +648,12 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 
 
-def perform_xgb_cv(name, mongo_host):
+def perform_xgb_cv(name=None, mongo_host=None):
     df = load_train_all_xgb()
-    del_trash_cols(df)
+    # del_trash_cols(df)
     add_kur_combinations(df)
+
+    return df
     folds =5
     seed = 42
 
@@ -735,14 +727,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='new_light_bench'
-perform_xgb_cv(name, gc_host)
 
-
-
-print '============================'
-print 'DONE!'
-print '============================'
 
 
 

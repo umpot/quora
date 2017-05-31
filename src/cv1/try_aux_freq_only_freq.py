@@ -507,10 +507,10 @@ column_types = ['tokens', 'lemmas']
 kur_pairs=[
     ('kur_q1vec_{}_{}'.format(col_type,emb), 'kur_q2vec_{}_{}'.format(col_type,emb))
     for col_type in column_types for emb in embedings_list
-]
+    ]
 
 skew_pairs=[
-    ('skew_q1vec_{}_{}'.format(col_type,emb), 'skew_q2vec_{}_{}'.format(col_type,emb))
+    ('skew_q1vec_{}_{}'.format(col_type,emb), 'skew_q1vec_{}_{}'.format(col_type,emb))
     for col_type in column_types for emb in embedings_list
     ]
 
@@ -527,6 +527,19 @@ def add_kur_combinations(df):
 ############################################################3
 ############################################################3
 ############################################################3
+aux_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_train.csv')
+aux_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_test.csv')
+aux_pair_target_freq = 'aux_pair_target_freq'
+def load_aux_pairs_50_train():
+    return pd.read_csv(aux_pairs_50_train_fp, index_col='id')[[aux_pair_target_freq]]
+
+def load_aux_pairs_50_test():
+    return pd.read_csv(aux_pairs_50_test_fp, index_col='test_id')
+
+############################################################3
+############################################################3
+############################################################3
+
 train_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'train_pos_metrics.csv')
 test_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'test_pos_metrics.csv')
 
@@ -569,7 +582,8 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
-        load_metrics_on_pos_train()
+        load_metrics_on_pos_train(),
+        load_aux_pairs_50_train()
         # load_upper_keywords_train()
     ], axis=1)
 
@@ -735,7 +749,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='new_light_bench'
+name='try_aux_freq_only_freq'
 perform_xgb_cv(name, gc_host)
 
 
