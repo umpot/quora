@@ -48,6 +48,9 @@ def perform_xgb_cv():
     t =time()
     print "Loading data...."
     df = load_topics_w2v()
+    df = shuffle_df(df)
+    df = df.heaD(100000)
+
     print "Loaded!"
     print 'Time {}'.format(time()-t)
     folds =5
