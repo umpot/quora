@@ -633,8 +633,13 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
         raise
         # sleep(20)
 
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
 
 def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+
     new_test=test_df.copy()
     for col in train_df.columns:
         if col !=TARGET:
@@ -645,7 +650,7 @@ def fix_train_columns(train_df, test_df):
 
     ok = list(test_df.columns[1:])==list(new_test.columns)
     if not ok:
-        raise Exception('Features lists for train/test are different')
+        raise Exception('Features LISTS for train/test are different')
 
     return new_test
 
