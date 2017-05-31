@@ -91,3 +91,6 @@ def perform_xgb_cv():
             verbose=True,
             early_stopping_rounds=150
         )
+
+
+perform_xgb_cv()
