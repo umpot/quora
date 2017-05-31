@@ -10,6 +10,7 @@ apt-get -y install unzip
 apt-get -y install htop
 apt-get -y install nmap
 apt-get -y install libcupti-dev
+apt-get install zip gzip tar
 
 #git lfs
 wget https://github.com/git-lfs/git-lfs/releases/download/v2.1.0/git-lfs-linux-amd64-2.1.0.tar.gz

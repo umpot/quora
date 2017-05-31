@@ -2,6 +2,8 @@ from time import time
 
 import gensim
 import os
+
+from gensim.models import Word2Vec
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 stop_words = stopwords.words('english')
@@ -86,22 +88,13 @@ def load_test_for_embeddings():
 ##########################################################################
 
 
-glove_model_fp = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
 glove_wmd_tokens='glove_wmd_tokens'
 glove_norm_wmd_tokens='glove_norm_wmd_tokens'
 
 glove_wmd_lemmas='glove_wmd_lemmas'
 glove_norm_wmd_lemmas='glove_norm_wmd_lemmas'
 
-def load_glove():
-    model= gensim.models.KeyedVectors.load_word2vec_format(glove_model_fp)#, binary=True
-    # model.init_sims(replace=True) # normalizes vectors
-    return model
 
-def load_norm_glove():
-    model= gensim.models.KeyedVectors.load_word2vec_format(glove_model_fp)#, binary=True
-    model.init_sims(replace=True) # normalizes vectors
-    return model
 
 counter=0
 def wmd(s1, s2, model):
@@ -152,21 +145,10 @@ def sent2vec(s, model):
     return v / np.sqrt((v ** 2).sum())
 
 
-def process_wmd(df, model, norm_model):
-    print 'wmd'
-    df[glove_wmd_tokens] = df.apply(lambda row: wmd(row[question1], row[question2], model), axis=1)
-    df[glove_wmd_lemmas] = df.apply(lambda row: wmd(row[lemmas_q1], row[lemmas_q2], model), axis=1)
-
-    df[glove_norm_wmd_tokens] = df.apply(lambda row: wmd(row[question1], row[question2], norm_model), axis=1)
-    df[glove_norm_wmd_lemmas] = df.apply(lambda row: wmd(row[lemmas_q1], row[lemmas_q2], norm_model), axis=1)
-
 def process_wmd_one_model(df, model, col1, col2, embed_name, operation, type_of_cols):
     print 'wmd'
     new_col = '{}_{}_{}'.format(embed_name, operation, type_of_cols)
     df[new_col] = df.apply(lambda row: wmd(row[col1], row[col2], model), axis=1)
-
-glove_train_fp = os.path.join(data_folder, 'embeddings', 'glove_train.csv')
-glove_test_fp = os.path.join(data_folder, 'embeddings', 'glove_test.csv')
 
 def write_train(train_df, fp_train):
     del_trash_cols(train_df)
@@ -244,36 +226,69 @@ def del_trash_cols(df):
         if col in df.columns:
             del df[col]
 
-def process_train_test(model, norm_model, name, fp_train, fp_test):
-    train_df, test_df = load_train_for_embeddings(), load_test_for_embeddings()
-    # train_df, test_df = train_df.head(1000), test_df.head(1000)
 
-    for df in [train_df]:
-        process_wmd(df, model, norm_model)
-        process_metrics(df, question1, question2, 'tokens', name, model)
-        process_metrics(df, lemmas_q1, lemmas_q2, 'lemmas', name, model)
-    write_train(train_df, fp_train)
+freebase_model_fp='/media/ubik/8cc52b52-b1bd-4eb6-a3ee-1b1a4adbc96c/freebase-vectors-skipgram1000-en.bin'
+word2vec_model_fp = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
+glove_model_fp = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
 
-    for df in [test_df]:
-        process_wmd(df, model, norm_model)
-        process_metrics(df, question1, question2, 'tokens', name, model)
-        process_metrics(df, lemmas_q1, lemmas_q2, 'lemmas', name, model)
-    write_test(test_df, fp_test)
+############################################################################
+word2vec_train_fp = os.path.join(data_folder, 'embeddings', 'word2vec_train.csv')
+word2vec_test_fp = os.path.join(data_folder, 'embeddings', 'word2vec_test.csv')
+def load_word2vec():
+    model= gensim.models.KeyedVectors.load_word2vec_format(word2vec_model_fp, binary=True)
+    return model
+
+def load_norm_word2vec():
+    model= gensim.models.KeyedVectors.load_word2vec_format(word2vec_model_fp, binary=True)
+    model.init_sims(replace=True) # normalizes vectors
+
+    return model
+############################################################################
 
 
-def process_train_test_glove():
-    print 'Loading Glove...'
-    model = load_glove()
+def load_freebase():
+    model= gensim.models.KeyedVectors.load_word2vec_format(freebase_model_fp, binary=True)#, binary=True
+    # model = Word2Vec.load_word2vec_format(freebase_model_fp, binary=True)
+    return model
 
-    print 'Loading norm Glove...'
-    norm_model = load_norm_glove()
-    process_train_test(model, norm_model, 'glove', glove_train_fp, glove_test_fp)
+############################################################################
+glove_train_fp = os.path.join(data_folder, 'embeddings', 'glove_train.csv')
+glove_test_fp = os.path.join(data_folder, 'embeddings', 'glove_test.csv')
+def load_glove():
+    model= gensim.models.KeyedVectors.load_word2vec_format(glove_model_fp)#, binary=True
+    # model.init_sims(replace=True) # normalizes vectors
+    return model
+
+def load_norm_glove():
+    model= gensim.models.KeyedVectors.load_word2vec_format(glove_model_fp)#, binary=True
+    model.init_sims(replace=True) # normalizes vectors
+    return model
+
+############################################################################
+
+
+
+
+def get_model(name):
+    if name=='glove':
+        return load_glove()
+    elif name == 'word2vec':
+        return load_word2vec()
+
+def get_norm_model(name):
+    if name=='glove':
+        return load_norm_glove()
+    elif name == 'word2vec':
+        return load_norm_word2vec()
+
+def get_res_files_names(name):
+    if name == 'glove':
+        return glove_train_fp, glove_test_fp
+    elif name == 'word2vec':
+        return word2vec_train_fp, word2vec_test_fp
 
 def process_paralell(train_test, embed_name, operation, type_of_cols):
-    embed_name = 'glove'
-
-    if embed_name=='glove':
-        res_train_fp, res_test_fp = glove_train_fp, glove_test_fp
+    res_train_fp, res_test_fp = get_res_files_names(embed_name)
 
     if operation not in ['wmd', 'norm_wmd', 'metrics', 'combine']:
         raise Exception('{} blja!'.format(operation))
@@ -298,7 +313,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
 
         print 'Loading model...'
         t=time()
-        model = load_glove()
+        model = get_model(embed_name)
         print 'Loaded!!'
         print 'Time {}'.format(time()-t)
 
@@ -310,7 +325,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
 
         print 'Loading model...'
         t=time()
-        model = load_norm_glove()
+        model = get_norm_model(embed_name)
         print 'Loaded!!'
         print 'Time {}'.format(time()-t)
 
@@ -322,7 +337,7 @@ def process_paralell(train_test, embed_name, operation, type_of_cols):
 
         t=time()
         print 'Loading model...'
-        model = load_glove()
+        model = get_model(embed_name)
         print 'Loaded!!'
         print 'Time {}'.format(time()-t)
 
