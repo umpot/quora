@@ -49,7 +49,7 @@ def perform_xgb_cv():
     print "Loading data...."
     df = load_topics_w2v()
     df = shuffle_df(df)
-    df = df.heaD(100000)
+    df = df.head(100000)
 
     print "Loaded!"
     print 'Time {}'.format(time()-t)
