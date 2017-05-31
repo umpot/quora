@@ -548,14 +548,12 @@ def load_abi_test():
 
 train_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'train_pos_metrics.csv')
 test_pos_metrics_fp=os.path.join(data_folder, 'pos_metrics', 'test_pos_metrics.csv')
-############################################################3
-############################################################3
-############################################################3
+
 def load_metrics_on_pos_train():
     return pd.read_csv(train_pos_metrics_fp, index_col='id')
 
 def load_metrics_on_pos_test():
-    return pd.read_csv(train_pos_metrics_fp, index_col='test_id')
+    return pd.read_csv(test_pos_metrics_fp, index_col='test_id')
 
 
 max_k_cores_train_fp=os.path.join(data_folder,'magic' ,'max_k_cores_train.csv')
@@ -674,8 +672,8 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
-        load_aux_pairs_50_train(),
-        load_metrics_on_pos_train()
+        load_aux_pairs_50_train()
+        # load_metrics_on_pos_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -699,8 +697,8 @@ def load_test_all_xgb():
         load_word2vec_metrics_test(),
         load_glove_metrics_test(),
         load_lex_metrics_test(),
-        load_aux_pairs_50_test(),
-        load_metrics_on_pos_test()
+        load_aux_pairs_50_test()
+        # load_metrics_on_pos_test()
     ], axis=1)
 
 
