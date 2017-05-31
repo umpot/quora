@@ -20,9 +20,9 @@ def run(instance_name, zone, folder, files, destination='.'):
 
 
 
-instance_name = 'kg1'
+instance_name = 'kg2'
 zone='us-west1-b'
-folder='/home/dd_petrovskiy/kg/quora/src/glove'
+folder='/home/dd_petrovskiy/kg/data/embeddings'
 
 
 
@@ -31,6 +31,6 @@ folder='/home/dd_petrovskiy/kg/quora/src/glove'
 destination='.'
 
 files = [
-    'nohup.out'
+    'glove_test.csv'
 ]
 run(instance_name, zone, folder, files, destination)
