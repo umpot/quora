@@ -216,16 +216,21 @@ def load_train_test():
 def load_train_lemmas():
     df = pd.read_csv(lemmas_train_fp, index_col='id')
     df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+
     for col in [lemmas_q1, lemmas_q2]:
-        df[col] = df[col].apply(str)
+        df[col] = df[col].apply(del_pron)
     return df
 
 
 def load_test_lemmas():
     df = pd.read_csv(lemmas_test_fp, index_col='test_id')
     df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
     for col in [lemmas_q1, lemmas_q2]:
-        df[col] = df[col].apply(str)
+        df[col] = df[col].apply(del_pron)
     return df
 
 

@@ -198,6 +198,14 @@ Or I can multiply by some L and get better LB?
 
 68)s more frequently in q1 or q2 feature (train/test)
 
+
+69)Very important features:
+"abi_skew_q2vec"
+"abi_kur_q1vec"
+
+    1)Add features_like , skew1/(sk1+sk2), abs(sk1-sk2), sk1/sk2, sk2/sk1, abs(log(sk1/sk2))
+    2)Read about skew + kur, why they are so important???
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

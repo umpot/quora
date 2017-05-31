@@ -66,16 +66,21 @@ def load_test():
 def load_train_lemmas():
     df = pd.read_csv(lemmas_train_fp, index_col='id')
     df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+
     for col in [lemmas_q1, lemmas_q2]:
-        df[col] = df[col].apply(str)
+        df[col] = df[col].apply(del_pron)
     return df
 
 
 def load_test_lemmas():
     df = pd.read_csv(lemmas_test_fp, index_col='test_id')
     df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
     for col in [lemmas_q1, lemmas_q2]:
-        df[col] = df[col].apply(str)
+        df[col] = df[col].apply(del_pron)
     return df
 
 
@@ -230,6 +235,8 @@ def del_trash_cols(df):
 freebase_model_fp='/media/ubik/8cc52b52-b1bd-4eb6-a3ee-1b1a4adbc96c/freebase-vectors-skipgram1000-en.bin'
 word2vec_model_fp = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
 glove_model_fp = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
+fasttext_model_fp=os.path.join(data_folder, 'wiki.en')
+lex_model_fp = os.path.join(data_folder, 'lexvec.commoncrawl.300d.W+C.pos.vectors.gz')
 
 ############################################################################
 word2vec_train_fp = os.path.join(data_folder, 'embeddings', 'word2vec_train.csv')
@@ -265,27 +272,63 @@ def load_norm_glove():
     return model
 
 ############################################################################
+from gensim.models.wrappers import FastText
+
+fasttext_train_fp = os.path.join(data_folder, 'embeddings', 'fasttext_train.csv')
+fasttext_test_fp = os.path.join(data_folder, 'embeddings', 'fasttext_test.csv')
 
 
+def load_fasttext():
+    model = FastText.load_fasttext_format(fasttext_model_fp)
+    return model
+
+def load_norm_fasttext():
+    model = FastText.load_fasttext_format(fasttext_model_fp)
+    model.init_sims(replace=True)
+    return model
+############################################################################
+lex_train_fp = os.path.join(data_folder, 'embeddings', 'lex_train.csv')
+lex_test_fp = os.path.join(data_folder, 'embeddings', 'lex_test.csv')
 
 
+def load_lex():
+    model= gensim.models.KeyedVectors.load_word2vec_format(f)
+    return model
+
+def load_norm_lex():
+    model= gensim.models.KeyedVectors.load_word2vec_format(f)
+    model.init_sims(replace=True)
+    return model
+############################################################################
 def get_model(name):
     if name=='glove':
         return load_glove()
     elif name == 'word2vec':
         return load_word2vec()
+    elif name=='fasttext':
+        return load_fasttext()
+    elif name == 'lex':
+        return load_lex()
 
 def get_norm_model(name):
     if name=='glove':
         return load_norm_glove()
     elif name == 'word2vec':
         return load_norm_word2vec()
+    elif name=='fasttext':
+        return load_norm_fasttext()
+    elif name == 'lex':
+        return load_norm_lex()
 
 def get_res_files_names(name):
     if name == 'glove':
         return glove_train_fp, glove_test_fp
     elif name == 'word2vec':
         return word2vec_train_fp, word2vec_test_fp
+    elif name=='fasttext':
+        return fasttext_train_fp, fasttext_test_fp
+    elif name=='lex':
+        return lex_train_fp, lex_test_fp
 
 def process_paralell(train_test, embed_name, operation, type_of_cols):
     res_train_fp, res_test_fp = get_res_files_names(embed_name)

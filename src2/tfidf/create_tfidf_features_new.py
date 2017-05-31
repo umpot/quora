@@ -162,29 +162,6 @@ def load_test_nlp():
     ], axis=1)
 
 
-# def tfidf_word_match_share(q1, q2, stops, weights):
-#     q1words = {}
-#     q2words = {}
-#     for word in q1:
-#         if word not in stops:
-#             q1words[word] = 1
-#     for word in q2:
-#         if word not in stops:
-#             q2words[word] = 1
-#     if len(q1words) == 0 or len(q2words) == 0:
-#         # The computer-generated chaff includes a few questions that are nothing but stopwords
-#         return 0
-#
-#     shared_weights = [weights.get(w, 0) for w in q1words.keys() if w in q2words] + [weights.get(w, 0) for w in q2words.keys() if w in q1words]
-#
-#     w1 = [weights.get(w, 0) for w in q1words]
-#     w2 = [weights.get(w, 0) for w in q2words]
-#     total_weights = w1 + w2
-#
-#     R = np.sum(shared_weights) / np.sum(total_weights)
-#     return R
-
-
 
 def process_idf_statistics(q1, q2, weights):
     w1=[weights.get(x,0) for x in q1]
