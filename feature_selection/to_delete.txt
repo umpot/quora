@@ -4,115 +4,110 @@
 
 
 
-    "w_share_ratio_2_std_idf_dirty_lower_no_stops",
-    3.6988540159654804e-06
-  =============================,
-  =============================
-    "w_share_ratio_2_smooth_idf_dirty_upper",
-    3.6988540159654804e-06
-  =============================,
-  =============================
-    "w_share_ratio_2_std_idf_tokens_lower_no_stops",
-    3.6988540159654804e-06
-  =============================,
-  =============================
-    "abi_jaccard_distance",
-    3.6988540159654804e-06
-  =============================,
-  =============================
-    "len_char_diff_log",
-    0.0
-  =============================,
-  =============================
-    "len_word_diff_log",
-    0.0
-  =============================,
-  =============================
-    "len_word_expt_stop_diff_log",
-    0.0
-  =============================,
-  =============================
-    "stop_words_num_q1",
-    0.0
-  =============================,
-  =============================
-    "stop_words_num_q2",
-    0.0
-  =============================,
-  =============================
-    "lemmas_kulsinski",
-    0.0
-  =============================,
-  =============================
-    "lemmas_dice",
-    0.0
-  =============================,
-  =============================
-    "lemmas_jaccard",
-    0.0
-  =============================,
-  =============================
-    "stems_kulsinski",
-    0.0
-  =============================,
-  =============================
-    "stems_dice",
-    0.0
-  =============================,
-  =============================
-    "stems_jaccard",
-    0.0
-  =============================,
-  =============================
-    "tokens_dice",
-    0.0
-  =============================,
-  =============================
-    "tokens_jaccard",
-    0.0
-  =============================,
-  =============================
-    "lemmas_partial_token_set_ratio",
-    0.0
-  =============================,
-  =============================
-    "stems_partial_token_set_ratio",
-    0.0
-  =============================,
-  =============================
-    "tokens_partial_token_set_ratio",
-    0.0
-  =============================,
-  =============================
-    "lemmas_distance.jaccard",
-    0.0
-  =============================,
-  =============================
-    "stems_distance.jaccard",
-    0.0
-  =============================,
-  =============================
-    "tokens_distance.jaccard",
-    0.0
-  =============================,
-  =============================
-    "w_share_ratio_2_smooth_idf_dirty_lower_no_stops",
-    0.0
-  =============================,
-  =============================
-    "w_share_ratio_2_std_idf_dirty_upper",
-    0.0
-  =============================,
-  =============================
-    "w_share_ratio_2_smooth_idf_tokens_lower",
-    0.0
-  =============================,
-  =============================
-    "w_share_ratio_2_std_idf_tokens_lower",
-    0.0
-  =============================,
-  =============================
-    "w_share_ratio_2_smooth_idf_tokens_lower_no_stops",
-    0.0
-  =============================
-=============================
+    "w_share_ratio_2_std_idf_dirty_lower_no_stops"
+
+  
+    "w_share_ratio_2_smooth_idf_dirty_upper"
+
+  
+    "w_share_ratio_2_std_idf_tokens_lower_no_stops"
+
+  
+    "abi_jaccard_distance"
+
+  
+    "len_char_diff_log"
+    
+  
+  
+    "len_word_diff_log"
+    
+  
+  
+    "len_word_expt_stop_diff_log"
+    
+  
+  
+    "stop_words_num_q1"
+    
+  
+  
+    "stop_words_num_q2"
+    
+  
+  
+    "lemmas_kulsinski"
+    
+  
+  
+    "lemmas_dice"
+    
+  
+  
+    "lemmas_jaccard"
+    
+  
+  
+    "stems_kulsinski"
+    
+  
+  
+    "stems_dice"
+    
+  
+  
+    "stems_jaccard"
+    
+  
+  
+    "tokens_dice"
+    
+  
+  
+    "tokens_jaccard"
+    
+  
+  
+    "lemmas_partial_token_set_ratio"
+    
+  
+  
+    "stems_partial_token_set_ratio"
+    
+  
+  
+    "tokens_partial_token_set_ratio"
+    
+  
+  
+    "lemmas_distance.jaccard"
+    
+  
+  
+    "stems_distance.jaccard"
+    
+  
+  
+    "tokens_distance.jaccard"
+    
+  
+  
+    "w_share_ratio_2_smooth_idf_dirty_lower_no_stops"
+    
+  
+  
+    "w_share_ratio_2_std_idf_dirty_upper"
+    
+  
+  
+    "w_share_ratio_2_smooth_idf_tokens_lower"
+    
+  
+  
+    "w_share_ratio_2_std_idf_tokens_lower"
+    
+  
+  
+    "w_share_ratio_2_smooth_idf_tokens_lower_no_stops"
+    
+  
