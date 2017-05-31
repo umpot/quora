@@ -646,7 +646,7 @@ def fix_train_columns(train_df, test_df):
     train_df=train_df[[TARGET]+[x for x in test_df.columns]]
 
 
-    ok = list(test_df.columns[1:])==list(train_df.columns)
+    ok = list(train_df.columns[1:])==list(test_df.columns)
     if not ok:
         raise Exception('Features LISTS for train/test are different')
 
