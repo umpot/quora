@@ -219,6 +219,7 @@ Percentiles???
 mean\meadian ???, std
 Galton skewness
 Moments!!!!!!
+Pearson a second skewness coefficient:
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 

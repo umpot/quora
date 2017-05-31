@@ -94,7 +94,8 @@ def perform_xgb_cv():
             eval_set=eval_set,
             eval_metric='merror',
             verbose=True,
-            early_stopping_rounds=150
+            early_stopping_rounds=150,
+            verbose=True
         )
 
 
