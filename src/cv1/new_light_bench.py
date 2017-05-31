@@ -477,6 +477,31 @@ def load_glove_metrics_test():
 ############################################################3
 ############################################################3
 ############################################################3
+lex_train_fp = os.path.join(data_folder, 'embeddings', 'lex_train.csv')
+lex_test_fp = os.path.join(data_folder, 'embeddings', 'lex_test.csv')
+
+def load_lex_metrics_train():
+    return pd.read_csv(lex_train_fp, index_col='id')
+
+
+def load_lex_metrics_test():
+    return pd.read_csv(lex_test_fp, index_col='test_id')
+############################################################3
+############################################################3
+############################################################3
+word2vec_train_fp = os.path.join(data_folder, 'embeddings', 'word2vec_train.csv')
+word2vec_test_fp = os.path.join(data_folder, 'embeddings', 'word2vec_test.csv')
+
+
+def load_word2vec_metrics_train():
+    return pd.read_csv(word2vec_train_fp, index_col='id')
+
+
+def load_word2vec_metrics_test():
+    return pd.read_csv(word2vec_test_fp, index_col='test_id')
+############################################################3
+############################################################3
+############################################################3
 embedings_list=['word2vec', 'glove', 'lex']
 column_types = ['tokens', 'lemmas']
 kur_pairs=[
@@ -489,8 +514,15 @@ skew_pairs=[
     for col_type in column_types for emb in embedings_list
     ]
 
-skew_q1vec_tokens_glove
+
 def add_kur_combinations(df):
+    for col1, col2 in kur_pairs+skew_pairs:
+        name = col1.replace('q1', '')
+        df['{}_abs_diff'.format(name)]=np.abs(df[col1]-df[col2])
+        df['{}_1div2_ratio'.format(name)]= df[col1]/df[col2]
+        df['{}_log_ratio'.format(name)]= np.abs(np.log(df[col1]/df[col2]))
+        df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
+        df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
 
 ############################################################3
 ############################################################3
@@ -522,7 +554,9 @@ def load_train_all_xgb():
         load_topNs_avg_tok_freq_train(),
         load_abi_train(),
         load_max_k_cores_train(),
-        load_glove_metrics_train()
+        load_word2vec_metrics_train(),
+        load_glove_metrics_train(),
+        load_lex_metrics_train(),
         # load_upper_keywords_train()
     ], axis=1)
 
@@ -532,23 +566,25 @@ def load_train_all_xgb():
 
     return train_df
 
-def load_test_all_xgb():
-    test_df = pd.concat([
-        load_test_lengths(),
-        load_test_common_words(),
-        load__test_metrics(),
-        load_train_tfidf(),
-        load_test_magic(),
-        load_wh_test(),
-        load_one_upper_test(),
-        load_topNs_avg_tok_freq_test(),
-        load_abi_test(),
-        load_max_k_cores_test(),
-        load_glove_metrics_test()
-    ], axis=1)
-
-
-    return test_df
+# def load_test_all_xgb():
+#     test_df = pd.concat([
+#         load_test_lengths(),
+#         load_test_common_words(),
+#         load__test_metrics(),
+#         load_train_tfidf(),
+#         load_test_magic(),
+#         load_wh_test(),
+#         load_one_upper_test(),
+#         load_topNs_avg_tok_freq_test(),
+#         # load_abi_test(),
+#         load_max_k_cores_test(),
+#         load_word2vec_metrics_test(),
+#         load_glove_metrics_test(),
+#         load_lex_metrics_test()
+#     ], axis=1)
+#
+#
+#     return test_df
 
 def plot_errors(imp):
     train_runs= [x['train'] for x in imp]
@@ -610,6 +646,8 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 
 def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
+    del_trash_cols(df)
+    add_kur_combinations(df)
     folds =5
     seed = 42
 
