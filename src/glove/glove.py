@@ -292,11 +292,11 @@ lex_test_fp = os.path.join(data_folder, 'embeddings', 'lex_test.csv')
 
 
 def load_lex():
-    model= gensim.models.KeyedVectors.load_word2vec_format(f)
+    model= gensim.models.KeyedVectors.load_word2vec_format(lex_model_fp)
     return model
 
 def load_norm_lex():
-    model= gensim.models.KeyedVectors.load_word2vec_format(f)
+    model= gensim.models.KeyedVectors.load_word2vec_format(lex_model_fp)
     model.init_sims(replace=True)
     return model
 ############################################################################
