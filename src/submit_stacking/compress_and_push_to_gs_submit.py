@@ -10,7 +10,7 @@ script_name = sys.argv[2]
 archive_name = '{}_{}.tar.gz'.format(name, get_time_str())
 descr_fp = 'descr.txt'
 probs_fp='probs.csv'
-bucket = 'gs://ubbikk/stacking/'
+bucket = 'gs://ubbikk/submit_stacking/'
 
 # tar -cvzf may_arch.tar.gz my_folder
 code=subprocess.call(['mkdir', name])

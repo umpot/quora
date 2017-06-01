@@ -141,6 +141,11 @@ def add_kur_combinations(df):
         df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
         df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
 
+
+def preprocess_df(df):
+    del_trash_cols(df)
+    add_kur_combinations(df)
+
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -640,10 +645,13 @@ def load_test_all_xgb():
 
     return test_df
 
-def preprocess_df(df):
-    del_trash_cols(df)
-    add_kur_combinations(df)
 
+
+
+
+#STACKING
+################################################3
+################################################3
 def get_update_df():
     df = load_train()
     cols_to_del = [qid1, qid2, question1, question2]
@@ -651,6 +659,7 @@ def get_update_df():
         del df[col]
 
     return df
+
 
 def perform_xgb_cv(name, mongo_host):
     seed = 42
@@ -742,6 +751,10 @@ perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
 
 done()
+
+#STACKING
+################################################3
+################################################3
 
 
 

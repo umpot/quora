@@ -141,6 +141,12 @@ def add_kur_combinations(df):
         df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
         df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
 
+
+
+def preprocess_df(df):
+    del_trash_cols(df)
+    add_kur_combinations(df)
+
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -600,7 +606,7 @@ def load_train_all_xgb():
         load_train_lengths(),
         load_train_common_words(),
         load__train_metrics(),
-        load_train_tfidf(),
+        load_train_tfidf_new(),
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
@@ -637,12 +643,12 @@ def load_test_all_xgb():
         load_aux_pairs_50_test()
     ], axis=1)
 
-
     return test_df
 
-def preprocess_df(df):
-    del_trash_cols(df)
-    add_kur_combinations(df)
+
+#STACKING
+################################################3
+################################################3
 
 def get_update_df():
     df = load_train()
@@ -741,6 +747,11 @@ perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
 
 done()
+
+
+#STACKING
+################################################3
+################################################3
 
 
 

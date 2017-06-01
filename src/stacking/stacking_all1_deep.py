@@ -1,9 +1,9 @@
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import re
 import os
 import sys
+
+import pandas as pd
+import seaborn as sns
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -140,6 +140,11 @@ def add_kur_combinations(df):
         df['{}_log_ratio'.format(name)]= np.abs(np.log(df[col1]/df[col2]))
         df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
         df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
+
+
+def preprocess_df(df):
+    del_trash_cols(df)
+    add_kur_combinations(df)
 
 ######################################################################################
 ######################################################################################
@@ -585,11 +590,8 @@ def load_aux_pairs_50_test():
 ############################################################3
 ############################################################3
 import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 import json
-from time import sleep
 import traceback
 
 
@@ -640,9 +642,10 @@ def load_test_all_xgb():
 
     return test_df
 
-def preprocess_df(df):
-    del_trash_cols(df)
-    add_kur_combinations(df)
+
+#STACKING
+################################################3
+################################################3
 
 def get_update_df():
     df = load_train()
@@ -742,6 +745,11 @@ perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
 
 done()
+
+
+#STACKING
+################################################3
+################################################3
 
 
 

@@ -75,59 +75,6 @@ def load_train():
 def load_test():
     return pd.read_csv(fp_test, index_col='test_id')
 
-
-def load__train_metrics():
-    dfs = [pd.read_csv(fp, index_col='id') for fp in TRAIN_METRICS_FP]
-    return pd.concat(dfs, axis=1)
-
-def load__test_metrics():
-    dfs = [pd.read_csv(fp, index_col='test_id') for fp in TEST_METRICS_FP]
-    return pd.concat(dfs, axis=1)
-
-
-def load_train_tfidf():
-    df = pd.read_csv(tfidf_with_stops_train_fp, index_col='id')
-    return df
-
-def load_test_tfidf():
-    df = pd.read_csv(tfidf_with_stops_test_fp, index_col='test_id')
-    return df
-
-
-def load_train_magic():
-    df = pd.concat([
-        pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
-        pd.read_csv(magic2_train_fp, index_col='id')],
-        axis=1
-    )
-    return df
-
-def load_test_magic():
-    df = pd.concat([
-        pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
-        pd.read_csv(magic2_test_fp, index_col='test_id')],
-        axis=1
-    )
-    return df
-
-
-def load_train_common_words():
-    df = pd.read_csv(common_words_train_fp, index_col='id')
-    return df
-
-def load_test_common_words():
-    df = pd.read_csv(common_words_test_fp, index_col='test_id')
-    return df
-
-
-def load_train_lengths():
-    df = pd.read_csv(length_train_fp, index_col='id')
-    return df
-
-def load_test_lengths():
-    df = pd.read_csv(length_test_fp, index_col='test_id')
-    return df
-
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -169,6 +116,26 @@ def del_trash_cols(df):
         if col in df:
             del df[col]
 
+
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
+
+def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
+
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
+
+
+    ok = list(train_df.columns[1:])==list(test_df.columns)
+    if not ok:
+        raise Exception('Features LISTS for train/test are different')
+
+    return train_df
+
 embedings_list=['word2vec', 'glove', 'lex']
 column_types = ['tokens', 'lemmas']
 kur_pairs=[
@@ -193,6 +160,11 @@ def add_kur_combinations(df):
         df['{}_log_ratio'.format(name)]= np.abs(np.log(df[col1]/df[col2]))
         df['{}_q1_ratio'.format(name)]=df[col1]/(df[col1]+df[col2])
         df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
+
+
+def preprocess_df(df):
+    del_trash_cols(df)
+    add_kur_combinations(df)
 
 ######################################################################################
 ######################################################################################
@@ -290,6 +262,10 @@ def oversample(train_df, test_df, random_state):
     return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
 
 ############################################################3
 ############################################################3
@@ -311,7 +287,7 @@ def push_to_gs(name, descr):
 
 
     script_name = os.path.basename(__file__)
-    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name])
+    subprocess.call(['python', '-u', 'compress_and_push_to_gs_submit.py', name, script_name])
 
 ######################################################################################
 ######################################################################################
@@ -380,6 +356,107 @@ def push_results_to_mongo(estimator, losses, mongo_host, name, test_arr, test_ta
 
     out_loss('avg = {}'.format(np.mean(losses)))
 
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+def load_train_magic():
+    df = pd.concat([
+        pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
+        pd.read_csv(magic2_train_fp, index_col='id')],
+        axis=1
+    )
+    return df
+
+def load_test_magic():
+    df = pd.concat([
+        pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
+        pd.read_csv(magic2_test_fp, index_col='test_id')],
+        axis=1
+    )
+    return df
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+def load__train_metrics():
+    dfs = [pd.read_csv(fp, index_col='id') for fp in TRAIN_METRICS_FP]
+    return pd.concat(dfs, axis=1)
+
+def load__test_metrics():
+    dfs = [pd.read_csv(fp, index_col='test_id') for fp in TEST_METRICS_FP]
+    return pd.concat(dfs, axis=1)
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+def load_train_common_words():
+    df = pd.read_csv(common_words_train_fp, index_col='id')
+    return df
+
+def load_test_common_words():
+    df = pd.read_csv(common_words_test_fp, index_col='test_id')
+    return df
+
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+def load_train_lengths():
+    df = pd.read_csv(length_train_fp, index_col='id')
+    return df
+
+def load_test_lengths():
+    df = pd.read_csv(length_test_fp, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+
+def load_train_tfidf():
+    df = pd.read_csv(tfidf_with_stops_train_fp, index_col='id')
+    return df
+
+def load_test_tfidf():
+    df = pd.read_csv(tfidf_with_stops_test_fp, index_col='test_id')
+    return df
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+def load_train_tfidf_new():
+    fps = [
+        os.path.join(data_folder, 'tfidf', x) for x in ['train_dirty_lower_no_stops.csv',
+                                                        'train_dirty_upper.csv',
+                                                        'train_tokens_lower.csv',
+                                                        'train_tokens_lower_no_stops.csv']
+        ]
+    return pd.concat(
+        [pd.read_csv(fp, index_col='id') for fp in fps],
+        axis=1)
+
+def load_test_tfidf_new():
+    fps = [
+        os.path.join(data_folder, 'tfidf', x) for x in ['test_dirty_lower_no_stops.csv',
+                                                        'test_dirty_upper.csv',
+                                                        'test_tokens_lower.csv',
+                                                        'test_tokens_lower_no_stops.csv']
+        ]
+    return pd.concat(
+        [pd.read_csv(fp, index_col='test_id') for fp in fps],
+        axis=1)
 
 ######################################################################################
 ######################################################################################
@@ -523,6 +600,19 @@ def load_metrics_on_pos_test():
 ############################################################3
 ############################################################3
 ############################################################3
+
+aux_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_train.csv')
+aux_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_test.csv')
+aux_pair_target_freq = 'aux_pair_target_freq'
+def load_aux_pairs_50_train():
+    return pd.read_csv(aux_pairs_50_train_fp, index_col='id')[[aux_pair_target_freq]]
+
+def load_aux_pairs_50_test():
+    return pd.read_csv(aux_pairs_50_test_fp, index_col='test_id')[[aux_pair_target_freq]]
+
+############################################################3
+############################################################3
+############################################################3
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -539,124 +629,7 @@ def load_train_all_xgb():
         load_train_lengths(),
         load_train_common_words(),
         load__train_metrics(),
-        # load_train_tfidf(),
-        # load_train_magic(),
-        # load_wh_train(),
-        # load_one_upper_train(),
-        # load_topNs_avg_tok_freq_train(),
-        # load_abi_train(),
-        # load_max_k_cores_train(),
-        # load_word2vec_metrics_train(),
-        # load_glove_metrics_train(),
-        # load_lex_metrics_train(),
-        # load_metrics_on_pos_train()
-    ], axis=1)
-
-    cols_to_del = [qid1, qid2, question1, question2]
-    for col in cols_to_del:
-        del train_df[col]
-
-    return train_df
-
-def preprocess_df(df):
-    del_trash_cols(df)
-    add_kur_combinations(df)
-
-def get_update_df():
-    df = load_train()
-    cols_to_del = [qid1, qid2, question1, question2]
-    for col in cols_to_del:
-        del df[col]
-
-    return df
-
-def perform_xgb_cv(name, mongo_host, descr):
-    seed = 42
-    df = load_train_all_xgb()
-    update_df = get_update_df()
-    preprocess_df(df)
-    folds = load_folds()
-
-    losses = []
-    counter = 0
-
-    for big_ind, small_ind in folds:
-        start()
-
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
-
-        # big, small = big.head(1000), small.head(1000)
-
-
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
-
-        big, small = oversample(big, small, seed)
-
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
-
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
-
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
-
-        estimator = xgb.XGBClassifier(n_estimators=10,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=3,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr), len(test_arr.index), len(set(test_arr.index))
-
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
-
-        estimator.fit(
-            train_arr, train_target,
-            eval_metric='logloss',
-            verbose=True,
-            eval_set=eval_set
-        )
-
-        proba = estimator.predict_proba(test_arr)
-        print len(proba[:,1])
-        print len(test_arr)
-
-        test_arr['prob'] = proba[:,1]
-
-        test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
-
-        update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
-
-        push_results_to_mongo(estimator, losses,
-                              mongo_host, name, test_arr, test_target, train_arr, proba)
-
-        end('fold {}'.format(counter))
-        counter+=1
-
-
-    update_df.to_csv('probs.csv', index_label='id')
-
-
-
-name='stacking_test1'
-
-descr = \
-"""
-def load_train_all_xgb():
-    train_df = pd.concat([
-        load_train(),
-        load_train_lengths(),
-        load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf(),
+        # load_train_tfidf_new(),
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
@@ -666,28 +639,133 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
-        load_metrics_on_pos_train()
+        load_aux_pairs_50_train()
     ], axis=1)
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
-        print test_arr.columns.values
+    cols_to_del = [qid1, qid2, question1, question2]
+    for col in cols_to_del:
+        del train_df[col]
 
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-"""
+    return train_df
+
+def load_test_all_xgb():
+    test_df = pd.concat([
+        load_test_lengths(),
+        load_test_common_words(),
+        load__test_metrics(),
+        # load_test_tfidf_new(),
+        load_test_magic(),
+        load_wh_test(),
+        load_one_upper_test(),
+        load_topNs_avg_tok_freq_test(),
+        load_abi_test(),
+        load_max_k_cores_test(),
+        load_word2vec_metrics_test(),
+        load_glove_metrics_test(),
+        load_lex_metrics_test(),
+        load_aux_pairs_50_test()
+    ], axis=1)
+
+    return test_df
 
 
 
-perform_xgb_cv(name, gc_host, descr)
+#STACKING
+################################################3
+################################################3
+
+def get_update_df_submit():
+    df = load_test()
+    cols_to_del = [question1, question2]
+    for col in cols_to_del:
+        del df[col]
+
+    return df
+
+def submit_xgb(name):
+    seed=42
+
+    train_df = load_train_all_xgb()
+    test_df = load_test_all_xgb()
+
+    update_df = get_update_df_submit()
+
+    for df in [train_df, test_df]:
+        preprocess_df(df)
+
+    train_df = fix_train_columns(train_df, test_df)
+
+    print explore_target_ratio(train_df)
+    train_df, test_df = oversample_submit(train_df, test_df, seed)
+
+    print explore_target_ratio(train_df)
+
+    train_target = train_df[TARGET]
+    del train_df[TARGET]
+    train_arr = train_df
+
+    print train_df.columns.values
+    test_arr = test_df
+
+    start()
+
+    estimator = xgb.XGBClassifier(n_estimators=1000,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
+                                  max_depth=5,
+                                  objective='binary:logistic',
+                                  nthread=-1)
+    print test_arr.columns.values
+
+    print len(train_arr)
+    print len(test_arr)
+
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
+
+    proba = estimator.predict_proba(test_arr)
+
+
+    test_arr['prob'] = proba[:,1]
+    test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
+
+    update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
+    update_df.to_csv('probs.csv', index_label='test_id')
+
+    end('Finished')
+
+
+
+
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    test_df[TARGET] = proba[:, 1]
+
+    res = test_df[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
+
+
+descr= \
+    """
+
+    """
+
+
+name='submit_stacking_no_tfidf_light'
+
+submit_xgb(name)
 push_to_gs(name, descr)
 
 done()
+
+
+
+#STACKING
+################################################3
+################################################3
 
 
 

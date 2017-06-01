@@ -142,10 +142,10 @@ def add_kur_combinations(df):
         df['{}_q2_ratio'.format(name)]=df[col2]/(df[col1]+df[col2])
 
 
+
 def preprocess_df(df):
     del_trash_cols(df)
     add_kur_combinations(df)
-
 
 ######################################################################################
 ######################################################################################
@@ -577,6 +577,19 @@ def load_metrics_on_pos_test():
 ############################################################3
 ############################################################3
 ############################################################3
+
+aux_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_train.csv')
+aux_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_test.csv')
+aux_pair_target_freq = 'aux_pair_target_freq'
+def load_aux_pairs_50_train():
+    return pd.read_csv(aux_pairs_50_train_fp, index_col='id')[[aux_pair_target_freq]]
+
+def load_aux_pairs_50_test():
+    return pd.read_csv(aux_pairs_50_test_fp, index_col='test_id')[[aux_pair_target_freq]]
+
+############################################################3
+############################################################3
+############################################################3
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
@@ -592,17 +605,18 @@ def load_train_all_xgb():
         load_train(),
         load_train_lengths(),
         load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf(),
+        # load__train_metrics(),
+        load_train_tfidf_new(),
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
         load_topNs_avg_tok_freq_train(),
-        # load_abi_train(),
+        load_abi_train(),
         load_max_k_cores_train(),
-        # load_word2vec_metrics_train(),
-        # load_glove_metrics_train(),
-        # load_lex_metrics_train()
+        load_word2vec_metrics_train(),
+        load_glove_metrics_train(),
+        load_lex_metrics_train(),
+        load_aux_pairs_50_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -610,6 +624,26 @@ def load_train_all_xgb():
         del train_df[col]
 
     return train_df
+
+def load_test_all_xgb():
+    test_df = pd.concat([
+        load_test_lengths(),
+        load_test_common_words(),
+        # load__test_metrics(),
+        load_test_tfidf_new(),
+        load_test_magic(),
+        load_wh_test(),
+        load_one_upper_test(),
+        load_topNs_avg_tok_freq_test(),
+        load_abi_test(),
+        load_max_k_cores_test(),
+        load_word2vec_metrics_test(),
+        load_glove_metrics_test(),
+        load_lex_metrics_test(),
+        load_aux_pairs_50_test()
+    ], axis=1)
+
+    return test_df
 
 
 #STACKING
@@ -707,7 +741,7 @@ descr= \
     """
 
 
-name='stacking_no_emb_simpl_idf_light'
+name='stacking_no_metrics_light'
 
 perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
@@ -718,3 +752,7 @@ done()
 #STACKING
 ################################################3
 ################################################3
+
+
+
+
