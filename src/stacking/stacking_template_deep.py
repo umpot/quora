@@ -600,7 +600,7 @@ def load_train_all_xgb():
         load_train_lengths(),
         load_train_common_words(),
         load__train_metrics(),
-        load_train_tfidf(),
+        load_train_tfidf_new(),
         load_train_magic(),
         load_wh_train(),
         load_one_upper_train(),
@@ -687,13 +687,14 @@ def perform_xgb_cv(name, mongo_host):
         del small[TARGET]
         test_arr = small
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
+        estimator = xgb.XGBClassifier(n_estimators=2800,
+                                  subsample=0.6,
+                                  # colsample_bytree=0.8,
+                                  max_depth=7,
+                                  objective='binary:logistic',
+                                  learning_rate=0.02,
+                                  base_score=0.2,
+                                  nthread=-1)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr), len(test_arr.index), len(set(test_arr.index))
@@ -729,10 +730,10 @@ def perform_xgb_cv(name, mongo_host):
 
 
 
-descr=\
-"""
+descr= \
+    """
 
-"""
+    """
 
 
 name=''
