@@ -24,7 +24,7 @@ tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 ner_q1, ner_q2='ner_q1', 'ner_q2'
 postag_q1, postag_q2='postag_q1', 'postag_q2'
 
-data_folder = '../../../data/'
+data_folder = '../../data/'
 
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -548,4 +548,4 @@ def_split=50
 # write_out_of_fold_frequencies()
 # write_out_of_fold_test_contains()
 # write_train_freq()
-write_test_conatins()
+# write_test_conatins()

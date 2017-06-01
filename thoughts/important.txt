@@ -221,6 +221,9 @@ Galton skewness
 Moments!!!!!!
 Pearson a second skewness coefficient:
 
+74)topic classification :
+    textacy most_discriminating_terms
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams

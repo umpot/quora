@@ -48,7 +48,9 @@ def load_folds():
 def create_folds(df):
     folds = load_folds()
 
-    return [(df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']]) for x in range(len(folds))]
+    return [
+        (df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']])
+        for x in range(len(folds))]
 
 def split_into_folds(df, random_state=42):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
