@@ -669,6 +669,7 @@ def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
     df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
     df.fillna(-1, inplace=True)
+    df = df.apply(lambda x: pd.to_numeric(x,errors='ignore'))
 
     update_df = get_update_df()
     preprocess_df(df)

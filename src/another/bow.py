@@ -407,5 +407,6 @@ def test_log_reg_on_bow():
 
     train, test = folds[0]
 
-    c = CountVectorizer(list[train[question1]])
+    questions = list(train[question1])+list(train)
+    c = CountVectorizer()
 
