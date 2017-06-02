@@ -154,8 +154,8 @@ experiments = [
     'stacking_no_top_tokens_light',
     'stacking_only_glove_emb_light',
     'stacking_only_lex_emb_light',
-    'stacking_only_word2vec_emb_light',
-    'stacking_lstm'
+    'stacking_only_word2vec_emb_light'
+    # 'stacking_lstm'
 ]
 
 def perform_xgb_cv():
