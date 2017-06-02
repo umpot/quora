@@ -318,7 +318,7 @@ print explore_target_ratio(cv_train)
 print explore_target_ratio(cv_test)
 print '========================================'
 
-cv_train, cv_test = oversample(cv_train, cv_test)
+cv_train, cv_test = oversample(cv_train, cv_test, 42)
 
 print explore_target_ratio(cv_train)
 print explore_target_ratio(cv_test)
