@@ -474,7 +474,7 @@ def do_lstm_stacking():
 
         update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
 
-    update_df.to_csv('probs.csv', index_label='id')
+    update_df[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
 descr= \
 """
