@@ -117,24 +117,6 @@ def del_trash_cols(df):
             del df[col]
 
 
-def get_all_cols_except_target(df):
-    return set([x for x in df.columns if x!=TARGET])
-
-def fix_train_columns(train_df, test_df):
-    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
-        raise Exception('SETS of columns train/test are different')
-    else:
-        print 'SETS of cols are equal'
-
-
-    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
-
-
-    ok = list(train_df.columns[1:])==list(test_df.columns)
-    if not ok:
-        raise Exception('Features LISTS for train/test are different')
-
-    return train_df
 
 embedings_list=['word2vec', 'glove', 'lex']
 column_types = ['tokens', 'lemmas']
@@ -674,6 +656,27 @@ def load_test_all_xgb():
 #STACKING
 ################################################3
 ################################################3
+
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
+
+
+def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
+
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
+
+
+    ok = list(train_df.columns[1:])==list(test_df.columns)
+    if not ok:
+        raise Exception('Features LISTS for train/test are different')
+
+    return train_df
+
 
 def get_update_df_submit():
     df = load_test()

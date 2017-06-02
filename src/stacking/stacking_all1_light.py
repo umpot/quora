@@ -1,9 +1,9 @@
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import re
 import os
 import sys
+
+import pandas as pd
+import seaborn as sns
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -242,11 +242,6 @@ def oversample(train_df, test_df, random_state):
     return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
 
 
-
-def oversample_submit(train_df, test_df, random_state=42):
-    l_train = int(delta * len(train_df))
-
-    return oversample_df(train_df, l_train, random_state),test_df
 
 ############################################################3
 ############################################################3
@@ -595,11 +590,8 @@ def load_aux_pairs_50_test():
 ############################################################3
 ############################################################3
 import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 import json
-from time import sleep
 import traceback
 
 
@@ -651,12 +643,10 @@ def load_test_all_xgb():
     return test_df
 
 
-
-
-
 #STACKING
 ################################################3
 ################################################3
+
 def get_update_df():
     df = load_train()
     cols_to_del = [qid1, qid2, question1, question2]
@@ -664,7 +654,6 @@ def get_update_df():
         del df[col]
 
     return df
-
 
 def perform_xgb_cv(name, mongo_host):
     seed = 42
@@ -701,14 +690,13 @@ def perform_xgb_cv(name, mongo_host):
         del small[TARGET]
         test_arr = small
 
-        estimator = xgb.XGBClassifier(n_estimators=2800,
-                                  subsample=0.6,
-                                  # colsample_bytree=0.8,
-                                  max_depth=7,
-                                  objective='binary:logistic',
-                                  learning_rate=0.02,
-                                  base_score=0.2,
-                                  nthread=-1)
+        estimator = xgb.XGBClassifier(n_estimators=1000,
+                                      subsample=0.8,
+                                      colsample_bytree=0.8,
+                                      max_depth=5,
+                                      objective='binary:logistic',
+                                      nthread=-1
+                                      )
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr), len(test_arr.index), len(set(test_arr.index))
@@ -750,12 +738,13 @@ descr= \
     """
 
 
-name=''
+name='stacking_all1_light'
 
 perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
 
 done()
+
 
 #STACKING
 ################################################3

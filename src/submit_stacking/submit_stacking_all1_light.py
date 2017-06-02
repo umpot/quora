@@ -1,9 +1,9 @@
-import pandas as pd
-import numpy as np
-import seaborn as sns
-import re
 import os
 import sys
+
+import pandas as pd
+import seaborn as sns
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -595,11 +595,8 @@ def load_aux_pairs_50_test():
 ############################################################3
 ############################################################3
 import xgboost as xgb
-import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import log_loss
 import json
-from time import sleep
 import traceback
 
 
@@ -651,97 +648,105 @@ def load_test_all_xgb():
     return test_df
 
 
-
-
-
 #STACKING
 ################################################3
 ################################################3
-def get_update_df():
-    df = load_train()
-    cols_to_del = [qid1, qid2, question1, question2]
+
+
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
+
+def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
+
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
+
+
+    ok = list(train_df.columns[1:])==list(test_df.columns)
+    if not ok:
+        raise Exception('Features LISTS for train/test are different')
+
+    return train_df
+
+
+
+
+def get_update_df_submit():
+    df = load_test()
+    cols_to_del = [question1, question2]
     for col in cols_to_del:
         del df[col]
 
     return df
 
+def submit_xgb(name):
+    seed=42
 
-def perform_xgb_cv(name, mongo_host):
-    seed = 42
-    df = load_train_all_xgb()
-    update_df = get_update_df()
-    preprocess_df(df)
-    folds = load_folds()
+    train_df = load_train_all_xgb()
+    test_df = load_test_all_xgb()
 
-    losses = []
-    counter = 0
+    update_df = get_update_df_submit()
 
-    for big_ind, small_ind in folds:
-        start()
+    for df in [train_df, test_df]:
+        preprocess_df(df)
 
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+    train_df = fix_train_columns(train_df, test_df)
 
-        # big, small = big.head(1000), small.head(1000)
+    print explore_target_ratio(train_df)
+    train_df, test_df = oversample_submit(train_df, test_df, seed)
 
+    print explore_target_ratio(train_df)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    train_target = train_df[TARGET]
+    del train_df[TARGET]
+    train_arr = train_df
 
-        big, small = oversample(big, small, seed)
+    print train_df.columns.values
+    test_arr = test_df
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    start()
 
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
-
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
-
-        estimator = xgb.XGBClassifier(n_estimators=2800,
-                                  subsample=0.6,
-                                  # colsample_bytree=0.8,
-                                  max_depth=7,
+    estimator = xgb.XGBClassifier(n_estimators=1000,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
+                                  max_depth=5,
                                   objective='binary:logistic',
-                                  learning_rate=0.02,
-                                  base_score=0.2,
                                   nthread=-1)
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr), len(test_arr.index), len(set(test_arr.index))
+    print test_arr.columns.values
 
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
+    print len(train_arr)
+    print len(test_arr)
 
-        estimator.fit(
-            train_arr, train_target,
-            eval_metric='logloss',
-            verbose=True,
-            eval_set=eval_set
-        )
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
 
-        proba = estimator.predict_proba(test_arr)
-        print len(proba[:,1])
-        print len(test_arr)
-
-        test_arr['prob'] = proba[:,1]
-
-        test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
-
-        update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
-
-        push_results_to_mongo(estimator, losses,
-                              mongo_host, name, test_arr, test_target, train_arr, proba)
-
-        end('fold {}'.format(counter))
-        counter+=1
+    proba = estimator.predict_proba(test_arr)
 
 
-    update_df.to_csv('probs.csv', index_label='id')
+    test_arr['prob'] = proba[:,1]
+    test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
+
+    update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
+    update_df.to_csv('probs.csv', index_label='test_id')
+
+    end('Finished')
 
 
+
+
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    test_df[TARGET] = proba[:, 1]
+
+    res = test_df[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
 descr= \
@@ -750,16 +755,19 @@ descr= \
     """
 
 
-name=''
+name='submit_stacking_all1_light'
 
-perform_xgb_cv(name, gc_host)
+submit_xgb(name)
 push_to_gs(name, descr)
 
 done()
 
+
+
 #STACKING
 ################################################3
 ################################################3
+
 
 
 
