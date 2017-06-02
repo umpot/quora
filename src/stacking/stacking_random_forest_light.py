@@ -704,7 +704,7 @@ def perform_xgb_cv(name, mongo_host):
         #                               nthread=-1)
 
 
-        estimator = RandomForestClassifier(n_estimators=100, verbose=True, n_jobs=-1)
+        estimator = RandomForestClassifier(n_estimators=100, verbose=10, n_jobs=-1)
 
         print test_arr.columns.values
         print len(train_arr)
