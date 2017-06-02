@@ -482,5 +482,7 @@ lstm_with_magics_glove
 """
 
 name='lstm_with_magics_oversample_glove_10'
+
+do_lstm_stacking()
 push_to_gs(name, descr)
 done()
