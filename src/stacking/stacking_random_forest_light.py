@@ -150,7 +150,8 @@ def preprocess_df(df):
         if s==None or s!=s or np.isnan(s) or np.isposinf(s) or np.isneginf(s):
             return -1
         return s
-    df = df.apply(blja)
+    for col in df.columns:
+        df[col] = df[col].apply(blja)
 
 ######################################################################################
 ######################################################################################
