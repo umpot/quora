@@ -146,12 +146,12 @@ def preprocess_df(df):
     del_trash_cols(df)
     add_kur_combinations(df)
 
-    def blja(s):
-        if s==None or s!=s or np.isnan(s) or np.isposinf(s) or np.isneginf(s):
-            return -1
-        return s
-    for col in df.columns:
-        df[col] = df[col].apply(blja)
+    # def blja(s):
+    #     if s==None or s!=s or np.isnan(s) or np.isposinf(s) or np.isneginf(s):
+    #         return -1
+    #     return s
+    # for col in df.columns:
+    #     df[col] = df[col].apply(blja)
 
 ######################################################################################
 ######################################################################################
@@ -667,6 +667,7 @@ def get_update_df():
 def perform_xgb_cv(name, mongo_host):
     seed = 42
     df = load_train_all_xgb()
+    df.replace([np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
     df.fillna(-1, inplace=True)
 
     update_df = get_update_df()

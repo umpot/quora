@@ -396,6 +396,14 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
+from sklearn.feature_extraction.text import HashingVectorizer
+
 
 # train_df, test_df = load_train(), load_test()
+
+def test_log_reg_on_bow():
+    df = load_train()
+    folds = create_folds(df)
+
+    train, test = folds[0]
 
