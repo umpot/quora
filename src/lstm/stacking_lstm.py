@@ -354,12 +354,12 @@ def generate_data_for_lstm(cv_train, cv_test):
 def do_lstm_stacking(f_num):
     f_num=int(f_num)
 
-    update_df = load_train()
-    folds = create_folds(update_df)
-
     # update_df = load_train()
-    # update_df = update_df.head(5000)
-    # folds = get_dummy_folds(update_df)
+    # folds = create_folds(update_df)
+
+    update_df = load_train()
+    update_df = update_df.head(5000)
+    folds = get_dummy_folds(update_df)
 
     embeddings_index = create_embed_index()
     counter = 0
