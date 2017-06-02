@@ -462,7 +462,7 @@ def do_lstm_stacking():
 
         hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
                          validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
-                         epochs=200, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
+                         epochs=10, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
 
 
         preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
