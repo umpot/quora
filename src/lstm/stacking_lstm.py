@@ -404,10 +404,6 @@ def do_lstm_stacking():
         leaks_val = np.vstack((test_leaks, test_leaks))
         labels_val = np.concatenate((test_labels, test_labels))
 
-        weight_val = np.ones(len(labels_val))
-        if re_weight:
-            weight_val *= 0.472001959
-            weight_val[labels_val==0] = 1.309028344
 
 
         ########################################
@@ -461,8 +457,8 @@ def do_lstm_stacking():
 
 
         hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
-                         validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
-                         epochs=10, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
+                         validation_data=([data_1_val, data_2_val, leaks_val], labels_val), \
+                         epochs=10, batch_size=2048, shuffle=True,callbacks=[model_checkpoint])
 
 
         preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
