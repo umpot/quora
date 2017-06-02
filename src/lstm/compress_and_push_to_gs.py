@@ -7,7 +7,8 @@ def get_time_str():
 
 name = sys.argv[1]
 script_name = sys.argv[2]
-archive_name = '{}_{}.tar.gz'.format(name, get_time_str())
+fold = sys.argv[3]
+archive_name = '{}_fold_{}_{}.tar.gz'.format(name,fold, get_time_str())
 descr_fp = 'descr.txt'
 probs_fp='probs.csv'
 bucket = 'gs://ubbikk/stacking/'

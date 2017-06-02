@@ -142,7 +142,7 @@ def push_to_gs(name, descr, fold):
 
 
     script_name = os.path.basename(__file__)
-    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name])
+    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name, fold])
 
 
 def done():
