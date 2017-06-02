@@ -396,7 +396,7 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
-from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 # train_df, test_df = load_train(), load_test()
@@ -406,4 +406,6 @@ def test_log_reg_on_bow():
     folds = create_folds(df)
 
     train, test = folds[0]
+
+    c = CountVectorizer(list[train[question1]])
 

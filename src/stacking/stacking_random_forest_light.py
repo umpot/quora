@@ -667,7 +667,7 @@ def get_update_df():
 def perform_xgb_cv(name, mongo_host):
     seed = 42
     df = load_train_all_xgb()
-    df.replace([np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
+    df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
     df.fillna(-1, inplace=True)
 
     update_df = get_update_df()
