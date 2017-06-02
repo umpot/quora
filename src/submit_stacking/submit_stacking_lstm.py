@@ -62,7 +62,7 @@ rate_drop_lstm = 0.15 + np.random.rand() * 0.25
 rate_drop_dense = 0.15 + np.random.rand() * 0.25
 
 act = 'relu'
-re_weight = True  # whether to re-weight classes to fit the 17.5% share in test set
+# re_weight = False  # whether to re-weight classes to fit the 17.5% share in test set
 
 STAMP = 'lstm_%d_%d_%.2f_%.2f' % (num_lstm, num_dense, rate_drop_lstm, \
                                   rate_drop_dense)
@@ -311,7 +311,6 @@ def generate_data_for_lstm(cv_train, cv_test):
     test_texts_1 = [x for x in cv_test['texts_1']]
     test_texts_2 = [x for x in cv_test['texts_2']]
     test_ids = [x for x in cv_test.index]
-    test_labels = [x for x in cv_test[TARGET]]
 
     tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
     tokenizer.fit_on_texts(texts_1 + texts_2 + test_texts_1 + test_texts_2)
@@ -344,7 +343,7 @@ def generate_data_for_lstm(cv_train, cv_test):
 
     return data_1, data_2, leaks, \
            test_data_1, test_data_2, test_leaks, \
-           train_labels, test_labels, test_ids, \
+           train_labels, test_ids, \
            word_index
 
 
@@ -371,7 +370,7 @@ def do_submit_lstm_stacking():
 
     data_1, data_2, leaks, \
     test_data_1, test_data_2, test_leaks, \
-    train_labels, test_labels, test_ids, word_index = \
+    train_labels, test_ids, word_index = \
         generate_data_for_lstm(cv_train, cv_test)
 
     ########################################
@@ -400,12 +399,8 @@ def do_submit_lstm_stacking():
     data_1_val = np.vstack((test_data_1, test_data_2))
     data_2_val = np.vstack((test_data_2, test_data_1))
     leaks_val = np.vstack((test_leaks, test_leaks))
-    labels_val = np.concatenate((test_labels, test_labels))
 
-    weight_val = np.ones(len(labels_val))
-    if re_weight:
-        weight_val *= 0.472001959
-        weight_val[labels_val==0] = 1.309028344
+
 
 
     ########################################
@@ -458,9 +453,8 @@ def do_submit_lstm_stacking():
     model_checkpoint = ModelCheckpoint(bst_model_path, save_best_only=True, save_weights_only=True)
 
 
-    hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
-                     validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
-                     epochs=10, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
+    hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train,\
+                     epochs=10, batch_size=2048, shuffle=True, callbacks=[model_checkpoint])
 
 
     preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
