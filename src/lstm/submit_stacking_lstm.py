@@ -351,21 +351,20 @@ def generate_data_for_lstm(cv_train, cv_test):
 
 
 
-def do_lstm_stacking():
+def do_submit_lstm_stacking():
     update_df = load_test()
-    # folds = create_folds(update_df)
 
     cv_train, cv_test = load_train(), load_test()
 
+    cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
     update_df = update_df.head(5000)
-    folds = get_dummy_folds(update_df)
 
     embeddings_index = create_embed_index()
 
     print explore_target_ratio(cv_train)
     print '========================================'
 
-    cv_train, cv_test = oversample(cv_train, cv_test, 42)
+    cv_train, cv_test = oversample_submit(cv_train, cv_test, 42)
 
     print explore_target_ratio(cv_train)
 
@@ -468,12 +467,12 @@ def do_lstm_stacking():
     preds += model.predict([test_data_2, test_data_1, test_leaks], batch_size=8192, verbose=1)
     preds /= 2
 
+    cv_test['prob'] = preds
     cv_test = cv_test[~cv_test.index.duplicated(keep='first')]
 
-    cv_test['prob'] = preds
     update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
 
-    update_df.to_csv('probs.csv', index_label='id')
+    update_df.to_csv('probs.csv', index_label='test_id')
 
 descr= \
     """
@@ -482,6 +481,6 @@ descr= \
 
 name='lstm_with_magics_oversample_glove_10'
 
-do_lstm_stacking()
+do_submit_lstm_stacking()
 push_to_gs(name, descr)
 done()
