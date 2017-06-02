@@ -3,6 +3,7 @@ import sys
 
 import pandas as pd
 import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -146,13 +147,6 @@ def preprocess_df(df):
     del_trash_cols(df)
     add_kur_combinations(df)
 
-    # def blja(s):
-    #     if s==None or s!=s or np.isnan(s) or np.isposinf(s) or np.isneginf(s):
-    #         return -1
-    #     return s
-    # for col in df.columns:
-    #     df[col] = df[col].apply(blja)
-
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -250,6 +244,11 @@ def oversample(train_df, test_df, random_state):
 
 
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
 ############################################################3
 ############################################################3
 ############################################################3
@@ -333,7 +332,7 @@ def push_results_to_mongo(estimator, losses, mongo_host, name, test_arr, test_ta
     loss = log_loss(test_target, proba)
     out_loss(loss)
     losses.append(loss)
-    per_tree_res = []
+    per_tree_res = xgboost_per_tree_results(estimator)
     ii = estimator.feature_importances_
     write_results(name, mongo_host, per_tree_res, losses, ii, train_arr.columns)
 
@@ -653,17 +652,37 @@ def load_test_all_xgb():
 #STACKING
 ################################################3
 ################################################3
-from sklearn.ensemble import RandomForestClassifier
 
 
-def get_update_df():
-    df = load_train()
-    cols_to_del = [qid1, qid2, question1, question2]
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
+
+def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
+
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
+
+
+    ok = list(train_df.columns[1:])==list(test_df.columns)
+    if not ok:
+        raise Exception('Features LISTS for train/test are different')
+
+    return train_df
+
+
+
+
+def get_update_df_submit():
+    df = load_test()
+    cols_to_del = [question1, question2]
     for col in cols_to_del:
         del df[col]
 
     return df
-
 
 def blja_nan(df):
     df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
@@ -673,91 +692,66 @@ def blja_nan(df):
     df = df.apply(lambda x: np.float32(x))
     df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
 
+def submit_xgb(name):
+    seed=42
 
-def perform_xgb_cv(name, mongo_host):
-    seed = 42
-    df = load_train_all_xgb()
+    train_df = load_train_all_xgb()
+    test_df = load_test_all_xgb()
 
+    blja_nan(train_df)
+    blja_nan(test_df)
 
-    update_df = get_update_df()
-    preprocess_df(df)
+    update_df = get_update_df_submit()
 
-    blja_nan(df)
+    for df in [train_df, test_df]:
+        preprocess_df(df)
 
-    folds = load_folds()
+    train_df = fix_train_columns(train_df, test_df)
 
-    losses = []
-    counter = 0
+    print explore_target_ratio(train_df)
+    train_df, test_df = oversample_submit(train_df, test_df, seed)
 
-    for big_ind, small_ind in folds:
-        start()
+    print explore_target_ratio(train_df)
 
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+    train_target = train_df[TARGET]
+    del train_df[TARGET]
+    train_arr = train_df
 
-        # big, small = big.head(1000), small.head(1000)
+    print train_df.columns.values
+    test_arr = test_df
 
+    start()
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    estimator = RandomForestClassifier(n_estimators=1000, verbose=10, n_jobs=-1)
+    print test_arr.columns.values
 
-        big, small = oversample(big, small, seed)
+    print len(train_arr)
+    print len(test_arr)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    estimator.fit(
+        train_arr, train_target
+    )
 
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
-
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
-
-        # estimator = xgb.XGBClassifier(n_estimators=2800,
-        #                               subsample=0.6,
-        #                               # colsample_bytree=0.8,
-        #                               max_depth=7,
-        #                               objective='binary:logistic',
-        #                               learning_rate=0.02,
-        #                               base_score=0.2,
-        #                               nthread=-1)
+    proba = estimator.predict_proba(test_arr)
 
 
-        estimator = RandomForestClassifier(n_estimators=1000, verbose=10, n_jobs=-1)
+    test_arr['prob'] = proba[:,1]
+    test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
 
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr), len(test_arr.index), len(set(test_arr.index))
+    update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
+    update_df.to_csv('probs.csv', index_label='test_id')
 
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
-
-        estimator.fit(
-            train_arr, train_target
-        )
-
-        proba = estimator.predict_proba(test_arr)
-        print len(proba[:,1])
-        print len(test_arr)
-
-        test_arr['prob'] = proba[:,1]
-
-        test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
-
-        update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
-
-        loss = log_loss(test_target, proba)
-        print 'Logloss {}'.format(loss)
-        push_results_to_mongo(estimator, losses,
-                              mongo_host, name, test_arr, test_target, train_arr, proba)
-
-        end('fold {}'.format(counter))
-        counter+=1
+    end('Finished')
 
 
-    update_df.to_csv('probs.csv', index_label='id')
 
 
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    test_df[TARGET] = proba[:, 1]
+
+    res = test_df[[TARGET]]
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
 descr= \
@@ -766,18 +760,19 @@ descr= \
     """
 
 
-name='stacking_random_forest_light'
+name='submit_stacking_random_forest_light'
 
-
-perform_xgb_cv(name, gc_host)
+submit_xgb(name)
 push_to_gs(name, descr)
 
 done()
 
 
+
 #STACKING
 ################################################3
 ################################################3
+
 
 
 

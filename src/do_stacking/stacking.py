@@ -154,7 +154,8 @@ experiments = [
     'stacking_no_top_tokens_light',
     'stacking_only_glove_emb_light',
     'stacking_only_lex_emb_light',
-    'stacking_only_word2vec_emb_light'
+    'stacking_only_word2vec_emb_light',
+    'stacking_lstm'
 ]
 
 def perform_xgb_cv():
@@ -267,5 +268,5 @@ def apply_stacking():
     res.to_csv('{}.csv'.format('stacking1'), index=True, index_label='test_id')
 
 
-# perform_xgb_cv()
-apply_stacking()
+perform_xgb_cv()
+# apply_stacking()
