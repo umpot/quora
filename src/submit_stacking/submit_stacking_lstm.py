@@ -355,8 +355,8 @@ def do_submit_lstm_stacking():
 
     cv_train, cv_test = load_train(), load_test()
 
-    cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
-    update_df = update_df.head(5000)
+    # cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
+    # update_df = update_df.head(5000)
 
     embeddings_index = create_embed_index()
 
