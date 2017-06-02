@@ -667,6 +667,11 @@ def get_update_df():
 def perform_xgb_cv(name, mongo_host):
     seed = 42
     df = load_train_all_xgb()
+
+
+    update_df = get_update_df()
+    preprocess_df(df)
+
     df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
     df.fillna(-1, inplace=True)
     df = df.apply(lambda x: pd.to_numeric(x,errors='ignore'))
@@ -674,8 +679,6 @@ def perform_xgb_cv(name, mongo_host):
     df = df.apply(lambda x: np.float32(x))
     df.replace([None, np.inf, -np.inf, np.nan, float('inf'), float('-inf')], -1, inplace=True)
 
-    update_df = get_update_df()
-    preprocess_df(df)
     folds = load_folds()
 
     losses = []
