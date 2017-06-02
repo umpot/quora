@@ -364,6 +364,7 @@ def do_lstm_stacking(f_num):
     embeddings_index = create_embed_index()
     counter = 0
     for cv_train, cv_test in folds:
+        print 'Len trainn {},Len test {}'.format(len(cv_train), len(cv_test))
         if f_num!=counter:
             print 'Skipping_{}'.format(counter)
             counter+=1
@@ -376,6 +377,8 @@ def do_lstm_stacking(f_num):
         print '========================================'
 
         cv_train, cv_test = oversample(cv_train, cv_test, 42)
+
+        print 'Len trainn {},Len test {}'.format(len(cv_train), len(cv_test))
 
         print explore_target_ratio(cv_train)
         print explore_target_ratio(cv_test)
