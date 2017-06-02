@@ -61,7 +61,8 @@ pip install joblib
 pip install -U spacy
 python -m spacy download en
 pip install textacy
-
+pip install cython
+pip install fastFM
 
 
 

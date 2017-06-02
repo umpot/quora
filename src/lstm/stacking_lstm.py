@@ -132,13 +132,13 @@ from time import gmtime, strftime, time
 def get_time_str():
     return strftime("%Y_%m_%d__%H_%M_%S", gmtime())
 
-def push_to_gs(name, descr):
+def push_to_gs(name, descr, fold):
     with open('descr.txt', 'w+') as f:
         f.writelines([descr])
 
     if name in os.listdir('.'):
         t=get_time_str()
-        subprocess.call(['mv', name, '{}_{}'.format(name, t)])
+        subprocess.call(['mv', name, '{}_fold_{}_{}'.format(name,fold, t)])
 
 
     script_name = os.path.basename(__file__)
@@ -351,16 +351,26 @@ def generate_data_for_lstm(cv_train, cv_test):
 
 
 
-def do_lstm_stacking():
+def do_lstm_stacking(f_num):
+    f_num=int(f_num)
+
     update_df = load_train()
     folds = create_folds(update_df)
 
+    # update_df = load_train()
     # update_df = update_df.head(5000)
     # folds = get_dummy_folds(update_df)
 
     embeddings_index = create_embed_index()
-
+    counter = 0
     for cv_train, cv_test in folds:
+        if f_num!=counter:
+            print 'Skipping_{}'.format(counter)
+            counter+=1
+            continue
+        else:
+            counter+=1
+
         print explore_target_ratio(cv_train)
         print explore_target_ratio(cv_test)
         print '========================================'
@@ -467,10 +477,11 @@ def do_lstm_stacking():
 
         cv_test['prob'] = preds
         cv_test = cv_test[~cv_test.index.duplicated(keep='first')]
+        cv_test[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
-        update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
+        # update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
 
-    update_df[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
+    # update_df[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
 descr= \
 """
@@ -479,6 +490,6 @@ lstm_with_magics_glove
 
 name='lstm_with_magics_oversample_glove_10'
 
-do_lstm_stacking()
-push_to_gs(name, descr)
+do_lstm_stacking(sys.argv[1])
+push_to_gs(name, descr, sys.argv[1])
 done()
