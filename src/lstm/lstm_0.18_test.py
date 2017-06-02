@@ -243,7 +243,7 @@ def generate_data_for_lstm(cv_train, cv_test):
 folds = create_folds(load_train())
 cv_train, cv_test=folds[0]
 
-cv_train, cv_test = cv_train.head(1000), cv_test.head(1000)
+# cv_train, cv_test = cv_train.head(1000), cv_test.head(1000)
 
 
 data_1, data_2, leaks, \
@@ -350,7 +350,7 @@ model.compile(loss='binary_crossentropy',
 #model.summary()
 print(STAMP)
 
-early_stopping =EarlyStopping(monitor='val_loss', patience=3)
+early_stopping =EarlyStopping(monitor='val_loss', patience=5)
 bst_model_path = STAMP + '.h5'
 model_checkpoint = ModelCheckpoint(bst_model_path, save_best_only=True, save_weights_only=True)
 
@@ -358,7 +358,7 @@ fit_data = [data_1, data_2, leaks]
 
 hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
                  validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
-                 epochs=5, batch_size=2048, shuffle=True, \
+                 epochs=200, batch_size=2048, shuffle=True, \
                  class_weight=class_weight, callbacks=[early_stopping, model_checkpoint])
 
 

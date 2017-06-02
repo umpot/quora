@@ -30,7 +30,9 @@ cd ..
 #fi
 
 #gcloud compute copy-files ~/Desktop/libcudnn5_5.1.10-1+cuda8.0_amd64.deb kg1:/home/dd_petrovskiy/tmp
+wget https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v5.1/prod_20161129/8.0/libcudnn5_5.1.10-1+cuda8.0_amd64-deb
 #sudo dpkg -i libcudnn5_5.1.10-1+cuda8.0_amd64.deb
+
 
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
