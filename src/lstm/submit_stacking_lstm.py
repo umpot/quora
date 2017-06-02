@@ -352,134 +352,133 @@ def generate_data_for_lstm(cv_train, cv_test):
 
 
 def do_lstm_stacking():
-    update_df = load_train()
+    update_df = load_test()
     # folds = create_folds(update_df)
+
+    cv_train, cv_test = load_train(), load_test()
 
     update_df = update_df.head(5000)
     folds = get_dummy_folds(update_df)
 
     embeddings_index = create_embed_index()
 
-    for cv_train, cv_test in folds:
-        print explore_target_ratio(cv_train)
-        print explore_target_ratio(cv_test)
-        print '========================================'
+    print explore_target_ratio(cv_train)
+    print '========================================'
 
-        cv_train, cv_test = oversample(cv_train, cv_test, 42)
+    cv_train, cv_test = oversample(cv_train, cv_test, 42)
 
-        print explore_target_ratio(cv_train)
-        print explore_target_ratio(cv_test)
+    print explore_target_ratio(cv_train)
 
 
-        data_1, data_2, leaks, \
-        test_data_1, test_data_2, test_leaks, \
-        train_labels, test_labels, test_ids, word_index = \
-            generate_data_for_lstm(cv_train, cv_test)
+    data_1, data_2, leaks, \
+    test_data_1, test_data_2, test_leaks, \
+    train_labels, test_labels, test_ids, word_index = \
+        generate_data_for_lstm(cv_train, cv_test)
 
-        ########################################
-        ## prepare embeddings
-        ########################################
-        print('Preparing embedding matrix')
+    ########################################
+    ## prepare embeddings
+    ########################################
+    print('Preparing embedding matrix')
 
-        nb_words = min(MAX_NB_WORDS, len(word_index))+1
+    nb_words = min(MAX_NB_WORDS, len(word_index))+1
 
-        embedding_matrix = np.zeros((nb_words, EMBEDDING_DIM))
-        for word, i in word_index.items():
-            embedding_vector = embeddings_index.get(word)
-            if embedding_vector is not None:
-                embedding_matrix[i] = embedding_vector
-        print('Null word embeddings: %d' % np.sum(np.sum(embedding_matrix, axis=1) == 0))
+    embedding_matrix = np.zeros((nb_words, EMBEDDING_DIM))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_index.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    print('Null word embeddings: %d' % np.sum(np.sum(embedding_matrix, axis=1) == 0))
 
-        ########################################
-        ## sample train/validation data
-        ########################################
+    ########################################
+    ## sample train/validation data
+    ########################################
 
-        data_1_train = np.vstack((data_1, data_2))
-        data_2_train = np.vstack((data_2, data_1))
-        leaks_train = np.vstack((leaks, leaks))
-        labels_train = np.concatenate((train_labels, train_labels))
+    data_1_train = np.vstack((data_1, data_2))
+    data_2_train = np.vstack((data_2, data_1))
+    leaks_train = np.vstack((leaks, leaks))
+    labels_train = np.concatenate((train_labels, train_labels))
 
-        data_1_val = np.vstack((test_data_1, test_data_2))
-        data_2_val = np.vstack((test_data_2, test_data_1))
-        leaks_val = np.vstack((test_leaks, test_leaks))
-        labels_val = np.concatenate((test_labels, test_labels))
+    data_1_val = np.vstack((test_data_1, test_data_2))
+    data_2_val = np.vstack((test_data_2, test_data_1))
+    leaks_val = np.vstack((test_leaks, test_leaks))
+    labels_val = np.concatenate((test_labels, test_labels))
 
-        weight_val = np.ones(len(labels_val))
-        if re_weight:
-            weight_val *= 0.472001959
-            weight_val[labels_val==0] = 1.309028344
-
-
-        ########################################
-        ## define the model structure
-        ########################################
-        embedding_layer = Embedding(nb_words,
-                                    EMBEDDING_DIM,
-                                    weights=[embedding_matrix],
-                                    input_length=MAX_SEQUENCE_LENGTH,
-                                    trainable=False)
-        lstm_layer = LSTM(num_lstm, dropout=rate_drop_lstm, recurrent_dropout=rate_drop_lstm)
-
-        sequence_1_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
-        embedded_sequences_1 = embedding_layer(sequence_1_input)
-        x1 = lstm_layer(embedded_sequences_1)
-
-        sequence_2_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
-        embedded_sequences_2 = embedding_layer(sequence_2_input)
-        y1 = lstm_layer(embedded_sequences_2)
-
-        leaks_input = Input(shape=(leaks.shape[1],))
-        leaks_dense = Dense(num_dense/2, activation=act)(leaks_input)
-
-        merged = concatenate([x1, y1, leaks_dense])
-        merged = Dropout(rate_drop_dense)(merged)
-        merged = BatchNormalization()(merged)
-
-        merged = Dense(num_dense, activation=act)(merged)
-        merged = Dropout(rate_drop_dense)(merged)
-        merged = BatchNormalization()(merged)
-
-        preds = Dense(1, activation='sigmoid')(merged)
-
-        ########################################
-
-        ########################################
-        ## train the model
-        ########################################
-
-        model = Model(inputs=[sequence_1_input, sequence_2_input, leaks_input], \
-                      outputs=preds)
-        model.compile(loss='binary_crossentropy',
-                      optimizer='nadam',
-                      metrics=['acc'])
-        #model.summary()
-        print(STAMP)
-
-        early_stopping =EarlyStopping(monitor='val_loss', patience=5)
-        bst_model_path = STAMP + '.h5'
-        model_checkpoint = ModelCheckpoint(bst_model_path, save_best_only=True, save_weights_only=True)
+    weight_val = np.ones(len(labels_val))
+    if re_weight:
+        weight_val *= 0.472001959
+        weight_val[labels_val==0] = 1.309028344
 
 
-        hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
-                         validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
-                         epochs=10, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
+    ########################################
+    ## define the model structure
+    ########################################
+    embedding_layer = Embedding(nb_words,
+                                EMBEDDING_DIM,
+                                weights=[embedding_matrix],
+                                input_length=MAX_SEQUENCE_LENGTH,
+                                trainable=False)
+    lstm_layer = LSTM(num_lstm, dropout=rate_drop_lstm, recurrent_dropout=rate_drop_lstm)
+
+    sequence_1_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+    embedded_sequences_1 = embedding_layer(sequence_1_input)
+    x1 = lstm_layer(embedded_sequences_1)
+
+    sequence_2_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+    embedded_sequences_2 = embedding_layer(sequence_2_input)
+    y1 = lstm_layer(embedded_sequences_2)
+
+    leaks_input = Input(shape=(leaks.shape[1],))
+    leaks_dense = Dense(num_dense/2, activation=act)(leaks_input)
+
+    merged = concatenate([x1, y1, leaks_dense])
+    merged = Dropout(rate_drop_dense)(merged)
+    merged = BatchNormalization()(merged)
+
+    merged = Dense(num_dense, activation=act)(merged)
+    merged = Dropout(rate_drop_dense)(merged)
+    merged = BatchNormalization()(merged)
+
+    preds = Dense(1, activation='sigmoid')(merged)
+
+    ########################################
+
+    ########################################
+    ## train the model
+    ########################################
+
+    model = Model(inputs=[sequence_1_input, sequence_2_input, leaks_input], \
+                  outputs=preds)
+    model.compile(loss='binary_crossentropy',
+                  optimizer='nadam',
+                  metrics=['acc'])
+    #model.summary()
+    print(STAMP)
+
+    early_stopping =EarlyStopping(monitor='val_loss', patience=5)
+    bst_model_path = STAMP + '.h5'
+    model_checkpoint = ModelCheckpoint(bst_model_path, save_best_only=True, save_weights_only=True)
 
 
-        preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
-        preds += model.predict([test_data_2, test_data_1, test_leaks], batch_size=8192, verbose=1)
-        preds /= 2
+    hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
+                     validation_data=([data_1_val, data_2_val, leaks_val], labels_val, weight_val), \
+                     epochs=10, batch_size=2048, shuffle=True,callbacks=[early_stopping, model_checkpoint])
 
-        cv_test['prob'] = preds
-        cv_test = cv_test[~cv_test.index.duplicated(keep='first')]
 
-        update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
+    preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
+    preds += model.predict([test_data_2, test_data_1, test_leaks], batch_size=8192, verbose=1)
+    preds /= 2
+
+    cv_test = cv_test[~cv_test.index.duplicated(keep='first')]
+
+    cv_test['prob'] = preds
+    update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
 
     update_df.to_csv('probs.csv', index_label='id')
 
 descr= \
-"""
-lstm_with_magics_glove
-"""
+    """
+    lstm_with_magics_glove
+    """
 
 name='lstm_with_magics_oversample_glove_10'
 
