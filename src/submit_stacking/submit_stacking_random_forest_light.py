@@ -698,13 +698,15 @@ def submit_xgb(name):
     train_df = load_train_all_xgb()
     test_df = load_test_all_xgb()
 
-    blja_nan(train_df)
-    blja_nan(test_df)
+
 
     update_df = get_update_df_submit()
 
     for df in [train_df, test_df]:
         preprocess_df(df)
+
+    blja_nan(train_df)
+    blja_nan(test_df)
 
     train_df = fix_train_columns(train_df, test_df)
 

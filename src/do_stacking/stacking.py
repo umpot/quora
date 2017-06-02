@@ -154,8 +154,8 @@ experiments = [
     'stacking_no_top_tokens_light',
     'stacking_only_glove_emb_light',
     'stacking_only_lex_emb_light',
-    'stacking_only_word2vec_emb_light'
-    # 'stacking_lstm'
+    'stacking_only_word2vec_emb_light',
+    'stacking_lstm'
 ]
 
 def perform_xgb_cv():
@@ -241,7 +241,7 @@ def apply_stacking():
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=120,
+    estimator = xgb.XGBClassifier(n_estimators=200,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=3,
@@ -265,8 +265,8 @@ def apply_stacking():
     test_arr[TARGET] = proba[:,1]
 
     res = test_df[[TARGET]]
-    res.to_csv('{}.csv'.format('stacking1'), index=True, index_label='test_id')
+    res.to_csv('{}.csv'.format('stacking_with_lstm'), index=True, index_label='test_id')
 
 
-perform_xgb_cv()
-# apply_stacking()
+# perform_xgb_cv()
+apply_stacking()
