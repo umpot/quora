@@ -279,7 +279,6 @@ def shuffle_df(df, random_state=42):
 
 #token words, not lower, lemmas, top idf, nouns etc
 def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
-    print 'Remove stopwords == {}'.format(remove_stop_words==True)
     # Clean the text, with the option to remove stopwords and to stem words.
 
     # Convert words to lower case and split them
@@ -380,6 +379,8 @@ def get_emb_index(emb_type):
 
 
 def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
+    print 'Remove stopwords == {}'.format(remove_stop_words==True)
+
     cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
     cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
     texts_1=[x for x in cv_train['texts_1']]
@@ -392,7 +393,6 @@ def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
     test_texts_1 = [x for x in cv_test['texts_1']]
     test_texts_2 = [x for x in cv_test['texts_2']]
     test_ids = [x for x in cv_test.index]
-    test_labels = [x for x in cv_test[TARGET]]
 
     tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
     tokenizer.fit_on_texts(texts_1 + texts_2 + test_texts_1 + test_texts_2)
@@ -425,7 +425,7 @@ def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
 
     return data_1, data_2, leaks, \
            test_data_1, test_data_2, test_leaks, \
-           train_labels, test_labels, test_ids, \
+           train_labels, test_ids, \
            word_index
 
 

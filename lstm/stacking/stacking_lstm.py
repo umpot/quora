@@ -312,7 +312,6 @@ def write_loss(f_num, type_of_cols, emb_type, remove_stop_words, loss):
 
 #token words, not lower, lemmas, top idf, nouns etc
 def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
-    print 'Remove stopwords == {}'.format(remove_stop_words==True)
     # Clean the text, with the option to remove stopwords and to stem words.
 
     # Convert words to lower case and split them
@@ -411,6 +410,8 @@ def get_emb_index(emb_type):
 
 
 def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
+    print 'Remove stopwords == {}'.format(remove_stop_words==True)
+
     cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
     cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
     texts_1=[x for x in cv_train['texts_1']]
