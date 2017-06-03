@@ -784,7 +784,7 @@ def perform_xgb_cv(name, mongo_host):
     out_loss('avg = {}'.format(np.mean(losses)))
 
 
-name='try_all1_light'
+name='try_all_with_pron_freq_light'
 perform_xgb_cv(name, gc_host)
 
 
