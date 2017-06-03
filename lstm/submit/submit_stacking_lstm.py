@@ -565,9 +565,9 @@ descr= \
 
     """
 
-name='lstm_with_magics_oversample_glove_10'
-
 type_of_cols, emb_type, remove_stop_words = sys.argv[1], sys.argv[2], sys.argv[3]
+name='lstm_{}_{}_re_stops_{}'.format(emb_type, type_of_cols, remove_stop_words)
+
 do_submit_lstm_stacking_submit(type_of_cols, emb_type, remove_stop_words)
 push_to_gs(name, descr)
 done()
