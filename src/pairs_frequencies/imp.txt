@@ -1,0 +1,485 @@
+0) q1_q2_intersect 0.0114680193365
+1) freq_question2 0.0101718790829
+2) freq_question1 0.00783319212496
+
+3) w_share_ratio_1_smooth_idf_dirty_lower_no_stops 0.00687517598271
+
+4) freq_1000_minus_min 0.00684699928388
+
+5) q1_k_max_core 0.00667793722823
+
+6) wh_quest_pair_freq 0.00645252177492
+
+7) w_share_ratio_1_smooth_idf_dirty_upper 0.00631163688377
+
+8) q2_k_max_core 0.00591715984046
+
+9) freq_100_minus_min 0.00569174392149
+
+10) glove_wmd_lemmas 0.00566356722265
+
+11) freq_50_minus_min 0.00538179790601
+
+12) aux_pair_freq 0.00538179790601
+
+13) skew_q2vec_lemmas_glove 0.00524091301486
+
+14) w_share_ratio_1_std_idf_dirty_lower_no_stops 0.00510002812371
+
+15) skew_q1vec_tokens_lex 0.00507185142487
+16) kur_q2vec_lemmas_lex 0.00498732039705
+17) kur_q1vec_lemmas_word2vec 0.00493096653372
+18) skew_q2vec_lemmas_lex 0.0048464355059
+19) skew_q2vec_tokens_lex 0.00481825880706
+
+
+20) lex_norm_wmd_tokens 0.00481825880706
+
+21) w_means_log_smooth_idf_tokens_lower 0.00467737391591
+
+22) kur_q2vec_tokens_lex 0.00462102005258
+
+23) skew_q1vec_tokens_glove 0.00459284288809
+
+24) freq_200_minus_min 0.00453648902476
+
+25) skew_q1vec_lemmas_word2vec 0.00450831232592
+
+26) w_share_ratio_3_std_idf_dirty_lower_no_stops 0.00448013516143
+
+27) w2_std_smooth_idf_dirty_upper 0.00448013516143
+
+28) w_means_log_std_idf_tokens_lower 0.0044237812981
+
+29) kur_q1vec_tokens_glove 0.0044237812981
+30) kur_vec_lemmas_word2vec_log_ratio 0.0044237812981
+31) skew_q2vec_tokens_glove 0.00439560459927
+
+32) freq_500_minus_min 0.00436742743477
+
+33) skew_q1vec_lemmas_glove 0.00436742743477
+34) skew_q1vec_lemmas_lex 0.00436742743477
+
+35) common_lemmas_ratio_no_stops 0.00431107357144
+
+36) w_share_smooth_idf_dirty_upper 0.00431107357144
+
+37) freq_1000_plus_mean 0.00431107357144
+
+38) abi_kur_q2vec 0.00431107357144
+
+39) w_share_std_idf_dirty_lower_no_stops 0.00428289640695
+
+40) freq_50_minus_std 0.00428289640695
+
+41) kur_vec_tokens_word2vec_log_ratio 0.00428289640695
+42) kur_q2vec_lemmas_word2vec 0.00425471970811
+
+43) w_share_ratio_3_smooth_idf_dirty_upper 0.00422654254362
+44) w_means_log_smooth_idf_dirty_upper 0.00422654254362
+45) w_share_ratio_1_std_idf_tokens_lower 0.00422654254362
+
+46) abi_skew_q2vec 0.00422654254362
+47) kur_q2vec_tokens_glove 0.00422654254362
+48) kur_q1vec_tokens_lex 0.00422654254362
+
+49) w1_std_std_idf_dirty_lower_no_stops 0.00419836584479
+50) w_share_smooth_idf_dirty_lower_no_stops 0.00417018868029
+
+51) freq_1000_plus_max 0.00417018868029
+
+52) kur_vec_tokens_word2vec_q1_ratio 0.00417018868029
+
+53) w1_std_smooth_idf_tokens_lower 0.00414201198146
+
+54) word2vec_norm_wmd_lemmas 0.00411383481696
+
+55) abi_kur_q1vec 0.00408565811813
+
+56) kur_q2vec_lemmas_glove 0.00405748095363
+
+57) w1_std_smooth_idf_dirty_upper 0.0040293042548
+
+58) kur_q1vec_lemmas_lex 0.0040293042548
+
+59) w_share_ratio_1_std_idf_dirty_upper 0.00400112709031
+
+60) upper_plus_freq_200 0.00397294992581
+
+61) freq_1000_minus_g_mean 0.00397294992581
+
+62) kur_vec_tokens_lex_log_ratio 0.00397294992581
+
+63) w_means_log_smooth_idf_dirty_lower_no_stops 0.00394477322698
+64) w2_std_smooth_idf_tokens_lower 0.00394477322698
+65) w_means_log_std_idf_tokens_lower_no_stops 0.00394477322698
+66) w_share_ratio_3_std_idf_tokens_lower 0.00388841936365
+67) w_means_log_smooth_idf_tokens_lower_no_stops 0.00388841936365
+68) w_means_log_std_idf_dirty_lower_no_stops 0.00383206526749
+
+69) lemmas_partial_ratio 0.00380388833582
+
+70) w_means_log_std_idf_dirty_upper 0.00380388833582
+71) w_share_std_idf_tokens_lower 0.00377571140416
+
+72) freq_500_plus_max 0.00377571140416
+
+73) stems_token_set_ratio 0.0037475344725
+
+74) lex_norm_wmd_lemmas 0.0037475344725
+
+75) w1_std_std_idf_dirty_upper 0.00371935754083
+
+76) kur_vec_lemmas_lex_log_ratio 0.00371935754083
+
+77) freq_1000_minus_mean 0.00369118060917
+78) freq_1000_minus_max 0.00369118060917
+
+79) stems_sorensen 0.0036630036775
+
+80) w2_mean_smooth_idf_dirty_upper 0.0036630036775
+81) w2_std_std_idf_tokens_lower_no_stops 0.0036630036775
+
+82) freq_50_minus_max 0.0036630036775
+
+83) spacial_prep_pair_freq 0.0036630036775
+
+84) len_char_ratio 0.00363482674584
+85) w2_std_std_idf_dirty_lower_no_stops 0.00363482674584
+86) w1_std_smooth_idf_dirty_lower_no_stops 0.00360664981417
+87) aux_q1_freq 0.00360664981417
+88) kur_vec_tokens_lex_abs_diff 0.00360664981417
+89) w2_std_std_idf_dirty_upper 0.00357847288251
+90) w_share_ratio_3_std_idf_dirty_upper 0.00357847288251
+91) w1_std_std_idf_tokens_lower_no_stops 0.00357847288251
+92) upper_minus_freq_200 0.00357847288251
+93) freq_50_minus_mean 0.00357847288251
+94) abi_skew_q1vec 0.00357847288251
+95) freq_1000_plus_g_mean 0.00355029595084
+96) kur_vec_tokens_glove_log_ratio 0.00355029595084
+97) kur_vec_lemmas_lex_abs_diff 0.00355029595084
+98) stems_token_sort_ratio 0.00352211901918
+99) w_share_smooth_idf_tokens_lower 0.00352211901918
+100) w2_std_std_idf_tokens_lower 0.00352211901918
+101) aux_q2_freq 0.00352211901918
+102) kur_vec_lemmas_glove_abs_diff 0.00352211901918
+103) freq_200_plus_min 0.00349394185469
+104) w2_std_smooth_idf_tokens_lower_no_stops 0.00346576492302
+105) skew_q2vec_lemmas_word2vec 0.00346576492302
+106) kur_q1vec_lemmas_glove 0.00346576492302
+107) w2_mean_std_idf_tokens_lower 0.00343758799136
+108) freq_1000_minus_max_min_ratio 0.00343758799136
+109) tokens_sorensen 0.00338123412803
+110) freq_50_plus_std 0.00338123412803
+111) freq_500_minus_mean 0.00338123412803
+112) glove_wmd_tokens 0.0033248802647
+113) kur_vec_tokens_glove_abs_diff 0.0033248802647
+114) kur_vec_lemmas_word2vec_q1_ratio 0.0033248802647
+115) w2_std_smooth_idf_dirty_lower_no_stops 0.00329670333304
+116) kur_vec_tokens_word2vec_abs_diff 0.00329670333304
+117) kur_vec_tokens_word2vec_1div2_ratio 0.00329670333304
+118) kur_vec_lemmas_lex_q1_ratio 0.00329670333304
+119) w2_mean_std_idf_dirty_upper 0.00326852640137
+120) freq_100_plus_min 0.00326852640137
+121) freq_1000_minus_std 0.00326852640137
+122) w_share_std_idf_dirty_upper 0.00324034946971
+123) w_share_smooth_idf_tokens_lower_no_stops 0.00324034946971
+124) freq_100_plus_max 0.00324034946971
+125) freq_100_minus_std 0.00324034946971
+126) freq_100_minus_max 0.00324034946971
+127) lemmas_nlevenshtein 0.00321217253804
+128) w2_mean_smooth_idf_tokens_lower_no_stops 0.00321217253804
+129) kur_vec_lemmas_glove_log_ratio 0.00321217253804
+130) freq_1000_plus_max_min_ratio 0.00318399560638
+131) lemmas_token_sort_ratio 0.00315581844188
+132) tokens_partial_ratio 0.00315581844188
+133) freq_100_minus_max_min_ratio 0.00315581844188
+134) lemmas_sorensen 0.00312764151022
+135) w2_mean_smooth_idf_tokens_lower 0.00312764151022
+136) freq_50_plus_max 0.00312764151022
+137) freq_1000_plus_min 0.00312764151022
+138) ind_pron_pair_freq 0.00312764151022
+139) kur_vec_lemmas_word2vec_1div2_ratio 0.00312764151022
+140) w2_mean_std_idf_dirty_lower_no_stops 0.00309946457855
+141) w_share_ratio_1_smooth_idf_tokens_lower_no_stops 0.00309946457855
+142) w2_sum_smooth_idf_dirty_lower_no_stops 0.00307128764689
+143) kur_vec_tokens_lex_1div2_ratio 0.00307128764689
+144) lemmas_partial_token_sort_ratio 0.00304311071523
+145) tokens_nlevenshtein 0.00304311071523
+146) w1_mean_std_idf_dirty_upper 0.00304311071523
+147) abi_norm_wmd 0.00304311071523
+148) freq_500_plus_min 0.00301493378356
+149) freq_1000_plus_std 0.00301493378356
+150) w1_mean_smooth_idf_dirty_lower_no_stops 0.0029867568519
+151) w1_mean_smooth_idf_tokens_lower 0.0029867568519
+152) w1_mean_std_idf_tokens_lower 0.0029867568519
+153) freq_500_minus_g_mean 0.0029867568519
+154) len_char_q2 0.00295857992023
+155) freq_200_minus_max 0.00295857992023
+156) stems_partial_ratio 0.00293040298857
+157) w2_sum_smooth_idf_dirty_upper 0.00293040298857
+158) w_share_ratio_3_smooth_idf_tokens_lower 0.00293040298857
+159) freq_50_plus_g_mean 0.00293040298857
+160) freq_200_plus_max 0.00293040298857
+161) freq_200_minus_std 0.00293040298857
+162) freq_500_minus_std 0.00293040298857
+163) w_share_ratio_3_smooth_idf_dirty_lower_no_stops 0.0029022260569
+164) freq_50_plus_max_min_ratio 0.0029022260569
+165) freq_50_minus_max_min_ratio 0.0029022260569
+166) freq_500_plus_std 0.0029022260569
+167) w1_std_std_idf_tokens_lower 0.00287404912524
+168) freq_500_plus_max_min_ratio 0.00287404912524
+169) kur_vec_lemmas_lex_1div2_ratio 0.00287404912524
+170) w2_sum_std_idf_tokens_lower_no_stops 0.00284587196074
+171) freq_100_minus_mean 0.00284587196074
+172) freq_500_plus_mean 0.00284587196074
+173) stems_nlevenshtein 0.00281769502908
+174) w_share_ratio_1_std_idf_tokens_lower_no_stops 0.00281769502908
+175) freq_200_minus_max_min_ratio 0.00281769502908
+176) kur_vec_lemmas_word2vec_abs_diff 0.00281769502908
+177) w1_mean_smooth_idf_dirty_upper 0.00276134116575
+178) w_share_ratio_1_smooth_idf_tokens_lower 0.00276134116575
+179) w_share_std_idf_tokens_lower_no_stops 0.00276134116575
+180) lemmas_levenshtein 0.00273316423409
+181) w1_sum_std_idf_dirty_lower_no_stops 0.00273316423409
+182) freq_50_minus_g_mean 0.00273316423409
+183) freq_500_plus_g_mean 0.00273316423409
+184) len_char_diff 0.00270498730242
+185) freq_200_minus_g_mean 0.00267681037076
+186) freq_200_plus_std 0.00264863343909
+187) kur_vec_tokens_lex_q1_ratio 0.00264863343909
+188) common_lemmas_ratio 0.00262045650743
+189) w_share_ratio_3_smooth_idf_tokens_lower_no_stops 0.00262045650743
+190) freq_500_minus_max 0.00262045650743
+191) w1_mean_std_idf_tokens_lower_no_stops 0.00259227957577
+192) freq_100_plus_mean 0.00259227957577
+193) freq_200_minus_mean 0.00259227957577
+194) w1_mean_std_idf_dirty_lower_no_stops 0.0025641026441
+195) freq_500_minus_max_min_ratio 0.0025641026441
+196) freq_50_plus_min 0.00253592571244
+197) common_stems_ratio 0.00247957161628
+198) w1_sum_smooth_idf_dirty_upper 0.00247957161628
+199) w2_sum_std_idf_dirty_upper 0.00247957161628
+200) w1_mean_smooth_idf_tokens_lower_no_stops 0.00247957161628
+201) freq_100_plus_std 0.00247957161628
+202) freq_200_plus_g_mean 0.00247957161628
+203) len_char_q1 0.00245139468461
+204) freq_50_plus_mean 0.00245139468461
+205) lex_wmd_tokens 0.00245139468461
+206) w2_sum_smooth_idf_tokens_lower_no_stops 0.00242321775295
+207) glove_norm_wmd_tokens 0.00242321775295
+208) lex_wmd_lemmas 0.00242321775295
+209) w2_mean_smooth_idf_dirty_lower_no_stops 0.00239504082128
+210) freq_100_plus_max_min_ratio 0.00239504082128
+211) glove_norm_wmd_lemmas 0.00239504082128
+212) stop_words_ratio_q1 0.00236686388962
+213) w1_sum_std_idf_dirty_upper 0.00236686388962
+214) w1_std_smooth_idf_tokens_lower_no_stops 0.00236686388962
+215) pers_pron_pair_freq 0.00236686388962
+216) freq_200_plus_mean 0.00233868695796
+217) w2_sum_smooth_idf_tokens_lower 0.00231051002629
+218) w2_mean_std_idf_tokens_lower_no_stops 0.00231051002629
+219) w1_sum_std_idf_tokens_lower 0.00228233309463
+220) w1_sum_std_idf_tokens_lower_no_stops 0.00228233309463
+221) kur_vec_tokens_glove_1div2_ratio 0.00228233309463
+222) canberra_distance_lemmas_glove 0.00225415616296
+223) kur_vec_lemmas_glove_1div2_ratio 0.0022259792313
+224) canberra_distance_tokens_glove 0.00219780229963
+225) freq_200_plus_max_min_ratio 0.00216962513514
+226) word2vec_wmd_lemmas 0.00216962513514
+227) w1_sum_smooth_idf_dirty_lower_no_stops 0.00214144820347
+228) w1_sum_smooth_idf_tokens_lower_no_stops 0.00214144820347
+229) freq_100_minus_g_mean 0.00214144820347
+230) spacial_prep_q2_freq 0.00214144820347
+231) len_word_ratio 0.00211327127181
+232) tokens_levenshtein 0.00211327127181
+233) w2_sum_std_idf_tokens_lower 0.00211327127181
+234) w2_max_smooth_idf_dirty_upper 0.00208509434015
+235) abi_wmd 0.00208509434015
+236) w_share_ratio_3_std_idf_tokens_lower_no_stops 0.00205691740848
+237) kur_q2vec_tokens_word2vec 0.00205691740848
+238) time_prep_pair_freq 0.00205691740848
+239) w2_sum_std_idf_dirty_lower_no_stops 0.00200056354515
+240) w1_sum_smooth_idf_tokens_lower 0.00200056354515
+241) cityblock_distance_lemmas_glove 0.00200056354515
+242) stop_words_ratio_q2 0.00197238661349
+243) stems_partial_token_sort_ratio 0.00197238661349
+244) canberra_distance_tokens_lex 0.00197238661349
+245) subj_pron_pair_freq 0.00197238661349
+246) lemmas_token_set_ratio 0.00191603263374
+247) cosine_distance_tokens_glove 0.00191603263374
+248) pers_pron_q1_freq 0.00191603263374
+249) minkowski_distance_lemmas_glove 0.00188785570208
+250) w2_max_smooth_idf_dirty_lower_no_stops 0.00185967877042
+251) w1_max_smooth_idf_dirty_upper 0.00185967877042
+252) freq_1000_minus_len 0.00185967877042
+253) cosine_distance_lemmas_lex 0.00185967877042
+254) len_word_expt_stop_ratio 0.00183150183875
+255) w1_max_smooth_idf_dirty_lower_no_stops 0.00183150183875
+256) skew_q1vec_tokens_word2vec 0.00183150183875
+257) wh_quest_q1_freq 0.00183150183875
+258) tokens_kulsinski 0.00177514797542
+259) w1_min_std_idf_dirty_lower_no_stops 0.00177514797542
+260) freq_100_plus_g_mean 0.00177514797542
+261) tokens_token_sort_ratio 0.00174697092734
+262) w1_max_std_idf_dirty_upper 0.00174697092734
+263) cosine_distance_lemmas_glove 0.00174697092734
+264) braycurtis_distance_lemmas_glove 0.00174697092734
+265) stems_QRatio 0.00171879399568
+266) minkowski_distance_tokens_glove 0.00171879399568
+267) stems_levenshtein 0.00169061706401
+268) skew_q2vec_tokens_word2vec 0.00169061706401
+269) spacial_prep_q1_freq 0.00169061706401
+270) lemmas_WRatio 0.00166244013235
+271) tokens_partial_token_sort_ratio 0.00166244013235
+272) w1_min_smooth_idf_tokens_lower_no_stops 0.00166244013235
+273) wh_quest_q2_freq 0.00166244013235
+274) cosine_distance_tokens_lex 0.00163426320069
+275) tokens_WRatio 0.00157790922094
+276) kur_q1vec_tokens_word2vec 0.00157790922094
+277) canberra_distance_lemmas_lex 0.00157790922094
+278) w2_min_smooth_idf_tokens_lower_no_stops 0.00154973228928
+279) abi_canberra_distance 0.00154973228928
+280) braycurtis_distance_tokens_glove 0.00154973228928
+281) minkowski_distance_lemmas_lex 0.00154973228928
+282) pers_pron_q2_freq 0.00154973228928
+283) tokens_token_set_ratio 0.00152155535761
+284) w2_max_std_idf_dirty_upper 0.00152155535761
+285) word2vec_norm_wmd_tokens 0.00152155535761
+286) w2_min_smooth_idf_dirty_lower_no_stops 0.00149337842595
+287) w1_max_std_idf_dirty_lower_no_stops 0.00146520149428
+288) w2_min_std_idf_dirty_lower_no_stops 0.00146520149428
+289) w2_max_smooth_idf_tokens_lower 0.00146520149428
+290) cosine_distance_lemmas_word2vec 0.00146520149428
+291) minkowski_distance_tokens_lex 0.00143702456262
+292) ind_pron_q1_freq 0.00143702456262
+293) w2_max_std_idf_dirty_lower_no_stops 0.00138067058288
+294) canberra_distance_lemmas_word2vec 0.00138067058288
+295) subj_pron_q1_freq 0.00138067058288
+296) w1_min_smooth_idf_dirty_lower_no_stops 0.00135249365121
+297) w1_max_smooth_idf_tokens_lower 0.00135249365121
+298) ind_pron_q2_freq 0.00135249365121
+299) kur_vec_tokens_glove_q1_ratio 0.00135249365121
+300) kur_vec_lemmas_glove_q1_ratio 0.00135249365121
+301) w1_min_smooth_idf_dirty_upper 0.00132431671955
+302) w1_min_smooth_idf_tokens_lower 0.00132431671955
+303) w1_max_std_idf_tokens_lower_no_stops 0.00132431671955
+304) wh1 0.00132431671955
+305) lemmas_QRatio 0.00129613978788
+306) braycurtis_distance_tokens_lex 0.00129613978788
+307) subj_pron_q2_freq 0.00129613978788
+308) stems_WRatio 0.00126796285622
+309) cityblock_distance_tokens_lex 0.00126796285622
+310) w2_min_std_idf_tokens_lower_no_stops 0.00123978580814
+311) cityblock_distance_tokens_glove 0.00123978580814
+312) w2_max_std_idf_tokens_lower 0.00118343194481
+313) cityblock_distance_lemmas_word2vec 0.00118343194481
+314) len_word_q2 0.00115525501315
+315) w2_min_smooth_idf_dirty_upper 0.00112707808148
+316) wh2 0.00112707808148
+317) common_stems_num 0.00109890114982
+318) braycurtis_distance_lemmas_lex 0.00109890114982
+319) abi_cosine_distance 0.00107072410174
+320) w1_max_std_idf_tokens_lower 0.00101437023841
+321) cityblock_distance_lemmas_lex 0.00101437023841
+322) w1_min_std_idf_tokens_lower_no_stops 0.000986193306744
+323) wh_same 0.000986193306744
+324) braycurtis_distance_lemmas_word2vec 0.000986193306744
+325) tokens_QRatio 0.000958016316872
+326) w2_min_smooth_idf_tokens_lower 0.000958016316872
+327) abi_cityblock_distance 0.000958016316872
+328) time_prep_q1_freq 0.000929839385208
+329) common_lemmas_num 0.000873485463671
+330) w2_max_std_idf_tokens_lower_no_stops 0.000873485463671
+331) freq_500_minus_len 0.000845308532007
+332) canberra_distance_tokens_word2vec 0.000845308532007
+333) word2vec_wmd_tokens 0.000845308532007
+334) kur_vec_tokens_lex_q2_ratio 0.000845308532007
+335) len_word_expt_stop_diff 0.000817131600343
+336) abi_minkowski_distance 0.000817131600343
+337) obj_pron_pair_freq 0.000817131600343
+338) w2_max_smooth_idf_tokens_lower_no_stops 0.000788954610471
+339) quant_prep_pair_freq 0.000788954610471
+340) w1_max_smooth_idf_tokens_lower_no_stops 0.000760777678806
+341) freq_1000_plus_len 0.000760777678806
+342) cosine_distance_tokens_word2vec 0.000760777678806
+343) minkowski_distance_tokens_word2vec 0.000760777678806
+344) freq_200_minus_len 0.000732600747142
+345) kur_vec_lemmas_word2vec_q2_ratio 0.000732600747142
+346) len_word_expt_stop_q1 0.000676246825606
+347) common_lemmas_num_no_stops 0.000676246825606
+348) len_word_diff 0.000648069893941
+349) time_prep_q2_freq 0.000648069893941
+350) kur_vec_lemmas_lex_q2_ratio 0.000648069893941
+351) minkowski_distance_lemmas_word2vec 0.000619892904069
+352) len_word_q1 0.000591715972405
+353) abi_braycurtis_distance 0.000591715972405
+354) braycurtis_distance_tokens_word2vec 0.000591715972405
+355) kur_vec_tokens_word2vec_q2_ratio 0.000591715972405
+356) freq_50_minus_len 0.000563539040741
+357) kur_vec_tokens_glove_q2_ratio 0.000535362050869
+358) len_word_expt_stop_q2 0.000450831226772
+359) freq_500_plus_len 0.000422654266004
+360) w1_min_std_idf_dirty_upper 0.000394477305235
+361) freq_100_minus_len 0.000366300373571
+362) euclidean_distance_tokens_lex 0.000366300373571
+363) euclidean_distance_lemmas_glove 0.000338123412803
+364) freq_50_plus_len 0.000309946452035
+365) obj_pron_q2_freq 0.000309946452035
+366) w2_min_std_idf_dirty_upper 0.00028176952037
+367) freq_200_plus_len 0.00028176952037
+368) cityblock_distance_tokens_word2vec 0.00028176952037
+369) euclidean_distance_lemmas_lex 0.00028176952037
+370) obj_pron_q1_freq 0.00028176952037
+371) w2_min_std_idf_tokens_lower 0.000253592559602
+372) freq_100_plus_len 0.000253592559602
+373) euclidean_distance_lemmas_word2vec 0.000253592559602
+374) refl_pron_pair_freq 0.000253592559602
+375) w1_min_std_idf_tokens_lower 0.000197238652618
+376) kur_vec_lemmas_glove_q2_ratio 0.000197238652618
+377) abi_euclidean_distance 0.000169061706401
+378) euclidean_distance_tokens_glove 0.000169061706401
+379) euclidean_distance_tokens_word2vec 0.000140884760185
+380) quant_prep_q1_freq 0.000140884760185
+381) quant_prep_q2_freq 0.000140884760185
+382) poss_pron_pair_freq 0.000112707806693
+383) jaccard_distance_lemmas_glove 5.63539033465e-05
+384) jaccard_distance_lemmas_lex 5.63539033465e-05
+385) refl_pron_q1_freq 2.81769516732e-05
+386) poss_pron_q2_freq 2.81769516732e-05
+387) jaccard_distance_tokens_word2vec 0.0
+388) jaccard_distance_lemmas_word2vec 0.0
+389) jaccard_distance_tokens_glove 0.0
+390) jaccard_distance_tokens_lex 0.0
+391) refl_pron_q2_freq 0.0
+392) poss_pron_q1_freq 0.0
+393) skew_vec_tokens_word2vec_abs_diff 0.0
+394) skew_vec_tokens_word2vec_1div2_ratio 0.0
+395) skew_vec_tokens_word2vec_log_ratio 0.0
+396) skew_vec_tokens_word2vec_q1_ratio 0.0
+397) skew_vec_tokens_word2vec_q2_ratio 0.0
+398) skew_vec_tokens_glove_abs_diff 0.0
+399) skew_vec_tokens_glove_1div2_ratio 0.0
+400) skew_vec_tokens_glove_log_ratio 0.0
+401) skew_vec_tokens_glove_q1_ratio 0.0
+402) skew_vec_tokens_glove_q2_ratio 0.0
+403) skew_vec_tokens_lex_abs_diff 0.0
+404) skew_vec_tokens_lex_1div2_ratio 0.0
+405) skew_vec_tokens_lex_log_ratio 0.0
+406) skew_vec_tokens_lex_q1_ratio 0.0
+407) skew_vec_tokens_lex_q2_ratio 0.0
+408) skew_vec_lemmas_word2vec_abs_diff 0.0
+409) skew_vec_lemmas_word2vec_1div2_ratio 0.0
+410) skew_vec_lemmas_word2vec_log_ratio 0.0
+411) skew_vec_lemmas_word2vec_q1_ratio 0.0
+412) skew_vec_lemmas_word2vec_q2_ratio 0.0
+413) skew_vec_lemmas_glove_abs_diff 0.0
+414) skew_vec_lemmas_glove_1div2_ratio 0.0
+415) skew_vec_lemmas_glove_log_ratio 0.0
+416) skew_vec_lemmas_glove_q1_ratio 0.0
+417) skew_vec_lemmas_glove_q2_ratio 0.0
+418) skew_vec_lemmas_lex_abs_diff 0.0
+419) skew_vec_lemmas_lex_1div2_ratio 0.0
+420) skew_vec_lemmas_lex_log_ratio 0.0
+421) skew_vec_lemmas_lex_q1_ratio 0.0
+422) skew_vec_lemmas_lex_q2_ratio 0.0
