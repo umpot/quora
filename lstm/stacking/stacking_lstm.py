@@ -494,6 +494,7 @@ def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
     print 're {}'.format(remove_stop_words)
     print 'type re {}'.format(type(remove_stop_words))
     remove_stop_words = remove_stop_words == 'yes' or remove_stop_words == True
+    print 'suka {}'.format(remove_stop_words)
 
     col1, col2 = get_cols(type_of_cols)
     print 'Indexing...'
