@@ -451,7 +451,7 @@ def do_submit_lstm_stacking_submit(type_of_cols, emb_type, remove_stop_words):
 
 
     print 're {}'.format(remove_stop_words)
-    print 'type re {}'/format(type(remove_stop_words))
+    print 'type re {}'.format(type(remove_stop_words))
     remove_stop_words = remove_stop_words == 'yes' or remove_stop_words==True
 
     col1, col2 = get_cols(type_of_cols)
