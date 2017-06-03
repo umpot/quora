@@ -312,6 +312,7 @@ def write_loss(f_num, type_of_cols, emb_type, remove_stop_words, loss):
 
 #token words, not lower, lemmas, top idf, nouns etc
 def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
+    print 'Remove stopwords == {}'.format(remove_stop_words==True)
     # Clean the text, with the option to remove stopwords and to stem words.
 
     # Convert words to lower case and split them
@@ -372,7 +373,7 @@ def create_embed_index_word2vec():
     return word_index
 
 def create_embed_index_lex():
-    model = load_word2vec()
+    model = load_lex()
     word_index = {k:model[k] for k in model.vocab.keys()}
 
     return word_index
@@ -397,10 +398,13 @@ def create_embed_index_glove():
 
 def get_emb_index(emb_type):
     if emb_type=='glove':
+        print 'Loading Glove'
         return create_embed_index_glove()
     elif emb_type=='word2vec':
+        print 'Loading Word2vec'
         return create_embed_index_word2vec()
     elif emb_type == 'lex':
+        print 'Loading Lex'
         return create_embed_index_lex()
     raise Exception('Unknown emd_type {}'.format(emb_type))
 
@@ -458,8 +462,10 @@ def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
 
 def get_cols(type_of_cols):
     if type_of_cols == 'question':
+        print 'type of cols question'
         return question1, question2
     elif type_of_cols=='lemmas':
+        print 'type of cols lemmas'
         return lemmas_q1, lemmas_q2
     raise Exception('Unknown type_of_cols {}'.format(type_of_cols))
 
