@@ -3,6 +3,9 @@ import os
 import re
 import csv
 import codecs
+import traceback
+
+import gensim
 import numpy as np
 import pandas as pd
 import unicodedata
@@ -20,6 +23,7 @@ from keras.layers.merge import concatenate
 from keras.models import Model
 from keras.layers.normalization import BatchNormalization
 from keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.metrics import log_loss
 from sklearn.model_selection import StratifiedKFold
 
 from sklearn.preprocessing import StandardScaler
@@ -36,7 +40,10 @@ pd.set_option('display.max_colwidth', 100)
 
 TARGET = 'is_duplicate'
 qid1, qid2 = 'qid1', 'qid2'
+
 question1, question2 = 'question1', 'question2'
+tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
+lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 
 data_folder = '../../../data/'
 fp_train = data_folder + 'train.csv'
@@ -48,13 +55,32 @@ magic_test_fp = os.path.join(data_folder, 'magic', 'magic_test.csv')
 magic2_train_fp = os.path.join(data_folder, 'magic', 'magic2_train.csv')
 magic2_test_fp = os.path.join(data_folder, 'magic', 'magic2_test.csv')
 
+lemmas_train_fp = os.path.join(data_folder, 'nlp', 'lemmas_train.csv')
+lemmas_test_fp = os.path.join(data_folder, 'nlp', 'lemmas_test.csv')
+
+tokens_train_fp = os.path.join(data_folder, 'nlp', 'tokens_train.csv')
+tokens_test_fp = os.path.join(data_folder, 'nlp', 'tokens_test.csv')
+
+
 folds_fp = os.path.join(data_folder, 'top_k_freq', 'folds.json')
 
 MAX_SEQUENCE_LENGTH = 30
 MAX_NB_WORDS = 200000
 EMBEDDING_DIM = 300
 VALIDATION_SPLIT = 0.1
-EMBEDDING_FILE = os.path.join(data_folder, 'glove.840B.300d.txt')
+
+word2vec_model_fp = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
+glove_model_fp = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
+fasttext_model_fp=os.path.join(data_folder, 'wiki.en')
+lex_model_fp = os.path.join(data_folder, 'lexvec.commoncrawl.300d.W+C.pos.vectors.gz')
+
+def load_word2vec():
+    model= gensim.models.KeyedVectors.load_word2vec_format(word2vec_model_fp, binary=True)
+    return model
+
+def load_lex():
+    model= gensim.models.KeyedVectors.load_word2vec_format(lex_model_fp)
+    return model
 
 num_lstm = np.random.randint(175, 275)
 num_dense = np.random.randint(100, 150)
@@ -104,10 +130,42 @@ def fix_nans(df):
 
     return df
 
+def load_train_lemmas():
+    df = pd.read_csv(lemmas_train_fp, index_col='id')
+    df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+
+    for col in [lemmas_q1, lemmas_q2]:
+        df[col] = df[col].apply(del_pron)
+    return df
+
+
+def load_test_lemmas():
+    df = pd.read_csv(lemmas_test_fp, index_col='test_id')
+    df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+    for col in [lemmas_q1, lemmas_q2]:
+        df[col] = df[col].apply(del_pron)
+    return df
+
+def load_train_tokens():
+    df = pd.read_csv(tokens_train_fp, index_col='id')
+    df = df.fillna('')
+    return df
+
+
+def load_test_tokens():
+    df = pd.read_csv(tokens_test_fp, index_col='test_id')
+    df = df.fillna('')
+    return df
 
 def load_train():
     df = pd.concat([
         pd.read_csv(fp_train, index_col='id', encoding="utf-8"),
+        load_train_tokens(),
+        load_train_lemmas(),
         pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
         pd.read_csv(magic2_train_fp, index_col='id')],
         axis=1
@@ -119,6 +177,8 @@ def load_train():
 def load_test():
     df = pd.concat([
         pd.read_csv(fp_test, index_col='test_id', encoding="utf-8"),
+        load_test_tokens(),
+        load_test_lemmas(),
         pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
         pd.read_csv(magic2_test_fp, index_col='test_id')],
         axis=1
@@ -132,17 +192,17 @@ from time import gmtime, strftime, time
 def get_time_str():
     return strftime("%Y_%m_%d__%H_%M_%S", gmtime())
 
-def push_to_gs(name, descr, fold):
+def push_to_gs(name, descr):
     with open('descr.txt', 'w+') as f:
         f.writelines([descr])
 
     if name in os.listdir('.'):
         t=get_time_str()
-        subprocess.call(['mv', name, '{}_fold_{}_{}'.format(name,fold, t)])
+        subprocess.call(['mv', name, '{}_fold_{}_{}'.format(name, t)])
 
 
     script_name = os.path.basename(__file__)
-    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name, fold])
+    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name])
 
 
 def done():
@@ -220,6 +280,35 @@ def shuffle_df(df, random_state=42):
 ############################################################3
 ############################################################3
 ############################################################3
+gc_host = '104.197.97.20'
+local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
+
+def write_loss(f_num, type_of_cols, emb_type, remove_stop_words, loss):
+    from pymongo import MongoClient
+    name='lstm_{}_{}_re_stops_{}'.format(emb_type, type_of_cols, remove_stop_words)
+
+    client = MongoClient(gc_host, 27017)
+    client['admin'].authenticate(user, password)
+    db = client['lstm_stacking_cv']
+    collection = db[name]
+    try:
+        collection.insert_one({
+            'loss': loss,
+            'fold':f_num
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        # raise
+        # sleep(20)
+
+
+
+############################################################3
+############################################################3
+############################################################3
 
 #token words, not lower, lemmas, top idf, nouns etc
 def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
@@ -276,11 +365,21 @@ def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
     # Return a list of words
     return(text)
 
+def create_embed_index_word2vec():
+    model = load_word2vec()
+    word_index = {k:model[k] for k in model.vocab.keys()}
 
+    return word_index
 
-def create_embed_index():
+def create_embed_index_lex():
+    model = load_word2vec()
+    word_index = {k:model[k] for k in model.vocab.keys()}
+
+    return word_index
+
+def create_embed_index_glove():
     embed_index = {}
-    f = open(EMBEDDING_FILE)
+    f = open(glove_model_fp)
     count = 0
     for line in f:
         if count == 0:
@@ -296,17 +395,26 @@ def create_embed_index():
 
     return embed_index
 
+def get_emb_index(emb_type):
+    if emb_type=='glove':
+        return create_embed_index_glove()
+    elif emb_type=='word2vec':
+        return create_embed_index_word2vec()
+    elif emb_type == 'lex':
+        return create_embed_index_lex()
+    raise Exception('Unknown emd_type {}'.format(emb_type))
 
 
-def generate_data_for_lstm(cv_train, cv_test):
-    cv_train['texts_1'] = cv_train[question1].apply(text_to_wordlist)
-    cv_train['texts_2'] = cv_train[question2].apply(text_to_wordlist)
+
+def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
+    cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
+    cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
     texts_1=[x for x in cv_train['texts_1']]
     texts_2=[x for x in cv_train['texts_2']]
     train_labels = [x for x in cv_train[TARGET]]
 
-    cv_test['texts_1'] = cv_test[question1].apply(text_to_wordlist)
-    cv_test['texts_2'] = cv_test[question2].apply(text_to_wordlist)
+    cv_test['texts_1'] = cv_test[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
+    cv_test['texts_2'] = cv_test[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
 
     test_texts_1 = [x for x in cv_test['texts_1']]
     test_texts_2 = [x for x in cv_test['texts_2']]
@@ -348,20 +456,32 @@ def generate_data_for_lstm(cv_train, cv_test):
            word_index
 
 
+def get_cols(type_of_cols):
+    if type_of_cols == 'question':
+        return question1, question2
+    elif type_of_cols=='lemmas':
+        return lemmas_q1, lemmas_q2
+    raise Exception('Unknown type_of_cols {}'.format(type_of_cols))
 
 
 
-def do_lstm_stacking(f_num):
+
+
+def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
     f_num=int(f_num)
+    remove_stop_words = remove_stop_words == 'yes'
 
-    update_df = load_train()
-    folds = create_folds(update_df)
+    col1, col2 = get_cols(type_of_cols)
+    embeddings_index = get_emb_index(emb_type)
 
     # update_df = load_train()
-    # update_df = update_df.head(5000)
-    # folds = get_dummy_folds(update_df)
+    # folds = create_folds(update_df)
 
-    embeddings_index = create_embed_index()
+    update_df = load_train()
+    update_df = update_df.head(5000)
+    folds = get_dummy_folds(update_df)
+
+
     counter = 0
     for cv_train, cv_test in folds:
         print 'Len trainn {},Len test {}'.format(len(cv_train), len(cv_test))
@@ -387,7 +507,7 @@ def do_lstm_stacking(f_num):
         data_1, data_2, leaks, \
         test_data_1, test_data_2, test_leaks, \
         train_labels, test_labels, test_ids, word_index = \
-            generate_data_for_lstm(cv_train, cv_test)
+            generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stop_words)
 
         ########################################
         ## prepare embeddings
@@ -464,7 +584,6 @@ def do_lstm_stacking(f_num):
         #model.summary()
         print(STAMP)
 
-        early_stopping =EarlyStopping(monitor='val_loss', patience=5)
         bst_model_path = STAMP + '.h5'
         model_checkpoint = ModelCheckpoint(bst_model_path, save_best_only=True, save_weights_only=True)
 
@@ -479,20 +598,24 @@ def do_lstm_stacking(f_num):
         preds /= 2
 
         cv_test['prob'] = preds
+        cv_test['z'] = 1-cv_test['prob']
+
+        loss = log_loss(cv_test[TARGET], cv_test[['z', 'prob']])
+        write_loss(f_num, type_of_cols, emb_type, remove_stop_words, loss)
+
         cv_test = cv_test[~cv_test.index.duplicated(keep='first')]
         cv_test[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
-        # update_df.loc[cv_test.index, 'prob'] = cv_test.loc[cv_test.index, 'prob']
-
-    # update_df[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
 descr= \
 """
-lstm_with_magics_glove
+
 """
 
-name='lstm_with_magics_oversample_glove_10'
+f_num, type_of_cols, emb_type, remove_stop_words = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
-do_lstm_stacking(sys.argv[1])
-push_to_gs(name, descr, sys.argv[1])
+name='lstm_{}_{}_re_stops_{}_fold_{}'.format(emb_type, type_of_cols, remove_stop_words, f_num)
+
+do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words)
+push_to_gs(name, descr)
 done()

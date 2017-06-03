@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 stop_words = stopwords.words('english')
 import numpy as np
 
-data_folder = '../../data/'
+data_folder = '../../../data/'
 
 fp_model = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
 

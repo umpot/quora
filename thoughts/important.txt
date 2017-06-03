@@ -238,6 +238,17 @@ Intensive Pronouns
 Reciprocal Pronouns
 Indefinite Pronouns
 
+77)Multiple frequencies for multiple sets, pairs of sets, statistics on this evidences
+    -First Wh: What, Who etc
+    -Wh all
+    -pronouns
+        -different kind of pronouns
+    -auxiary
+    -Uppers
+    -First Upper not in Stop
+    -top idf
+    -
+
 
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 

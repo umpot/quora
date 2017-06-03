@@ -7,11 +7,10 @@ def get_time_str():
 
 name = sys.argv[1]
 script_name = sys.argv[2]
-fold = sys.argv[3]
-archive_name = '{}_fold_{}_{}.tar.gz'.format(name,fold, get_time_str())
+archive_name = '{}__{}.tar.gz'.format(name, get_time_str())
 descr_fp = 'descr.txt'
 probs_fp='probs.csv'
-bucket = 'gs://ubbikk/stacking/'
+bucket = 'gs://ubbikk/lstm_stacking/'
 
 # tar -cvzf may_arch.tar.gz my_folder
 code=subprocess.call(['mkdir', name])
