@@ -11,6 +11,8 @@ import json
 from time import sleep
 import traceback
 import sys
+from xgboost import plot_importance
+from matplotlib import pyplot
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -155,7 +157,8 @@ experiments = [
     'stacking_only_glove_emb_light',
     'stacking_only_lex_emb_light',
     'stacking_only_word2vec_emb_light',
-    'stacking_lstm'
+    'stacking_lstm',
+    'stacking_random_forest_light'
 ]
 
 def perform_xgb_cv():
@@ -188,9 +191,9 @@ def perform_xgb_cv():
         test_arr = small
 
         estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
+                                      subsample=0.6,
                                       colsample_bytree=0.8,
-                                      max_depth=3,
+                                      max_depth=5,
                                       objective='binary:logistic',
                                       )
         print test_arr.columns.values
@@ -203,6 +206,9 @@ def perform_xgb_cv():
             verbose=True,
             early_stopping_rounds=100
         )
+
+        # plot_importance(estimator)
+        # pyplot.show()
 
         proba = estimator.predict_proba(test_arr)
         loss = log_loss(test_target, proba)
@@ -228,7 +234,7 @@ def load_submit_stacking(exp_list):
 
     return test_df
 
-def apply_stacking():
+def apply_stacking(name):
     random_state=42
 
     exp_list=experiments
@@ -241,7 +247,7 @@ def apply_stacking():
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=200,
+    estimator = xgb.XGBClassifier(n_estimators=250,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=3,
@@ -265,8 +271,8 @@ def apply_stacking():
     test_arr[TARGET] = proba[:,1]
 
     res = test_df[[TARGET]]
-    res.to_csv('{}.csv'.format('stacking_with_lstm'), index=True, index_label='test_id')
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
-# perform_xgb_cv()
-apply_stacking()
+perform_xgb_cv()
+# apply_stacking('stacking_with_random_forest_3_0.8_0.8_250')

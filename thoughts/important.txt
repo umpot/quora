@@ -224,6 +224,24 @@ Pearson a second skewness coefficient:
 74)topic classification :
     textacy most_discriminating_terms
 
+
+75)target freq on pair of frequent nouns
+
+76)
+Personal Pronouns
+Demonstrative Pronouns
+Interrogative Pronouns
+Possessive Pronouns
+Relative Pronouns
+Reflexive Pronouns
+Intensive Pronouns
+Reciprocal Pronouns
+Indefinite Pronouns
+
+
 xx)stop_words_ratio_q1-stop_words_ratio_q2, stop_words_ratio_q1/stop_words_ratio_q2 etc
 
 xx)Jackard\Dice\etc on ngrams
+
+
+
