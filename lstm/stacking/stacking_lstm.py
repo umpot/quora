@@ -472,7 +472,9 @@ def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
     remove_stop_words = remove_stop_words == 'yes'
 
     col1, col2 = get_cols(type_of_cols)
+    print 'Indexing...'
     embeddings_index = get_emb_index(emb_type)
+    print 'Done indexing'
 
     # update_df = load_train()
     # folds = create_folds(update_df)
