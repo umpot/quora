@@ -446,8 +446,8 @@ def do_submit_lstm_stacking_submit(type_of_cols, emb_type, remove_stop_words):
     update_df = load_test()
     cv_train, cv_test = load_train(), load_test()
 
-    cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
-    update_df = update_df.head(5000)
+    # cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
+    # update_df = update_df.head(5000)
 
 
     print 're {}'.format(remove_stop_words)

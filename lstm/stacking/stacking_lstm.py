@@ -498,12 +498,12 @@ def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
     embeddings_index = get_emb_index(emb_type)
     print 'Done indexing'
 
-    # update_df = load_train()
-    # folds = create_folds(update_df)
-
     update_df = load_train()
-    update_df = update_df.head(5000)
-    folds = get_dummy_folds(update_df)
+    folds = create_folds(update_df)
+
+    # update_df = load_train()
+    # update_df = update_df.head(5000)
+    # folds = get_dummy_folds(update_df)
 
     counter = 0
     for cv_train, cv_test in folds:
