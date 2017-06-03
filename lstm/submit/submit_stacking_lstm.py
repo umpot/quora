@@ -379,7 +379,7 @@ def get_emb_index(emb_type):
 
 
 def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
-    print 'Remove stopwords == {}'.format(remove_stop_words==True)
+    print 'Remove stopwords == {}'.format(remove_stops==True)
 
     cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
     cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))

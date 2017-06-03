@@ -426,8 +426,7 @@ def get_emb_index(emb_type):
 
 
 def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
-    print 'blja {}'.format(remove_stop_words)
-    print 'Remove stopwords == {}'.format(remove_stop_words == True)
+    print 'Remove stopwords == {}'.format(remove_stops == True)
 
     cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
     cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
@@ -491,10 +490,8 @@ def get_cols(type_of_cols):
 def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
     f_num = int(f_num)
 
-    print 're {}'.format(remove_stop_words)
-    print 'type re {}'.format(type(remove_stop_words))
     remove_stop_words = remove_stop_words == 'yes' or remove_stop_words == True
-    print 'suka {}'.format(remove_stop_words)
+    print 'remove blja {}'.format(remove_stop_words)
 
     col1, col2 = get_cols(type_of_cols)
     print 'Indexing...'
