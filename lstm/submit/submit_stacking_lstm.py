@@ -3,6 +3,8 @@ import os
 import re
 import csv
 import codecs
+
+import gensim
 import numpy as np
 import pandas as pd
 import unicodedata
@@ -37,10 +39,17 @@ pd.set_option('display.max_colwidth', 100)
 TARGET = 'is_duplicate'
 qid1, qid2 = 'qid1', 'qid2'
 question1, question2 = 'question1', 'question2'
+tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
+lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 
 data_folder = '../../../data/'
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
+lemmas_train_fp = os.path.join(data_folder, 'nlp', 'lemmas_train.csv')
+lemmas_test_fp = os.path.join(data_folder, 'nlp', 'lemmas_test.csv')
+
+tokens_train_fp = os.path.join(data_folder, 'nlp', 'tokens_train.csv')
+tokens_test_fp = os.path.join(data_folder, 'nlp', 'tokens_test.csv')
 
 magic_train_fp = os.path.join(data_folder, 'magic', 'magic_train.csv')
 magic_test_fp = os.path.join(data_folder, 'magic', 'magic_test.csv')
@@ -54,7 +63,19 @@ MAX_SEQUENCE_LENGTH = 30
 MAX_NB_WORDS = 200000
 EMBEDDING_DIM = 300
 VALIDATION_SPLIT = 0.1
-EMBEDDING_FILE = os.path.join(data_folder, 'glove.840B.300d.txt')
+
+word2vec_model_fp = os.path.join(data_folder, 'GoogleNews-vectors-negative300.bin')
+glove_model_fp = os.path.join(data_folder, 'glove.840B.300d_w2v.txt')
+fasttext_model_fp=os.path.join(data_folder, 'wiki.en')
+lex_model_fp = os.path.join(data_folder, 'lexvec.commoncrawl.300d.W+C.pos.vectors.gz')
+
+def load_word2vec():
+    model= gensim.models.KeyedVectors.load_word2vec_format(word2vec_model_fp, binary=True)
+    return model
+
+def load_lex():
+    model= gensim.models.KeyedVectors.load_word2vec_format(lex_model_fp)
+    return model
 
 num_lstm = np.random.randint(175, 275)
 num_dense = np.random.randint(100, 150)
@@ -105,9 +126,42 @@ def fix_nans(df):
     return df
 
 
+def load_train_lemmas():
+    df = pd.read_csv(lemmas_train_fp, index_col='id')
+    df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+
+    for col in [lemmas_q1, lemmas_q2]:
+        df[col] = df[col].apply(del_pron)
+    return df
+
+
+def load_test_lemmas():
+    df = pd.read_csv(lemmas_test_fp, index_col='test_id')
+    df = df.fillna('')
+    def del_pron(s):
+        return str(s).replace('-PRON-', '')
+    for col in [lemmas_q1, lemmas_q2]:
+        df[col] = df[col].apply(del_pron)
+    return df
+
+def load_train_tokens():
+    df = pd.read_csv(tokens_train_fp, index_col='id')
+    df = df.fillna('')
+    return df
+
+
+def load_test_tokens():
+    df = pd.read_csv(tokens_test_fp, index_col='test_id')
+    df = df.fillna('')
+    return df
+
 def load_train():
     df = pd.concat([
         pd.read_csv(fp_train, index_col='id', encoding="utf-8"),
+        load_train_tokens(),
+        load_train_lemmas(),
         pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
         pd.read_csv(magic2_train_fp, index_col='id')],
         axis=1
@@ -119,6 +173,8 @@ def load_train():
 def load_test():
     df = pd.concat([
         pd.read_csv(fp_test, index_col='test_id', encoding="utf-8"),
+        load_test_tokens(),
+        load_test_lemmas(),
         pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
         pd.read_csv(magic2_test_fp, index_col='test_id')],
         axis=1
@@ -278,9 +334,21 @@ def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
 
 
 
-def create_embed_index():
+def create_embed_index_word2vec():
+    model = load_word2vec()
+    word_index = {k:model[k] for k in model.vocab.keys()}
+
+    return word_index
+
+def create_embed_index_lex():
+    model = load_word2vec()
+    word_index = {k:model[k] for k in model.vocab.keys()}
+
+    return word_index
+
+def create_embed_index_glove():
     embed_index = {}
-    f = open(EMBEDDING_FILE)
+    f = open(glove_model_fp)
     count = 0
     for line in f:
         if count == 0:
@@ -296,21 +364,31 @@ def create_embed_index():
 
     return embed_index
 
+def get_emb_index(emb_type):
+    if emb_type=='glove':
+        return create_embed_index_glove()
+    elif emb_type=='word2vec':
+        return create_embed_index_word2vec()
+    elif emb_type == 'lex':
+        return create_embed_index_lex()
+    raise Exception('Unknown emd_type {}'.format(emb_type))
 
 
-def generate_data_for_lstm(cv_train, cv_test):
-    cv_train['texts_1'] = cv_train[question1].apply(text_to_wordlist)
-    cv_train['texts_2'] = cv_train[question2].apply(text_to_wordlist)
+
+def generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stops):
+    cv_train['texts_1'] = cv_train[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
+    cv_train['texts_2'] = cv_train[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
     texts_1=[x for x in cv_train['texts_1']]
     texts_2=[x for x in cv_train['texts_2']]
     train_labels = [x for x in cv_train[TARGET]]
 
-    cv_test['texts_1'] = cv_test[question1].apply(text_to_wordlist)
-    cv_test['texts_2'] = cv_test[question2].apply(text_to_wordlist)
+    cv_test['texts_1'] = cv_test[col1].apply(lambda s: text_to_wordlist(s, remove_stops))
+    cv_test['texts_2'] = cv_test[col2].apply(lambda s: text_to_wordlist(s, remove_stops))
 
     test_texts_1 = [x for x in cv_test['texts_1']]
     test_texts_2 = [x for x in cv_test['texts_2']]
     test_ids = [x for x in cv_test.index]
+    test_labels = [x for x in cv_test[TARGET]]
 
     tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
     tokenizer.fit_on_texts(texts_1 + texts_2 + test_texts_1 + test_texts_2)
@@ -343,22 +421,36 @@ def generate_data_for_lstm(cv_train, cv_test):
 
     return data_1, data_2, leaks, \
            test_data_1, test_data_2, test_leaks, \
-           train_labels, test_ids, \
+           train_labels, test_labels, test_ids, \
            word_index
 
 
+def get_cols(type_of_cols):
+    if type_of_cols == 'question':
+        return question1, question2
+    elif type_of_cols=='lemmas':
+        return lemmas_q1, lemmas_q2
+    raise Exception('Unknown type_of_cols {}'.format(type_of_cols))
 
 
 
-def do_submit_lstm_stacking():
+
+
+def do_submit_lstm_stacking_submit(type_of_cols, emb_type, remove_stop_words):
     update_df = load_test()
-
     cv_train, cv_test = load_train(), load_test()
 
-    # cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
-    # update_df = update_df.head(5000)
+    cv_train, cv_test = cv_train.head(5000), cv_test.head(5000)
+    update_df = update_df.head(5000)
 
-    embeddings_index = create_embed_index()
+
+    remove_stop_words = remove_stop_words == 'yes'
+
+    col1, col2 = get_cols(type_of_cols)
+    print 'Indexing...'
+    embeddings_index = get_emb_index(emb_type)
+    print 'Done indexing'
+
 
     print explore_target_ratio(cv_train)
     print '========================================'
@@ -371,7 +463,7 @@ def do_submit_lstm_stacking():
     data_1, data_2, leaks, \
     test_data_1, test_data_2, test_leaks, \
     train_labels, test_ids, word_index = \
-        generate_data_for_lstm(cv_train, cv_test)
+        generate_data_for_lstm(cv_train, cv_test, col1, col2, remove_stop_words)
 
     ########################################
     ## prepare embeddings
@@ -470,11 +562,12 @@ def do_submit_lstm_stacking():
 
 descr= \
     """
-    lstm_with_magics_glove
+
     """
 
 name='lstm_with_magics_oversample_glove_10'
 
-do_submit_lstm_stacking()
+type_of_cols, emb_type, remove_stop_words = sys.argv[1], sys.argv[2], sys.argv[3]
+do_submit_lstm_stacking_submit(type_of_cols, emb_type, remove_stop_words)
 push_to_gs(name, descr)
 done()

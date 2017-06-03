@@ -198,7 +198,7 @@ def push_to_gs(name, descr):
 
     if name in os.listdir('.'):
         t=get_time_str()
-        subprocess.call(['mv', name, '{}_fold_{}_{}'.format(name, t)])
+        subprocess.call(['mv', name, '{}_fold_{}'.format(name, t)])
 
 
     script_name = os.path.basename(__file__)
