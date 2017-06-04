@@ -394,7 +394,7 @@ def load_wh_test():
 ######################################################################################
 from collections import defaultdict
 from scipy.stats import kurtosis, skew, skewnorm
-pair_freq='pair_freq'
+x_None= 'x_None'
 RATIO = 'RATIO'
 
 statistics={
@@ -418,33 +418,41 @@ statistics = {k: wrap_func(v) for k,v in statistics.iteritems()}
 
 counter = 0
 
-top_7K_pair_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_train.csv')
-top_7K_pair_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_test.csv')
+top_7K_x_None_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_train.csv')
+top_7K_x_None_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_test.csv')
 
-def write_top_N_pairs_freq():
-    N=7000
+def write_top_N_x_None_freq():
+    N=5000
 
     train_df, test_df = load_train(), load_test()
 
-    # train_df, test_df=train_df.head(10000), test_df.head(1000)
+    # train_df, test_df = load_train().head(5000), load_test().head(5000)
+
+    folds = create_folds(train_df)
+    new_cols = None
+    for train, test in folds:
+        m = explore_top_pairs(train)[:N]
+        new_cols = process_top_N_x_None_toks(test, m, train_df)
+
 
     m = explore_top_pairs(train_df)[:N]
+    new_cols = process_top_N_x_None_toks(test_df, m, None)
 
-    new_cols = process_top_N_pairs(train_df, m)
-    train_df[new_cols].to_csv(top_7K_pair_freq_train_fp, index_label='id')
+
+
+    train_df[new_cols].to_csv(top_7K_x_None_freq_train_fp, index_label='id')
     print 'Done TRAIN!'
     print '======================================='
 
-    process_top_N_pairs(test_df, m)
-    test_df[new_cols].to_csv(top_7K_pair_freq_test_fp, index_label='test_id')
+    process_top_N_x_None_toks(test_df, m, None)
+    test_df[new_cols].to_csv(top_7K_x_None_freq_test_fp, index_label='test_id')
 
-def process_top_N_pairs(df, m):
+def process_top_N_x_None_toks(df, m, update_df):
     global counter
-
-
     counter=0
 
     m={x[0]:x[1] for x in m}
+
     def process_row(row, topN):
         global counter
         counter+=1
@@ -452,13 +460,10 @@ def process_top_N_pairs(df, m):
             print counter
 
         res=[]
-
-        x = set(row[question1].split())
-        y = set(row[question2].split())
-        ss=set()
-        for a in x:
-            for b in y:
-                ss.add((a,b))
+        # print row[question1], row[question2]
+        x = set(str(row[question1]).split())
+        y = set(str(row[question2]).split())
+        ss=x.symmetric_difference(y)
 
         for s in ss:
             if s in topN:
@@ -466,21 +471,23 @@ def process_top_N_pairs(df, m):
 
         return res
 
-    df[pair_freq] = df.apply(lambda row: process_row(row, m), axis=1)
+    df[x_None] = df.apply(lambda row: process_row(row, m), axis=1)
 
     def get_freq_only(s):
         if s is None:
             return None
         return [x[RATIO] for x in s]
 
-    df[pair_freq]= df[pair_freq].apply(get_freq_only)
+    df[x_None]= df[x_None].apply(get_freq_only)
 
     new_cols =[]
     for name, func in statistics.iteritems():
-        col = 'top_7K_pairs_{}'.format(name)
+        col = 'top_7K_x_None_freq_{}'.format(name)
         print col
         new_cols.append(col)
-        df[col]=df[pair_freq].apply(func)
+        df[col]=df[x_None].apply(func)
+        if update_df is not None:
+            update_df.loc[df.index, col]=df.loc[df.index, col]
 
     return new_cols
 
@@ -505,19 +512,20 @@ def explore_top_pairs(df):
             print counter
 
 
-        x=set(x.split())
-        y = set(y.split())
-        for a in x:
-            for b in y:
-                d = m[(a,b)]
-                if target in d:
-                    d[target]+=1
-                else:
-                    d[target]=1
-                if 'count' in d:
-                    d['count']+=1
-                else:
-                    d['count']=1
+        x=set(str(x).split())
+        y = set(str(y).split())
+
+        ss=x.symmetric_difference(y)
+        for t in ss:
+            d = m[t]
+            if target in d:
+                d[target]+=1
+            else:
+                d[target]=1
+            if 'count' in d:
+                d['count']+=1
+            else:
+                d['count']=1
 
     df.apply(lambda row: make_pairs_set(row[question1], row[question2], res, row[TARGET]), axis = 1)
     print 'Done2'
@@ -529,6 +537,6 @@ def explore_top_pairs(df):
     return res
 
 
-# write_top_N_pairs_freq()
+write_top_N_x_None_freq()
 
 
