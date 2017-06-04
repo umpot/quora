@@ -635,7 +635,8 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
-        load_aux_pairs_50_train()
+        load_aux_pairs_50_train(),
+        load_top_7K_x_None_freq_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
