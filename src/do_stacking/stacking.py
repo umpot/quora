@@ -199,7 +199,7 @@ def perform_xgb_cv():
         estimator = xgb.XGBClassifier(n_estimators=10000,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
-                                      max_depth=7,
+                                      max_depth=5,
                                       objective='binary:logistic',
                                       )
         print test_arr.columns.values
@@ -253,10 +253,10 @@ def apply_stacking(name):
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=400,
+    estimator = xgb.XGBClassifier(n_estimators=150,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
-                                  max_depth=3,
+                                  max_depth=5,
                                   objective='binary:logistic',
                                   )
     big, small = train_df, test_df
@@ -280,5 +280,5 @@ def apply_stacking(name):
     res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
-perform_xgb_cv()
-# apply_stacking('stacking_with_4_lstm_400_3_0.8_0.8')
+# perform_xgb_cv()
+apply_stacking('stacking_with_noun_verb_lstm_150_5_0.8_0.8')
