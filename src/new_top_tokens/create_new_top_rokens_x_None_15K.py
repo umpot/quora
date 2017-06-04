@@ -482,7 +482,7 @@ def process_top_N_x_None_toks(df, m, update_df):
 
     new_cols =[]
     for name, func in statistics.iteritems():
-        col = 'top_7K_x_None_freq_{}'.format(name)
+        col = 'top_15K_x_None_freq_{}'.format(name)
         print col
         new_cols.append(col)
         df[col]=df[x_None].apply(func)
