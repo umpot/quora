@@ -67,3 +67,19 @@ def get_losses(name, fold=4):
     losses = [x['losses'] for x in results.find()][fold]
 
     return losses
+
+def get_avg_loss(name):
+    db = client['xgb_cv']
+    results = db[name]
+    losses = [x['losses'] for x in results.find()]
+    losses=losses[-1]
+    l = []
+    for x in losses:
+        if isinstance(x, dict):
+            l.append(x['loss'])
+        else:
+            l.append(x)
+
+    print 'Len {}'.format(len(l))
+
+    return np.mean(l)
