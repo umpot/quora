@@ -45,6 +45,12 @@ question1, question2 = 'question1', 'question2'
 tokens_q1, tokens_q2 = 'tokens_q1', 'tokens_q2'
 lemmas_q1, lemmas_q2 = 'lemmas_q1', 'lemmas_q2'
 
+
+verbs_q1, verbs_q2 = 'verbs_q1', 'verbs_q2'
+nouns_q1, nouns_q2 = 'nouns_q1', 'nouns_q2'
+adv_adj_q1, adv_adj_q2='adv_adj_q1', 'adv_adj_q2'
+
+
 data_folder = '../../../data/'
 fp_train = data_folder + 'train.csv'
 fp_test = data_folder + 'test.csv'
@@ -60,6 +66,9 @@ lemmas_test_fp = os.path.join(data_folder, 'nlp', 'lemmas_test.csv')
 
 tokens_train_fp = os.path.join(data_folder, 'nlp', 'tokens_train.csv')
 tokens_test_fp = os.path.join(data_folder, 'nlp', 'tokens_test.csv')
+
+POS_train_fp = os.path.join(data_folder, 'nlp', 'POS_train.csv')
+POS_test_fp = os.path.join(data_folder, 'nlp', 'POS_test.csv')
 
 folds_fp = os.path.join(data_folder, 'top_k_freq', 'folds.json')
 
@@ -173,6 +182,7 @@ def load_test_tokens():
 def load_train():
     df = pd.concat([
         pd.read_csv(fp_train, index_col='id', encoding="utf-8"),
+        pd.read_csv(POS_train_fp, index_col='id', encoding="utf-8"),
         load_train_tokens(),
         load_train_lemmas(),
         pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
@@ -186,6 +196,7 @@ def load_train():
 def load_test():
     df = pd.concat([
         pd.read_csv(fp_test, index_col='test_id', encoding="utf-8"),
+        pd.read_csv(POS_test_fp, index_col='test_id', encoding="utf-8"),
         load_test_tokens(),
         load_test_lemmas(),
         pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
@@ -484,6 +495,15 @@ def get_cols(type_of_cols):
     elif type_of_cols == 'lemmas':
         print 'type of cols lemmas'
         return lemmas_q1, lemmas_q2
+    elif type_of_cols == 'nouns':
+        print 'type of cols nouns'
+        return nouns_q1, nouns_q2
+    elif type_of_cols == 'verbs':
+        print 'type of cols verbs'
+        return verbs_q1, verbs_q2
+    elif type_of_cols == 'adj':
+        print 'type of cols adj_adv'
+        return adv_adj_q1, adv_adj_q2
     raise Exception('Unknown type_of_cols {}'.format(type_of_cols))
 
 
@@ -609,7 +629,7 @@ def do_lstm_stacking(f_num, type_of_cols, emb_type, remove_stop_words):
 
         hist = model.fit([data_1_train, data_2_train, leaks_train], labels_train, \
                          validation_data=([data_1_val, data_2_val, leaks_val], labels_val), \
-                         epochs=10, batch_size=2048, shuffle=True, callbacks=[model_checkpoint])
+                         epochs=8, batch_size=2048, shuffle=True, callbacks=[model_checkpoint])
 
         preds = model.predict([test_data_1, test_data_2, test_leaks], batch_size=8192, verbose=1)
         preds += model.predict([test_data_2, test_data_1, test_leaks], batch_size=8192, verbose=1)
