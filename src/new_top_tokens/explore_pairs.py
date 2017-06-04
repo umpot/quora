@@ -432,6 +432,8 @@ def write_top_N_pairs_freq():
 
     new_cols = process_top_N_pairs(train_df, m)
     train_df[new_cols].to_csv(top_7K_pair_freq_train_fp, index_label='id')
+    print 'Done TRAIN!'
+    print '======================================='
 
     process_top_N_pairs(test_df, m)
     test_df[new_cols].to_csv(top_7K_pair_freq_test_fp, index_label='test_id')
