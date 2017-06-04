@@ -136,11 +136,7 @@ def load_train():
 
 def load_test():
     return fix_nans(
-        pd.concat(
-            [pd.read_csv(fp_test, index_col='test_id'),
-             pd.read_csv(new_qids_test_fp, index_col='test_id')],
-            axis=1
-        )
+        pd.read_csv(fp_test, index_col='test_id')
     )
 
 
