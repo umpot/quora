@@ -54,6 +54,12 @@ fp_test = data_folder + 'test.csv'
 lemmas_train_fp = os.path.join(data_folder, 'nlp', 'lemmas_train.csv')
 lemmas_test_fp = os.path.join(data_folder, 'nlp', 'lemmas_test.csv')
 
+magic_train_fp = os.path.join(data_folder, 'magic', 'magic_train.csv')
+magic_test_fp = os.path.join(data_folder, 'magic', 'magic_test.csv')
+
+magic2_train_fp = os.path.join(data_folder, 'magic', 'magic2_train.csv')
+magic2_test_fp = os.path.join(data_folder, 'magic', 'magic2_test.csv')
+
 tokens_train_fp = os.path.join(data_folder, 'nlp', 'tokens_train.csv')
 tokens_test_fp = os.path.join(data_folder, 'nlp', 'tokens_test.csv')
 
