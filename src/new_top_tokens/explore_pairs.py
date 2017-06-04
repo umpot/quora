@@ -431,9 +431,9 @@ def write_top_N_pairs_freq():
     m = explore_top_pairs(train_df)[:N]
 
     new_cols = process_top_N_pairs(train_df, m)
-    process_top_N_pairs(test_df, m)
-
     train_df[new_cols].to_csv(top_7K_pair_freq_train_fp, index_label='id')
+
+    process_top_N_pairs(test_df, m)
     test_df[new_cols].to_csv(top_7K_pair_freq_test_fp, index_label='test_id')
 
 def process_top_N_pairs(df, m):
