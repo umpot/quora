@@ -197,8 +197,8 @@ def perform_xgb_cv():
         test_arr = small
 
         estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
+                                      subsample=0.5,
+                                      colsample_bytree=0.5,
                                       max_depth=5,
                                       objective='binary:logistic',
                                       )
@@ -280,5 +280,5 @@ def apply_stacking(name):
     res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
-# perform_xgb_cv()
-apply_stacking('stacking_with_noun_verb_lstm_150_5_0.8_0.8')
+perform_xgb_cv()
+# apply_stacking('stacking_with_noun_verb_lstm_150_5_0.8_0.8')
