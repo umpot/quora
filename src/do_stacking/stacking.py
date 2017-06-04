@@ -158,7 +158,10 @@ experiments = [
     'stacking_only_lex_emb_light',
     'stacking_only_word2vec_emb_light',
     'stacking_lstm',
-    'stacking_random_forest_light'
+    'stacking_random_forest_light',
+    'stacking_lstm_glove_lemmas_re_stops_yes',
+    'stacking_lstm_lex_question_re_stops_yes',
+    'stacking_lstm_word2vec_lemmas_re_stops_yes'
 ]
 
 def perform_xgb_cv():
@@ -191,7 +194,7 @@ def perform_xgb_cv():
         test_arr = small
 
         estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.6,
+                                      subsample=0.8,
                                       colsample_bytree=0.8,
                                       max_depth=5,
                                       objective='binary:logistic',
@@ -247,7 +250,7 @@ def apply_stacking(name):
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=250,
+    estimator = xgb.XGBClassifier(n_estimators=400,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=3,
@@ -274,5 +277,5 @@ def apply_stacking(name):
     res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
-perform_xgb_cv()
-# apply_stacking('stacking_with_random_forest_3_0.8_0.8_250')
+# perform_xgb_cv()
+# apply_stacking('stacking_with_4_lstm_400_3_0.8_0.8')

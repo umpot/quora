@@ -46,7 +46,9 @@ def load_train():
 
 
 
-def gather_and_calculate_loss(fp_in, fp_out):
+def gather_and_calculate_loss(name):
+    fp_in = os.path.join('/home/ubik/Desktop', name)
+    fp_out=os.path.join('../../stacking_data/', 'stacking_{}'.format(name), 'probs.csv')
     dfs=[]
     for l in os.listdir(fp_in):
         if os.path.isdir(os.path.join(fp_in, l)):
@@ -58,5 +60,7 @@ def gather_and_calculate_loss(fp_in, fp_out):
             print loss
             dfs.append(df)
 
-    return pd.concat(dfs)
+    df= pd.concat(dfs)
+    df.to_csv(fp_out, index_label='id')
+    return df
 

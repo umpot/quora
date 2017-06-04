@@ -423,8 +423,8 @@ def get_dummy_folds(df):
 
 
 
-# from fastFM.sgd import FMClassification
-from fastFM.mcmc import FMClassification, FMRegression
+from fastFM.sgd import FMClassification
+# from fastFM.mcmc import FMClassification, FMRegression
 # from fastFM.als import FMClassification
 
 from sklearn.metrics import log_loss

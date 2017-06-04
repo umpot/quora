@@ -396,257 +396,141 @@ def load_wh_test():
 ######################################################################################
 ######################################################################################
 ######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
-######################################################################################
+from collections import defaultdict
+from scipy.stats import kurtosis, skew, skewnorm
+pair_freq='pair_freq'
+RATIO = 'RATIO'
 
-import pandas as pd
-import numpy as np
+statistics={
+    'kurtosis':kurtosis,
+    'skew':skew,
+    # 'skewnorm':skewnorm,
+    'mean':np.mean,
+    'median':np.median,
+    'max':np.max,
+    'min':np.min,
+    'std':np.std,
+    '1_persentile':lambda s: np.percentile(s, 25),
+    '3_persentile':lambda s: np.percentile(s, 75),
+    'count':len
+}
 
-TARGET = 'is_duplicate'
+def wrap_func(fucnk):
+    return lambda s: None if (s is None or len(s)==0) else fucnk(s)
 
-INDEX_PREFIX= 100000000
-#old
-{'pos': 0.369197853026293,
- 'neg': 0.630802146973707}
+statistics = {k: wrap_func(v) for k,v in statistics.iteritems()}
 
+counter = 0
 
-#new
-r1 = 0.174264424749
-r0 = 0.825754788586
+top_7K_pair_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_train.csv')
+top_7K_pair_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_test.csv')
 
-""""
-p_old/(1+delta) = p_new
+def write_top_N_pairs_freq():
+    N=7000
 
-delta = (p_old/p_new)-1 = 1.1186071314214785
-l = delta*N = 452241
-"""
+    train_df, test_df = load_train(), load_test()
 
-delta = 1.1186071314214785
+    # train_df, test_df=train_df.head(10000), test_df.head(1000)
 
-def explore_target_ratio(df):
-    return {
-        'pos':1.0*len(df[df[TARGET]==1])/len(df),
-        'neg':1.0*len(df[df[TARGET]==0])/len(df)
-    }
+    m = explore_top_pairs(train_df)[:N]
 
-def oversample_df(df, l, random_state):
-    df_pos = df[df[TARGET]==1]
-    df_neg = df[df[TARGET]==0]
+    new_cols = process_top_N_pairs(train_df, m)
+    process_top_N_pairs(test_df, m)
 
-    df_neg_sampl = df_neg.sample(l, random_state=random_state, replace=True)
+    train_df[new_cols].to_csv(top_7K_pair_freq_train_fp, index_label='id')
+    test_df[new_cols].to_csv(top_7K_pair_freq_test_fp, index_label='test_id')
 
-    df=pd.concat([df_pos, df_neg, df_neg_sampl])
-    df = shuffle_df(df, random_state)
+def process_top_N_pairs(df, m):
+    global counter
 
-    return df
 
-def oversample(train_df, test_df, random_state):
-    l_train = int(delta * len(train_df))
-    l_test = int(delta * len(test_df))
+    counter=0
 
-    print l_train, l_test
+    m={x[0]:x[1] for x in m}
+    def process_row(row, topN):
+        global counter
+        counter+=1
+        if counter%1000==0:
+            print counter
 
-    return oversample_df(train_df, l_train, random_state), oversample_df(test_df, l_test, random_state)
+        res=[]
 
+        x = set(row[question1].split())
+        y = set(row[question2].split())
+        ss=set()
+        for a in x:
+            for b in y:
+                ss.add((a,b))
 
+        for s in ss:
+            if s in topN:
+                res.append(topN[s])
 
-############################################################3
-############################################################3
-############################################################3
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import log_loss
-from fastFM.sgd import FMClassification
-from pyfm import pylibfm
-import xgboost as xgb
-import pywFM
+        return res
 
-# train_df, test_df = load_train(), load_test()
+    df[pair_freq] = df.apply(lambda row: process_row(row, m), axis=1)
 
-def test_pywfm_on_bow():
-    df = load_train()
+    def get_freq_only(s):
+        if s is None:
+            return None
+        return [x[RATIO] for x in s]
 
-    folds = create_folds(df)
+    df[pair_freq]= df[pair_freq].apply(get_freq_only)
 
-    train, test = folds[0]
+    new_cols =[]
+    for name, func in statistics.iteritems():
+        col = 'top_7K_pairs_{}'.format(name)
+        print col
+        new_cols.append(col)
+        df[col]=df[pair_freq].apply(func)
 
-    train, test = oversample(train, test, 42)
+    return new_cols
 
-    questions = list(train[question1])+list(train[question2])
-    print 'Creating Vectorizer...'
-    c = CountVectorizer(questions, binary=True, stop_words='english')
-    print 'Fitting Vectorizer...'
-    c.fit(questions)
 
-    train_arr_q1 = c.transform(train[question1])
-    train_arr_q2 = c.transform(train[question2])
 
-    train_arr = train_arr_q1+train_arr_q2
-    train_arr[train_arr==2]=1
-    train_arr[train_arr==1]=-1
 
-    test_arr_q1 = c.transform(test[question1])
-    test_arr_q2 = c.transform(test[question2])
+def add_target_ratio_to_m(m):
+    for w in m:
+        v=w[1]
+        if 1 not in v:
+            v[RATIO] = 0
+        else:
+            v[RATIO] = (1.0 * v[1]) / v['count']
 
-    test_arr = test_arr_q1+test_arr_q2
-    test_arr[test_arr==2]=1
-    test_arr[test_arr==1]=-1
+def explore_top_pairs(df):
+    res = defaultdict(dict)
 
-    train_target = train[TARGET]
-    test_target = test[TARGET]
+    def make_pairs_set(x,y, m, target):
+        global counter
+        counter+=1
+        if counter%1000==0:
+            print counter
 
 
-    fm = pywFM.FM(task='classification',
-                  num_iter=100,
-                  verbose=10,r1_regularization=0.1, learn_rate=0.1)
+        x=set(x.split())
+        y = set(y.split())
+        for a in x:
+            for b in y:
+                d = m[(a,b)]
+                if target in d:
+                    d[target]+=1
+                else:
+                    d[target]=1
+                if 'count' in d:
+                    d['count']+=1
+                else:
+                    d['count']=1
 
-    res = fm.run(train_arr, train_target, test_arr, test_target)
-    prob = res.predictions
-    prob_0 = [1-x for x in prob]
-    # return res
+    df.apply(lambda row: make_pairs_set(row[question1], row[question2], res, row[TARGET]), axis = 1)
+    print 'Done2'
 
-    proba = np.array([prob_0, prob]).reshape(len(prob), 2)
+    res = [(k,v) for k, v in res.iteritems()]
+    res.sort(key=lambda p: p[1]['count'], reverse=True)
+    add_target_ratio_to_m(res)
 
-    loss = log_loss(test[TARGET], proba)
-    print loss
+    return res
 
-    print loss
 
-def test_xgb_on_bow():
-    df = load_train()
+write_top_N_pairs_freq()
 
-    folds = create_folds(df)
-
-    train, test = folds[0]
-
-    train, test = oversample(train, test, 42)
-
-    questions = list(train[question1])+list(train[question2])
-    print 'Creating Vectorizer...'
-    c = CountVectorizer(questions, binary=True, stop_words='english')
-    print 'Fitting Vectorizer...'
-    c.fit(questions)
-
-    train_arr_q1 = c.transform(train[question1])
-    train_arr_q2 = c.transform(train[question2])
-
-    train_arr = train_arr_q1+train_arr_q2
-    train_arr[train_arr==2]=1
-    train_arr[train_arr==1]=-1
-
-    test_arr_q1 = c.transform(test[question1])
-    test_arr_q2 = c.transform(test[question2])
-
-    test_arr = test_arr_q1+test_arr_q2
-    test_arr[test_arr==2]=1
-    test_arr[test_arr==1]=-1
-
-    xgb_params = {
-        'objective': 'binary:logistic',
-        'booster': 'gblinear',
-        'eval_metric': 'logloss',
-        'lambda':0.1,
-        'eta': 0.01,
-        # 'max_depth': 3,
-        'subsample': 0.1,
-        'colsample_bytree': 0.1,
-        # 'min_child_weight': 5,
-        'silent': 1
-    }
-
-    dTrain = xgb.DMatrix(train_arr, train[TARGET])
-    dVal = xgb.DMatrix(test_arr, test[TARGET])
-
-    res={}
-
-    bst = xgb.train(xgb_params, dTrain,
-                    1000,
-                    [(dTrain,'train'), (dVal,'val')],
-                verbose_eval=1,
-                    early_stopping_rounds=50,
-                    evals_result=res)
-    loss = res['train']['logloss']
-    print loss
-
-
-def test_fastfmon_bow():
-    df = load_train()
-
-    folds = create_folds(df)
-
-    train, test = folds[0]
-
-    train, test = oversample(train, test, 42)
-    for bl in [train, test]:
-        bl[TARGET] = bl[TARGET].apply(lambda s:-1 if s==0 else 1)
-
-    questions = list(train[question1])+list(train[question2])
-    print 'Creating Vectorizer...'
-    c = CountVectorizer(questions, binary=True, stop_words='english')
-    print 'Fitting Vectorizer...'
-    c.fit(questions)
-
-    train_arr_q1 = c.transform(train[question1])
-    train_arr_q2 = c.transform(train[question2])
-
-    train_arr = train_arr_q1+train_arr_q2
-    train_arr[train_arr==2]=1
-    train_arr[train_arr==1]=-1
-
-    test_arr_q1 = c.transform(test[question1])
-    test_arr_q2 = c.transform(test[question2])
-
-    test_arr = test_arr_q1+test_arr_q2
-    test_arr[test_arr==2]=1
-    test_arr[test_arr==1]=-1
-
-
-    model = FMClassification(n_iter=1000, l2_reg=0.1)
-    print 'Fitting model...'
-    model.fit(train_arr, train[TARGET])
-
-
-    proba = model.predict_proba(test_arr)
-
-    loss = log_loss(test[TARGET], proba)
-    print loss
-
-
-def test_log_reg_on_bow():
-    df = load_train()
-
-    folds = create_folds(df)
-
-    train, test = folds[0]
-    train, test = oversample(train, test, 42)
-
-    questions = list(train[question1])+list(train[question2])
-    print 'Creating Vectorizer...'
-    c = CountVectorizer(questions, binary=True, stop_words='english')
-    print 'Fitting Vectorizer...'
-    c.fit(questions)
-
-    train_arr_q1 = c.transform(train[question1])
-    train_arr_q2 = c.transform(train[question2])
-
-    train_arr = train_arr_q1+train_arr_q2
-    train_arr[train_arr==2]=1
-    train_arr[train_arr==1]=-1
-
-    test_arr_q1 = c.transform(test[question1])
-    test_arr_q2 = c.transform(test[question2])
-
-    test_arr = test_arr_q1+test_arr_q2
-    test_arr[test_arr==2]=1
-    test_arr[test_arr==1]=-1
-
-    model = LogisticRegression(verbose=10, n_jobs=-1, penalty='l1')
-    print 'Fitting model...'
-    model.fit(train_arr, train[TARGET])
-    proba = model.predict_proba(test_arr)
-
-    loss = log_loss(test[TARGET], proba)
-    print loss
 
