@@ -178,11 +178,26 @@ def load_test_tokens():
     df = df.fillna('')
     return df
 
+def load_POS_train():
+    df = pd.read_csv(POS_train_fp, index_col='id', encoding="utf-8")
+    new_cols = [nouns_q1, nouns_q2, verbs_q1, verbs_q2, adv_adj_q1, adv_adj_q2]
+    for col in new_cols:
+        df[col] = df[col].apply(str)
+
+    return df
+
+def load_POS_test():
+    df = pd.read_csv(POS_test_fp, index_col='test_id', encoding="utf-8")
+    new_cols = [nouns_q1, nouns_q2, verbs_q1, verbs_q2, adv_adj_q1, adv_adj_q2]
+    for col in new_cols:
+        df[col] = df[col].apply(str)
+
+    return df
 
 def load_train():
     df = pd.concat([
         pd.read_csv(fp_train, index_col='id', encoding="utf-8"),
-        pd.read_csv(POS_train_fp, index_col='id', encoding="utf-8"),
+        load_POS_train(),
         load_train_tokens(),
         load_train_lemmas(),
         pd.read_csv(magic_train_fp, index_col='id')[['freq_question1', 'freq_question2']],
@@ -196,7 +211,7 @@ def load_train():
 def load_test():
     df = pd.concat([
         pd.read_csv(fp_test, index_col='test_id', encoding="utf-8"),
-        pd.read_csv(POS_test_fp, index_col='test_id', encoding="utf-8"),
+        load_POS_test(),
         load_test_tokens(),
         load_test_lemmas(),
         pd.read_csv(magic_test_fp, index_col='test_id')[['freq_question1', 'freq_question2']],
