@@ -68,11 +68,14 @@ def get_losses(name, fold=4):
 
     return losses
 
-def get_avg_loss(name):
+def get_avg_loss(name, end=None):
     db = client['xgb_cv']
     results = db[name]
     losses = [x['losses'] for x in results.find()]
-    losses=losses[-1]
+    if end is None:
+        losses=losses[-1]
+    else:
+        losses=losses[end]
     l = []
     for x in losses:
         if isinstance(x, dict):
