@@ -709,7 +709,8 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         test_target = small[TARGET]
         # del small[TARGET]
-        test_arr = small
+        test_arr = small.copy()
+        del test_arr[TARGET]
 
         estimator = xgb.XGBClassifier(n_estimators=1000,
                                       subsample=0.8,
