@@ -724,7 +724,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
         print len(train_arr)
         print len(test_arr), len(test_arr.index), len(set(test_arr.index))
 
-        eval_set = [(train_arr, train_target), (test_arr[train_arr], test_target)]
+        eval_set = [(train_arr, train_target), (test_arr[train_cols], test_target)]
 
         estimator.fit(
             train_arr, train_target,
