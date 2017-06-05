@@ -673,7 +673,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
 
     # folds = load_folds()
-    df = df.head(1000)
+    df = df.head(5000)
     folds = split_into_folds(df,42)
 
     losses = []
@@ -709,10 +709,11 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         test_target = small[TARGET]
         # del small[TARGET]
-        test_arr = small.copy()
-        del test_arr[TARGET]
+        test_arr = small
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
+        train_cols = list(train_arr.columns.values)
+
+        estimator = xgb.XGBClassifier(n_estimators=20,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
                                       max_depth=5,
@@ -723,7 +724,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
         print len(train_arr)
         print len(test_arr), len(test_arr.index), len(set(test_arr.index))
 
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
+        eval_set = [(train_arr, train_target), (test_arr[train_arr], test_target)]
 
         estimator.fit(
             train_arr, train_target,
@@ -732,7 +733,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
             eval_set=eval_set
         )
 
-        proba = estimator.predict_proba(test_arr)
+        proba = estimator.predict_proba(test_arr[train_cols])
         print len(proba[:,1])
         print len(test_arr)
 
@@ -740,7 +741,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
 
-        small[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
+        test_arr[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
 
         push_results_to_mongo(estimator, losses,
@@ -759,7 +760,7 @@ descr= \
     """
 
 
-name='stacking_all1_light'
+name='stacking_all1_light_test'
 
 f_num = int(sys.argv[1])
 
