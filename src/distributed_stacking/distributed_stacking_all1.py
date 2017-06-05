@@ -3,6 +3,7 @@ import sys
 
 import pandas as pd
 import seaborn as sns
+from sklearn.cross_validation import StratifiedKFold
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -166,6 +167,16 @@ def create_folds(df):
     return [
         (df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']])
         for x in range(len(folds))]
+
+
+def split_into_folds(df, random_state=42):
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+    res=[]
+    for big_ind, small_ind in skf.split(np.zeros(len(df)), df[TARGET]):
+        res.append((df.loc[big_ind], df.loc[small_ind]))
+
+    return res
+
 
 def shuffle_df(df, random_state=42):
     np.random.seed(random_state)
@@ -663,7 +674,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
     # folds = load_folds()
     df = df.head(1000)
-    folds = create_folds(df)
+    folds = split_into_folds(df,42)
 
     losses = []
     counter = 0
