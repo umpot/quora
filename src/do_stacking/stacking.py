@@ -24,6 +24,11 @@ pd.set_option('display.width', 5000)
 pd.set_option('display.max_rows', 5000)
 pd.set_option('display.max_colwidth', 100)
 
+gc_host = '104.197.97.20'
+local_host = '10.20.0.144'
+user='ubik'
+password='nfrf[eqyz'
+
 stacking_data_fp = '../../stacking_data'
 stacking_submit_data_fp = '../../stacking_submit_data'
 
@@ -147,28 +152,52 @@ def oversample_submit(train_df, test_df, random_state=42):
 ############################################################3
 ############################################################3
 
-experiments = [
-    'stacking_all1_deep',
-    'stacking_no_emb_simpl_idf_light',
-    'stacking_no_metrics_light',
-    'stacking_no_metrics_only_glove_emb',
-    'stacking_no_tfidf_light',
-    'stacking_no_top_tokens_light',
-    'stacking_only_glove_emb_light',
-    'stacking_only_lex_emb_light',
-    'stacking_only_word2vec_emb_light',
-    'stacking_lstm',
-    'stacking_random_forest_light',
-    'stacking_lstm_glove_lemmas_re_stops_yes',
-    'stacking_lstm_lex_question_re_stops_yes',
-    'stacking_lstm_word2vec_lemmas_re_stops_yes',
-    'stacking_lstm_glove_nouns_re_stops_no',
-    'stacking_lstm_glove_verbs_re_stops_no'
+experiments = ['stacking_lstm_glove_nouns_re_stops_no',
+               'one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5',
+               'stacking_xgb_with_lstm_prob_deep',
+               'stacking_lstm_glove_lemmas_re_stops_yes',
+               'glove_metrics_lex_metrics_word2vec_metrics_500_0.8_0.8_5',
+               'stacking_all1_deep',
+               'stacking_no_top_tokens_light',
+               'stacking_only_word2vec_emb_light',
+               'topNs_avg_tok_freq_magic_500_0.8_0.8_5',
+               'stacking_no_metrics_only_glove_emb',
+               'lengths_common_words_500_0.8_0.8_5',
+               'stacking_no_metrics_light',
+               'stacking_lstm_word2vec_lemmas_re_stops_yes',
+               'tfidf_new_magic_word2vec_metrics_500_0.6_0.6_5',
+               'stacking_random_forest_light',
+               'stacking_no_emb_simpl_idf_light',
+               'stacking_lstm_lex_question_re_stops_yes',
+               'metrics_500_0.8_0.8_5',
+               'stacking_only_lex_emb_light',
+               'stacking_no_tfidf_light',
+               'tfidf_new_magic_500_0.6_0.6_5',
+               'tfidf_new_magic_topNs_avg_tok_freq_500_0.6_0.6_5',
+               'lengths_common_words_magic_500_0.8_0.8_5',
+               'glove_metrics_500_0.8_0.8_5',
+               'lengths_common_words_topNs_avg_tok_freq_500_0.6_0.6_5',
+               'topNs_avg_tok_freq_500_0.8_0.8_5',
+               'stacking_only_glove_emb_light',
+               'stacking_lstm',
+               'stacking_lstm_glove_verbs_re_stops_no',
+               'glove_metrics_tfidf_new_500_0.8_0.8_5']
 
-]
+# experiments = ['stacking_lstm_glove_nouns_re_stops_no',
+#                'one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5',
+#                'stacking_xgb_with_lstm_prob_deep',
+#                'stacking_lstm_glove_lemmas_re_stops_yes',
+#                ]
 
-def perform_xgb_cv():
+
+def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
     seed = 42
+    name = '{}_{}_{}_{}_{}'.format(
+        name,
+        max_depth,
+        learning_rate,
+        subsample,
+        colsample_bytree)
 
     folds = load_folds()
     df = load_stacking(experiments)
@@ -197,10 +226,10 @@ def perform_xgb_cv():
         test_arr = small
 
         estimator = xgb.XGBClassifier(n_estimators=10000,
-                                      subsample=0.7,
-                                      colsample_bytree=0.7,
-                                      max_depth=5,
-                                      learning_rate=0.02,
+                                      subsample=subsample,
+                                      colsample_bytree=colsample_bytree,
+                                      max_depth=max_depth,
+                                      learning_rate=learning_rate,
                                       objective='binary:logistic',
                                       )
         print test_arr.columns.values
@@ -211,7 +240,7 @@ def perform_xgb_cv():
             eval_set=eval_set,
             eval_metric='logloss',
             verbose=True,
-            early_stopping_rounds=100
+            early_stopping_rounds=10
         )
 
         # plot_importance(estimator)
@@ -221,6 +250,8 @@ def perform_xgb_cv():
         loss = log_loss(test_target, proba)
         print loss
         losses.append(loss)
+
+        write_results(name, estimator, losses, train_arr)
 
     print 'AVG={}'.format(np.mean(losses))
 
@@ -254,7 +285,7 @@ def apply_stacking(name):
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=150,
+    estimator = xgb.XGBClassifier(n_estimators=142,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=5,
@@ -280,6 +311,43 @@ def apply_stacking(name):
     res = test_df[[TARGET]]
     res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
+def xgboost_per_tree_results(estimator):
+    results_on_test = estimator.evals_result()['validation_1']['logloss']
+    results_on_train = estimator.evals_result()['validation_0']['logloss']
+    return {
+        'train': results_on_train,
+        'test': results_on_test
+    }
 
-perform_xgb_cv()
-# apply_stacking('stacking_with_noun_verb_lstm_150_5_0.8_0.8')
+def write_results(name, estimator, losses, train_arr):
+    from pymongo import MongoClient
+
+    features =train_arr.columns
+    ii = estimator.feature_importances_
+    per_tree_res = xgboost_per_tree_results(estimator)
+
+    imp=[x.item() for x in ii]
+    features=list(features)
+
+    client = MongoClient(gc_host, 27017)
+    client['admin'].authenticate(user, password)
+    db = client['stacking_exp']
+    collection = db[name]
+    try:
+        print 'INSERTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+        collection.insert_one({
+            'results': per_tree_res,
+            'losses': losses,
+            'importance':imp,
+            'features':features
+        })
+    except:
+        print 'error in mongo'
+        traceback.print_exc()
+        raise
+        # sleep(20)
+
+
+perform_xgb_cv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+
+# apply_stacking('stacking_with_many_weak_est_142_5_0.8_0.8')
