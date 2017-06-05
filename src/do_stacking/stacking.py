@@ -246,7 +246,7 @@ def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
             eval_set=eval_set,
             eval_metric='logloss',
             verbose=True,
-            early_stopping_rounds=10
+            early_stopping_rounds=100
         )
 
         # plot_importance(estimator)
