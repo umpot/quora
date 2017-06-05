@@ -168,6 +168,13 @@ def create_folds(df):
         (df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']])
         for x in range(len(folds))]
 
+def create_folds(df):
+    folds = load_folds()
+
+    return [
+        (df.loc[folds[str(x)]['train']], df.loc[folds[str(x)]['test']])
+        for x in range(len(folds))]
+
 
 def split_into_folds(df, random_state=42):
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
@@ -686,14 +693,14 @@ def perform_xgb_cv(name, mongo_host, f_num):
     preprocess_df(df)
 
 
-    folds = create_folds(df)
+    folds = load_folds()
     # df = df.head(5000)
     # folds = split_into_folds(df,42)
 
     losses = []
     counter = 0
 
-    for big, small in folds:
+    for big_ind, small_ind in folds:
         if f_num != counter:
             print 'Skipping_{}'.format(counter)
             counter += 1
@@ -703,6 +710,9 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         start()
 
+
+        big = df.iloc[big_ind]
+        small = df.iloc[small_ind]
 
 
         print explore_target_ratio(big)
