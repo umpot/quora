@@ -144,7 +144,7 @@ def add_kur_combinations(df):
 
 def preprocess_df(df):
     del_trash_cols(df)
-    add_kur_combinations(df)
+    # add_kur_combinations(df)
 
 ######################################################################################
 ######################################################################################

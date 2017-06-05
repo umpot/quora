@@ -243,6 +243,11 @@ def oversample(train_df, test_df, random_state):
 
 
 
+def oversample_submit(train_df, test_df, random_state=42):
+    l_train = int(delta * len(train_df))
+
+    return oversample_df(train_df, l_train, random_state),test_df
+
 ############################################################3
 ############################################################3
 ############################################################3
@@ -263,7 +268,7 @@ def push_to_gs(name, descr):
 
 
     script_name = os.path.basename(__file__)
-    subprocess.call(['python', '-u', 'compress_and_push_to_gs.py', name, script_name])
+    subprocess.call(['python', '-u', 'compress_and_push_to_gs_submit.py', name, script_name])
 
 ######################################################################################
 ######################################################################################
@@ -595,25 +600,44 @@ import json
 import traceback
 
 
+train_load_map = {
+    'lengths'                 :          load_train_lengths,
+    'common_words'            :          load_train_common_words,
+    'metrics'                :          load__train_metrics,
+    'tfidf_new'               :          load_train_tfidf_new,
+    'magic'                   :          load_train_magic,
+    'wh'                      :          load_wh_train,
+    'one_upper'               :          load_one_upper_train,
+    'topNs_avg_tok_freq'      :          load_topNs_avg_tok_freq_train,
+    'abi'                     :          load_abi_train,
+    'max_k_cores'             :          load_max_k_cores_train,
+    'word2vec_metrics'        :          load_word2vec_metrics_train,
+    'glove_metrics'           :          load_glove_metrics_train,
+    'lex_metrics'             :          load_lex_metrics_train,
+    'aux_pairs_50'            :          load_aux_pairs_50_train
+}
 
-def load_train_all_xgb():
-    train_df = pd.concat([
-        load_train(),
-        load_train_lengths(),
-        load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf_new(),
-        load_train_magic(),
-        load_wh_train(),
-        load_one_upper_train(),
-        load_topNs_avg_tok_freq_train(),
-        load_abi_train(),
-        load_max_k_cores_train(),
-        load_word2vec_metrics_train(),
-        load_glove_metrics_train(),
-        load_lex_metrics_train(),
-        load_aux_pairs_50_train()
-    ], axis=1)
+test_load_map = {
+   'lengths'                 :          load_test_lengths,
+   'common_words'            :          load_test_common_words,
+   'metrics'                :           load__test_metrics,
+   'tfidf_new'               :          load_test_tfidf_new,
+   'magic'                   :          load_test_magic,
+   'wh'                      :          load_wh_test,
+   'one_upper'               :          load_one_upper_test,
+   'topNs_avg_tok_freq'      :          load_topNs_avg_tok_freq_test,
+   'abi'                     :          load_abi_test,
+   'max_k_cores'             :          load_max_k_cores_test,
+   'word2vec_metrics'        :          load_word2vec_metrics_test,
+   'glove_metrics'           :          load_glove_metrics_test,
+   'lex_metrics'             :          load_lex_metrics_test,
+   'aux_pairs_50'            :          load_aux_pairs_50_test
+}
+
+
+def load_train_all_xgb(names):
+    dfs = [load_train()]+ [train_load_map[n]() for n in names]
+    train_df = pd.concat(dfs, axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
     for col in cols_to_del:
@@ -621,25 +645,9 @@ def load_train_all_xgb():
 
     return train_df
 
-def load_test_all_xgb():
-    test_df = pd.concat([
-        load_test_lengths(),
-        load_test_common_words(),
-        load__test_metrics(),
-        load_test_tfidf_new(),
-        load_test_magic(),
-        load_wh_test(),
-        load_one_upper_test(),
-        load_topNs_avg_tok_freq_test(),
-        load_abi_test(),
-        load_max_k_cores_test(),
-        load_word2vec_metrics_test(),
-        load_glove_metrics_test(),
-        load_lex_metrics_test(),
-        load_aux_pairs_50_test()
-    ], axis=1)
-
-
+def load_test_all_xgb(names):
+    dfs = [test_load_map[n]() for n in names]
+    test_df = pd.concat(dfs, axis=1)
     return test_df
 
 
@@ -647,89 +655,104 @@ def load_test_all_xgb():
 ################################################3
 ################################################3
 
-def get_update_df():
-    df = load_train()
-    cols_to_del = [qid1, qid2, question1, question2]
+
+def get_all_cols_except_target(df):
+    return set([x for x in df.columns if x!=TARGET])
+
+def fix_train_columns(train_df, test_df):
+    if(get_all_cols_except_target(train_df))!=get_all_cols_except_target(test_df):
+        raise Exception('SETS of columns train/test are different')
+    else:
+        print 'SETS of cols are equal'
+
+
+    train_df=train_df[[TARGET]+[x for x in test_df.columns]]
+
+
+    ok = list(train_df.columns[1:])==list(test_df.columns)
+    if not ok:
+        raise Exception('Features LISTS for train/test are different')
+
+    return train_df
+
+
+
+
+def get_update_df_submit():
+    df = load_test()
+    cols_to_del = [question1, question2]
     for col in cols_to_del:
         del df[col]
 
     return df
 
-def perform_xgb_cv(name, mongo_host):
-    seed = 42
-    df = load_train_all_xgb()
-    update_df = get_update_df()
-    preprocess_df(df)
-    folds = load_folds()
+def submit_xgb(names, n_estimators, subsample, colsample, max_depth):
+    print 'names={}, n_estimators={}, subsample={}, colsample={}, max_depth={}'.\
+        format(names, n_estimators, subsample, colsample, max_depth)
+    seed=42
 
-    losses = []
-    counter = 0
+    train_df = load_train_all_xgb(names)
+    test_df = load_test_all_xgb(names)
 
-    for big_ind, small_ind in folds:
-        start()
+    update_df = get_update_df_submit()
 
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+    for df in [train_df, test_df]:
+        preprocess_df(df)
 
-        # big, small = big.head(1000), small.head(1000)
+    train_df = fix_train_columns(train_df, test_df)
 
+    print explore_target_ratio(train_df)
+    train_df, test_df = oversample_submit(train_df, test_df, seed)
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    print explore_target_ratio(train_df)
 
-        big, small = oversample(big, small, seed)
+    train_target = train_df[TARGET]
+    del train_df[TARGET]
+    train_arr = train_df
 
-        print explore_target_ratio(big)
-        print explore_target_ratio(small)
+    print train_df.columns.values
+    test_arr = test_df
 
-        train_target = big[TARGET]
-        del big[TARGET]
-        train_arr = big
+    start()
 
-        test_target = small[TARGET]
-        del small[TARGET]
-        test_arr = small
+    estimator = xgb.XGBClassifier(n_estimators=n_estimators,
+                                  subsample=subsample,
+                                  colsample_bytree=colsample,
+                                  max_depth=max_depth,
+                                  objective='binary:logistic',
+                                  nthread=-1)
+    print test_arr.columns.values
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
-        print test_arr.columns.values
-        print len(train_arr)
-        print len(test_arr), len(test_arr.index), len(set(test_arr.index))
+    print len(train_arr)
+    print len(test_arr)
 
-        eval_set = [(train_arr, train_target), (test_arr, test_target)]
+    estimator.fit(
+        train_arr, train_target,
+        eval_metric='logloss',
+        verbose=True
+    )
 
-        estimator.fit(
-            train_arr, train_target,
-            eval_metric='logloss',
-            verbose=True,
-            eval_set=eval_set
-        )
-
-        proba = estimator.predict_proba(test_arr)
-        print len(proba[:,1])
-        print len(test_arr)
-
-        test_arr['prob'] = proba[:,1]
-
-        test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
-
-        update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
-
-        push_results_to_mongo(estimator, losses,
-                              mongo_host, name, test_arr, test_target, train_arr, proba)
-
-        end('fold {}'.format(counter))
-        counter+=1
+    proba = estimator.predict_proba(test_arr)
 
 
-    update_df.to_csv('probs.csv', index_label='id')
+    test_arr['prob'] = proba[:,1]
+    test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
+
+    update_df.loc[test_arr.index, 'prob']=test_arr.loc[test_arr.index, 'prob']
+    update_df.to_csv('probs.csv', index_label='test_id')
+
+    end('Finished')
 
 
+
+
+    classes = [x for x in estimator.classes_]
+    print 'classes {}'.format(classes)
+    test_df[TARGET] = proba[:, 1]
+
+    res = test_df[[TARGET]]
+    name ='_'.join(names)
+    res.to_csv('{}.csv'.format(name), index=True, index_label='test_id')
 
 
 descr= \
@@ -738,17 +761,25 @@ descr= \
     """
 
 
-name='stacking_all1_light'
+names=sys.argv[1].split(',')
+n_estimators = int(sys.argv[2])
+subsample = float(sys.argv[3])
+colsample = float(sys.argv[4])
+max_depth = int(sys.argv[5])
 
-perform_xgb_cv(name, gc_host)
+name ='_'.join(names+[str(x) for x in [n_estimators, subsample, colsample, max_depth]])
+
+submit_xgb(names, n_estimators, subsample, colsample, max_depth)
 push_to_gs(name, descr)
 
 done()
 
 
+
 #STACKING
 ################################################3
 ################################################3
+
 
 
 
