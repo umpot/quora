@@ -364,6 +364,6 @@ def write_results(name, estimator, losses, train_arr):
 
 # ['python', '-u', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
 #name, max_depth, learning_rate, subsample, colsample_bytree
-# perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
+perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
-apply_stacking('stacking_with_many_weak_est_1130_5_0.5_0.9')
+# apply_stacking('stacking_with_many_weak_est_1130_5_0.5_0.9')
