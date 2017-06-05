@@ -26,7 +26,7 @@ random.seed(seed)
 
 def generate_rnd_params():
     max_depth = random.randint(2,9)
-    learning_rate = random.choice([0.001, 0.002, 0.003, 0.005, 0.01, 0.02, 0.0005, 0.003, 0.007])
+    learning_rate = random.choice([0.005, 0.01, 0.02, 0.003, 0.007])
     subsample = random.choice([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
     colsample_bytree = random.choice([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
 
