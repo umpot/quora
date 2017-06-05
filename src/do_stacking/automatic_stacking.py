@@ -41,7 +41,7 @@ def do_search():
     while True:
         start()
         max_depth, learning_rate, subsample, colsample_bytree = generate_rnd_params()
-        subprocess.call(['python','stacking.py' ,'-u', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
+        subprocess.call(['python','-u','stacking.py', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
         counter+=1
         end('Evaluating {}'.format(counter))
 
