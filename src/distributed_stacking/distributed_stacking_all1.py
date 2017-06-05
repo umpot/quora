@@ -740,7 +740,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         test_arr = test_arr[~test_arr.index.duplicated(keep='first')]
 
-        test_arr[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
+        small[[TARGET, 'prob']].to_csv('probs.csv', index_label='id')
 
 
         push_results_to_mongo(estimator, losses,
