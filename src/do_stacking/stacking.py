@@ -191,6 +191,11 @@ experiments = ['stacking_lstm_glove_nouns_re_stops_no',
 
 
 def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
+    print 'name={},\n' \
+          ' max_depth={},\n ' \
+          'learning_rate={},\n' \
+          ' subsample={},\n colsample_bytree={}'.\
+        format(name, max_depth, learning_rate, subsample, colsample_bytree)
     seed = 42
     name = '{}_{}_{}_{}_{}'.format(
         name,
@@ -348,6 +353,8 @@ def write_results(name, estimator, losses, train_arr):
         # sleep(20)
 
 
-perform_xgb_cv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+# ['python', '-u', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
+#name, max_depth, learning_rate, subsample, colsample_bytree
+perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
 # apply_stacking('stacking_with_many_weak_est_142_5_0.8_0.8')
