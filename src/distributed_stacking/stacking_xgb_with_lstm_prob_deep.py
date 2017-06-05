@@ -600,6 +600,19 @@ def load_aux_pairs_50_test():
 ############################################################3
 ############################################################3
 ############################################################3
+
+lstm_train_fp = os.path.join(data_folder, 'lstm', 'lstm_train.csv')
+lsrm_test_fp = os.path.join(data_folder, 'lstm', 'lstm_test.csv')
+def load_lstm_train():
+    return pd.read_csv(lstm_train_fp, index_col='id')
+
+def load_lstm_test():
+    return pd.read_csv(lsrm_test_fp, index_col='test_id')
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
 import xgboost as xgb
 from sklearn.metrics import log_loss
 import json
@@ -623,7 +636,8 @@ def load_train_all_xgb():
         load_word2vec_metrics_train(),
         load_glove_metrics_train(),
         load_lex_metrics_train(),
-        load_aux_pairs_50_train()
+        load_aux_pairs_50_train(),
+        load_lstm_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -709,13 +723,14 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         train_cols = list(train_arr.columns.values)
 
-        estimator = xgb.XGBClassifier(n_estimators=20,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
-                                      objective='binary:logistic',
-                                      nthread=-1
-                                      )
+        estimator = xgb.XGBClassifier(n_estimators=1800,
+                                  subsample=0.6,
+                                  # colsample_bytree=0.8,
+                                  max_depth=7,
+                                  objective='binary:logistic',
+                                  learning_rate=0.02,
+                                  base_score=0.2,
+                                  nthread=-1)
         print test_arr.columns.values
         print len(train_arr)
         print len(test_arr), len(test_arr.index), len(set(test_arr.index))
@@ -756,7 +771,7 @@ descr= \
     """
 
 
-name=''
+name='stacking_xgb_with_lstm_prob_deep_1800'
 
 f_num = int(sys.argv[1])
 
