@@ -258,7 +258,13 @@ def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
 
         write_results(name, estimator, losses, train_arr)
 
+    print '###############################'
+    print '###############################'
+    print
     print 'AVG={}'.format(np.mean(losses))
+    print
+    print '###############################'
+    print '###############################'
 
 
 def load_stacking(exp_list):
