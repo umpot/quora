@@ -449,38 +449,180 @@ def write_top_N_x_None_freq():
     process_top_N_x_None_toks(test_df, m, None)
     test_df[new_cols].to_csv(top_7K_x_None_freq_test_fp, index_label='test_id')
 
-def process_top_N_x_None_toks(df, m, update_df):
-    global counter
-    counter=0
 
-    m={x[0]:x[1] for x in m}
 
-    def process_row(row, topN):
+
+
+
+def add_target_ratio_to_m(m):
+    for v in m.values():
+        # print v
+        for col, blja in v.iteritems():
+            # print col, blja
+            cnt = blja['count']
+            t = blja[1]
+            blja[RATIO]= (1.0*t)/cnt
+
+
+
+def get_top_uppers_dict(df, top_N):
+    res = defaultdict(dict)
+
+    def make_upper_stats(x, y, top_N_set, result_set,  target):
         global counter
         counter+=1
         if counter%1000==0:
             print counter
 
-        res=[]
-        # print row[question1], row[question2]
+        x = set(str(x).split())
+        y = set(str(y).split())
+
+        in_q1_not_in_2 = x.difference(y).intersection(top_N_set)
+        in_q2_no_in_1 = y.difference(x).intersection(top_N_set)
+        sym_diff=x.symmetric_difference(y).intersection(top_N_set)
+        both = x.intersection(y).intersection(top_N_set)
+        all_set = x.union(y).intersection(top_N_set)
+
+        cols_map={
+            'in_q1_not_in_2':in_q1_not_in_2,
+            'in_q2_no_in_1':in_q2_no_in_1,
+            'sym_diff':sym_diff,
+            'both':both,
+            'all':all_set
+        }
+
+        for col, ss in cols_map.iteritems():
+            for a in ss:
+                d=result_set[a]
+                if col not in d:
+                    d[col]={}
+                    d[col]['count']=0
+                    d[col][1]=0
+                    d[col][0]=0
+
+                d[col]['count']+=1
+                d[col][target]+=1
+
+
+    df.apply(lambda row: make_upper_stats(row[tokens_q1], row[tokens_q2],top_N, res, row[TARGET]), axis = 1)
+    print 'Done2'
+
+    add_target_ratio_to_m(res)
+
+    return res
+
+from collections import Counter
+import json
+
+def get_top_uppers(df):
+    def filter_upper(s):
+        return filter(lambda x: x[0].isupper(), s.split())
+    tmp = df[tokens_q1]+' '+df[tokens_q2]
+    tmp = tmp.apply(filter_upper)
+    l=[]
+    for x in tmp:
+        l+=x
+    return Counter(l)
+
+def load_top_110_uppers():
+    fp = os.path.join(data_folder, 'new_top_uppers', '1100_top_upper_tokens.json')
+    return json.load(open(fp))
+
+    # upper_col='upper_col'
+    # def get_one_upper(row):
+    #     a = row[tokens_q1]
+    #     b = row[tokens_q2]
+    #     if a is None and b is None:
+    #         return None
+    #     if a is not None:
+    #         return a
+    #     return b
+    # df[upper_col] = df.apply(get_one_upper, axis = 1)
+
+def add_upper_cols(df):
+    top = load_top_110_uppers()
+    top = set(top)
+    def filter_upper(s):
+        up = filter(lambda x: x[0].isupper(), s.split())
+        up=set(up)
+        return list(up.intersection(top))
+    def first_or_None(l):
+        if len(l)==0:
+            return None
+        return l[0]
+    for col in [tokens_q1, tokens_q2]:
+        df[col] = df[col].apply(filter_upper).apply(first_or_None)
+
+
+def process_top_N_uppers_plus_minus(df, m, update_df):
+    global counter
+    counter=0
+
+    m={x[0]:x[1] for x in m}
+
+    upper_col='upper_col'
+    def get_one_upper(row):
+        a = row[tokens_q1]
+        b = row[tokens_q2]
+        if a is None and b is None:
+            return None
+        if a is not None:
+            return a
+        return b
+    df[upper_col] = df.apply(get_one_upper, axis = 1)
+
+    def process_row(row, top_N_set):
+        global counter
+        counter+=1
+        if counter%1000==0:
+            print counter
+
         x = set(str(row[question1]).split())
         y = set(str(row[question2]).split())
-        ss=x.symmetric_difference(y)
 
-        for s in ss:
-            if s in topN:
-                res.append(topN[s])
+        in_q1_not_in_2 = x.difference(y).intersection(top_N_set)
+        in_q2_no_in_1 = y.difference(x).intersection(top_N_set)
+        sym_diff=x.symmetric_difference(y).intersection(top_N_set)
+        both = x.intersection(y).intersection(top_N_set)
+
+        if len(in_q1_not_in_2)!=0:
+            in_q1_not_in_2 = list(in_q1_not_in_2)[0]
+        else:
+            in_q1_not_in_2 = None
+
+        if len(in_q2_no_in_1)!=0:
+            in_q2_no_in_1 = list(in_q2_no_in_1)[0]
+        else:
+            in_q2_no_in_1 = None
+
+        if len(sym_diff)!=0:
+            sym_diff = list(sym_diff)[0]
+        else:
+            sym_diff = None
+
+        if len(both)!=0:
+            both = list(both)[0]
+        else:
+            both = None
+
+        res={
+            'in_q1_not_in_2':in_q1_not_in_2,
+            'in_q2_no_in_1':in_q2_no_in_1,
+            'sym_diff':sym_diff,
+            'both':both
+        }
 
         return res
 
-    df[x_None] = df.apply(lambda row: process_row(row, m), axis=1)
+    m_set = set(m.keys())
+    df['tmp'] = df.apply(lambda row: process_row(row, m_set), axis=1)
 
-    def get_freq_only(s):
-        if s is None:
-            return None
-        return [x[RATIO] for x in s]
-
-    df[x_None]= df[x_None].apply(get_freq_only)
+    cols=[
+        'in_q1_not_in_2',
+        'in_q2_no_in_1',
+        'sym_diff',
+        'both'
+    ]
 
     new_cols =[]
     for name, func in statistics.iteritems():
@@ -492,53 +634,4 @@ def process_top_N_x_None_toks(df, m, update_df):
             update_df.loc[df.index, col]=df.loc[df.index, col]
 
     return new_cols
-
-
-
-
-def add_target_ratio_to_m(m):
-    for w in m:
-        v=w[1]
-        if 1 not in v:
-            v[RATIO] = 0
-        else:
-            v[RATIO] = (1.0 * v[1]) / v['count']
-
-def explore_top_pairs(df):
-    res = defaultdict(dict)
-
-    def make_pairs_set(x,y, m, target):
-        global counter
-        counter+=1
-        if counter%1000==0:
-            print counter
-
-
-        x=set(str(x).split())
-        y = set(str(y).split())
-
-        ss=x.symmetric_difference(y)
-        for t in ss:
-            d = m[t]
-            if target in d:
-                d[target]+=1
-            else:
-                d[target]=1
-            if 'count' in d:
-                d['count']+=1
-            else:
-                d['count']=1
-
-    df.apply(lambda row: make_pairs_set(row[question1], row[question2], res, row[TARGET]), axis = 1)
-    print 'Done2'
-
-    res = [(k,v) for k, v in res.iteritems()]
-    res.sort(key=lambda p: p[1]['count'], reverse=True)
-    add_target_ratio_to_m(res)
-
-    return res
-
-
-write_top_N_x_None_freq()
-
 
