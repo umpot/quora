@@ -764,7 +764,8 @@ name='stacking_all1_light_test'
 
 f_num = int(sys.argv[1])
 
-perform_xgb_cv('{}_fold_{}'.format(name, f_num), gc_host, f_num)
+name = '{}_fold_{}'.format(name, f_num)
+perform_xgb_cv(name, gc_host, f_num)
 push_to_gs(name, descr)
 
 done()
