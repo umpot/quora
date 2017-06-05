@@ -661,7 +661,7 @@ def get_update_df():
 
 def perform_xgb_cv(name, mongo_host, names, n_estimators, subsample, colsample, max_depth):
     seed = 42
-    df = load_train_all_xgb()
+    df = load_train_all_xgb(names)
     update_df = get_update_df()
     preprocess_df(df)
     folds = load_folds()
@@ -694,10 +694,10 @@ def perform_xgb_cv(name, mongo_host, names, n_estimators, subsample, colsample, 
         del small[TARGET]
         test_arr = small
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
-                                      subsample=0.8,
-                                      colsample_bytree=0.8,
-                                      max_depth=5,
+        estimator = xgb.XGBClassifier(n_estimators=n_estimators,
+                                      subsample=subsample,
+                                      colsample_bytree=colsample,
+                                      max_depth=max_depth,
                                       objective='binary:logistic',
                                       nthread=-1
                                       )
