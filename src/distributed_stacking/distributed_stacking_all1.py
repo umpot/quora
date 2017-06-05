@@ -679,7 +679,7 @@ def perform_xgb_cv(name, mongo_host, f_num):
     losses = []
     counter = 0
 
-    for big_ind, small_ind in folds:
+    for big, small in folds:
         if f_num != counter:
             print 'Skipping_{}'.format(counter)
             counter += 1
@@ -689,8 +689,8 @@ def perform_xgb_cv(name, mongo_host, f_num):
 
         start()
 
-        big = df.iloc[big_ind]
-        small = df.iloc[small_ind]
+        # big = df.iloc[big_ind]
+        # small = df.iloc[small_ind]
 
         # big, small = big.head(1000), small.head(1000)
 
