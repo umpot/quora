@@ -3,7 +3,7 @@ import sys
 
 import pandas as pd
 import seaborn as sns
-from sklearn.cross_validation import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
