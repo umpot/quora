@@ -772,11 +772,12 @@ descr= \
 
 
 name='stacking_xgb_with_lstm_prob_deep_1800'
+old_name = name
 
 f_num = int(sys.argv[1])
 
 name = '{}_fold_{}'.format(name, f_num)
-perform_xgb_cv(name, gc_host, f_num)
+perform_xgb_cv(old_name, gc_host, f_num)
 push_to_gs(name, descr)
 
 done()
