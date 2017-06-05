@@ -610,18 +610,18 @@ def load_train_all_xgb():
         load_train(),
         load_train_lengths(),
         load_train_common_words(),
-        load__train_metrics(),
-        load_train_tfidf_new(),
-        load_train_magic(),
-        load_wh_train(),
-        load_one_upper_train(),
-        load_topNs_avg_tok_freq_train(),
-        load_abi_train(),
-        load_max_k_cores_train(),
-        load_word2vec_metrics_train(),
-        load_glove_metrics_train(),
-        load_lex_metrics_train(),
-        load_aux_pairs_50_train()
+        # load__train_metrics(),
+        # load_train_tfidf_new(),
+        # load_train_magic(),
+        # load_wh_train(),
+        # load_one_upper_train(),
+        # load_topNs_avg_tok_freq_train(),
+        # load_abi_train(),
+        # load_max_k_cores_train(),
+        # load_word2vec_metrics_train(),
+        # load_glove_metrics_train(),
+        # load_lex_metrics_train(),
+        # load_aux_pairs_50_train()
     ], axis=1)
 
     cols_to_del = [qid1, qid2, question1, question2]
@@ -634,18 +634,18 @@ def load_test_all_xgb():
     test_df = pd.concat([
         load_test_lengths(),
         load_test_common_words(),
-        load__test_metrics(),
-        load_test_tfidf_new(),
-        load_test_magic(),
-        load_wh_test(),
-        load_one_upper_test(),
-        load_topNs_avg_tok_freq_test(),
-        load_abi_test(),
-        load_max_k_cores_test(),
-        load_word2vec_metrics_test(),
-        load_glove_metrics_test(),
-        load_lex_metrics_test(),
-        load_aux_pairs_50_test()
+        # load__test_metrics(),
+        # load_test_tfidf_new(),
+        # load_test_magic(),
+        # load_wh_test(),
+        # load_one_upper_test(),
+        # load_topNs_avg_tok_freq_test(),
+        # load_abi_test(),
+        # load_max_k_cores_test(),
+        # load_word2vec_metrics_test(),
+        # load_glove_metrics_test(),
+        # load_lex_metrics_test(),
+        # load_aux_pairs_50_test()
     ], axis=1)
 
     return test_df
@@ -698,7 +698,7 @@ def perform_xgb_cv(name, mongo_host):
         del small[TARGET]
         test_arr = small
 
-        estimator = xgb.XGBClassifier(n_estimators=1000,
+        estimator = xgb.XGBClassifier(n_estimators=500,
                                       subsample=0.8,
                                       colsample_bytree=0.8,
                                       max_depth=5,
@@ -740,13 +740,13 @@ def perform_xgb_cv(name, mongo_host):
 
 
 
-descr=\
-"""
+descr= \
+    """
 
-"""
+    """
 
 
-name=''
+name='stacking_only_basic_features'
 
 perform_xgb_cv(name, gc_host)
 push_to_gs(name, descr)
