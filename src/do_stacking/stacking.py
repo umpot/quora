@@ -301,6 +301,7 @@ def apply_stacking(name):
                                   colsample_bytree=0.8,
                                   max_depth=5,
                                   objective='binary:logistic',
+                                  nthread=-1
                                   )
     big, small = train_df, test_df
 
