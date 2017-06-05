@@ -236,6 +236,7 @@ def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
                                       max_depth=max_depth,
                                       learning_rate=learning_rate,
                                       objective='binary:logistic',
+                                      nthread=-1
                                       )
         print test_arr.columns.values
 
