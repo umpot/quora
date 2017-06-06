@@ -306,7 +306,7 @@ def apply_stacking(name):
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=1200,
+    estimator = xgb.XGBClassifier(n_estimators=800,
                                   subsample=0.8,
                                   colsample_bytree=0.8,
                                   max_depth=5,
@@ -388,7 +388,7 @@ def write_results(name, estimator, losses, train_arr):
 #name, max_depth, learning_rate, subsample, colsample_bytree
 # perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 # stacking_lstm_glove_nouns_re_stops_no
-# apply_stacking('stacking_all3_1200_5_0.8_0.8_0.02')
-perform_xgb_cv('only_lstm', 5, 0.02, 0.8, 0.8)
+apply_stacking('only_lstm_5_0.8_0.8_0.02')
+# perform_xgb_cv('only_lstm', 5, 0.02, 0.8, 0.8)
 
 # blja()
