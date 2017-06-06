@@ -145,7 +145,6 @@ def add_kur_combinations(df):
 
 def preprocess_df(df):
     del_trash_cols(df)
-    # add_kur_combinations(df)
 
 ######################################################################################
 ######################################################################################
@@ -744,7 +743,7 @@ def load_test_all_xgb():
         load_test_lengths(),
         load_test_common_words(),
         load__test_metrics(),
-        load_train_tfidf(),
+        load_train_tfidf_new(),
         load_test_magic(),
         load_wh_test(),
         load_one_upper_test(),

@@ -60,14 +60,14 @@ train_load_map = {
 
 names, n_estimators, subsample, colsample, max_depth
 
-nr generic_stacking_template.py diff_idf 500 0.7 0.7 5 &
-done
+nr generic_submit_stacking_template.py diff_idf 500 0.7 0.7 5 &
+done submit
 
-nr generic_stacking_template.py diff_idf,magic 500 0.7 0.7 5 &
-done
+nr generic_submit_stacking_template.py diff_idf,magic 500 0.7 0.7 5 &
+done submit
 
-nr generic_stacking_template.py common_words,lengths,diff_idf,magic 500 0.7 0.7 5 &
-done
+nr generic_submit_stacking_template.py common_words,lengths,diff_idf,magic 500 0.7 0.7 5 &
+done submit
 
 
 nr generic_stacking_template.py lstm,diff_idf,magic 500 0.7 0.7 5 &
