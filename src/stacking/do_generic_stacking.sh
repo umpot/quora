@@ -70,55 +70,55 @@ nr generic_submit_stacking_template.py common_words,lengths,diff_idf,magic 500 0
 done submit
 
 
-nr generic_stacking_template.py lstm,diff_idf,magic 500 0.7 0.7 5 &
-done
+nr generic_submit_stacking_template.py lstm,diff_idf,magic 500 0.7 0.7 5 &
+done submit
 
-nr generic_stacking_template.py new_top_uppers 500 0.7 0.7 5 &
-done
+nr generic_submit_stacking_template.py new_top_uppers 500 0.7 0.7 5 &
+done submit
 
-nr generic_stacking_template.py new_top_uppers,magic 300 0.7 0.7 5 &
-done
-
-
-nr generic_stacking_template.py new_top_uppers,magic 300 0.6 0.7 5 &
-done
+nr generic_submit_stacking_template.py new_top_uppers,magic 300 0.7 0.7 5 &
+done submit
 
 
-nr generic_stacking_template.py top_7K_pair_freq,magic,top_7K_x_None_freq 300 0.6 0.7 3 &
-done
+nr generic_submit_stacking_template.py new_top_uppers,magic 300 0.6 0.7 5 &
+done submit
 
-nr generic_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,pair_freq,pronoun_pairs_50 500 0.6 0.7 5 &
-done
 
-nr generic_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,pair_freq,pronoun_pairs_50,glove_metrics 400 0.6 0.7 4 &
-done
+nr generic_submit_stacking_template.py top_7K_pair_freq,magic,top_7K_x_None_freq 300 0.6 0.7 3 &
+done submit
 
-nr generic_stacking_template.py lstm,magic,max_k_cores 400 0.6 0.7 3 &
-done
+nr generic_submit_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,pair_freq,pronoun_pairs_50 500 0.6 0.7 5 &
+done submit
 
-nr generic_stacking_template.py diff_idf,magic,max_k_cores,top_7K_x_None_freq 500 0.6 0.7 3 &
-done
+nr generic_submit_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,pair_freq,pronoun_pairs_50,glove_metrics 400 0.6 0.7 4 &
+done submit
 
-nr generic_stacking_template.py new_top_uppers,pair_freq,lex_metrics 500 0.6 0.7 5 &
-done
+nr generic_submit_stacking_template.py lstm,magic,max_k_cores 400 0.6 0.7 3 &
+done submit
 
-nr generic_stacking_template.py diff_idf,new_top_uppers,pair_freq,lex_metrics,lengths,common_words 400 0.6 0.7 4 &
-done
+nr generic_submit_stacking_template.py diff_idf,magic,max_k_cores,top_7K_x_None_freq 500 0.6 0.7 3 &
+done submit
 
-nr generic_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq 500 0.6 0.7 3 &
-done
+nr generic_submit_stacking_template.py new_top_uppers,pair_freq,lex_metrics 500 0.6 0.7 5 &
+done submit
 
-nr generic_stacking_template.py pronoun_pairs_50,aux_pairs_50,magic 300 0.6 0.7 4 &
-done
+nr generic_submit_stacking_template.py diff_idf,new_top_uppers,pair_freq,lex_metrics,lengths,common_words 400 0.6 0.7 4 &
+done submit
 
-nr generic_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,lstm 500 0.6 0.7 5 &
-done
+nr generic_submit_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq 500 0.6 0.7 3 &
+done submit
 
-nr generic_stacking_template.py glove_metrics 500 0.6 0.7 5 &
-done
+nr generic_submit_stacking_template.py pronoun_pairs_50,aux_pairs_50,magic 300 0.6 0.7 4 &
+done submit
 
-nr generic_stacking_template.py glove_metrics,lstm,magic 500 0.6 0.7 5 &
-done
+nr generic_submit_stacking_template.py top_7K_pair_freq,top_7K_x_None_freq,lstm 500 0.6 0.7 5 &
+done submit
 
-nr generic_stacking_template.py pronoun_pairs_50,aux_pairs_50,magic,top_7K_pair_freq,top_7K_x_None_freq 300 0.6 0.7 4 &
-done
+nr generic_submit_stacking_template.py glove_metrics 500 0.6 0.7 5 &
+done submit
+
+nr generic_submit_stacking_template.py glove_metrics,lstm,magic 500 0.6 0.7 5 &
+done submit
+
+nr generic_submit_stacking_template.py pronoun_pairs_50,aux_pairs_50,magic,top_7K_pair_freq,top_7K_x_None_freq 300 0.6 0.7 4 &
+done submit
