@@ -152,12 +152,13 @@ def oversample_submit(train_df, test_df, random_state=42):
 ############################################################3
 ############################################################3
 
-experiments = ['stacking_lstm_glove_nouns_re_stops_no',
+experiments = [
+                  'stacking_lstm_glove_nouns_re_stops_no',
                'one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5',
-               # 'stacking_xgb_with_lstm_prob_deep',
+               'stacking_xgb_with_lstm_prob_deep',
                'stacking_lstm_glove_lemmas_re_stops_yes',
                'glove_metrics_lex_metrics_word2vec_metrics_500_0.8_0.8_5',
-               # 'stacking_all1_deep',
+               'stacking_all1_deep',
                'stacking_no_top_tokens_light',
                'stacking_only_word2vec_emb_light',
                'topNs_avg_tok_freq_magic_500_0.8_0.8_5',
@@ -316,14 +317,23 @@ def apply_stacking(name):
     train_df, test_df = oversample_submit(train_df, test_df)
     print explore_target_ratio(train_df)
 
-    estimator = xgb.XGBClassifier(n_estimators=1130,
-                                  subsample=0.5,
-                                  colsample_bytree=0.9,
+    estimator = xgb.XGBClassifier(n_estimators=1200,
+                                  subsample=0.8,
+                                  colsample_bytree=0.8,
                                   max_depth=5,
                                   objective='binary:logistic',
                                   nthread=-1,
-                                  learning_rate=0.01
+                                  learning_rate=0.02
                                   )
+
+    # estimator = xgb.XGBClassifier(n_estimators=1130,
+    #                               subsample=0.5,
+    #                               colsample_bytree=0.9,
+    #                               max_depth=5,
+    #                               objective='binary:logistic',
+    #                               nthread=-1,
+    #                               learning_rate=0.01
+    #                               )
     big, small = train_df, test_df
 
     train_target = big[TARGET]
@@ -389,5 +399,5 @@ def write_results(name, estimator, losses, train_arr):
 #name, max_depth, learning_rate, subsample, colsample_bytree
 # perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
-# apply_stacking('stacking_with_many_weak_est_1130_5_0.5_0.9')
-perform_xgb_cv('all3_no_deep', 5, 0.02, 0.8, 0.8)
+apply_stacking('stacking_all3_1200_5_0.8_0.8_0.02')
+# perform_xgb_cv('all3_no_deep', 5, 0.02, 0.8, 0.8)
