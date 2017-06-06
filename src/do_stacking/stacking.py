@@ -153,10 +153,10 @@ def oversample_submit(train_df, test_df, random_state=42):
 ############################################################3
 
 experiments = [
-                  'stacking_lstm_glove_nouns_re_stops_no',
+                # 'stacking_lstm_glove_nouns_re_stops_no',
                'one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5',
-               'stacking_xgb_with_lstm_prob_deep',
-               'stacking_lstm_glove_lemmas_re_stops_yes',
+               # 'stacking_xgb_with_lstm_prob_deep',
+               # 'stacking_lstm_glove_lemmas_re_stops_yes',
                'glove_metrics_lex_metrics_word2vec_metrics_500_0.8_0.8_5',
                'stacking_all1_deep',
                'stacking_no_top_tokens_light',
@@ -165,11 +165,11 @@ experiments = [
                'stacking_no_metrics_only_glove_emb',
                'lengths_common_words_500_0.8_0.8_5',
                'stacking_no_metrics_light',
-               'stacking_lstm_word2vec_lemmas_re_stops_yes',
+               # 'stacking_lstm_word2vec_lemmas_re_stops_yes',
                'tfidf_new_magic_word2vec_metrics_500_0.6_0.6_5',
                'stacking_random_forest_light',
                'stacking_no_emb_simpl_idf_light',
-               'stacking_lstm_lex_question_re_stops_yes',
+               # 'stacking_lstm_lex_question_re_stops_yes',
                'metrics_500_0.8_0.8_5',
                'stacking_only_lex_emb_light',
                'stacking_no_tfidf_light',
@@ -180,31 +180,10 @@ experiments = [
                'lengths_common_words_topNs_avg_tok_freq_500_0.6_0.6_5',
                'topNs_avg_tok_freq_500_0.8_0.8_5',
                'stacking_only_glove_emb_light',
-               'stacking_lstm',
-               'stacking_lstm_glove_verbs_re_stops_no',
+               # 'stacking_lstm',
+               # 'stacking_lstm_glove_verbs_re_stops_no',
                'glove_metrics_tfidf_new_500_0.8_0.8_5'
-               ]+\
-['new_top_uppers_magic_300_0.7_0.7_5',
- 'glove_metrics_500_0.6_0.7_5',
- 'top_7K_pair_freq_top_7K_x_None_freq_lstm_500_0.6_0.7_5',
- 'pronoun_pairs_50_aux_pairs_50_magic_top_7K_pair_freq_top_7K_x_None_freq_300_0.6_0.7_4',
- 'new_top_uppers_500_0.7_0.7_5',
- 'top_7K_pair_freq_top_7K_x_None_freq_500_0.6_0.7_3',
- 'diff_idf_new_top_uppers_pair_freq_lex_metrics_lengths_common_words_400_0.6_0.7_4',
- 'lstm_magic_max_k_cores_400_0.6_0.7_3',
- 'lstm_diff_idf_magic_500_0.7_0.7_5',
- 'pronoun_pairs_50_aux_pairs_50_magic_300_0.6_0.7_4',
- 'diff_idf_magic_500_0.7_0.7_5',
- 'top_7K_pair_freq_magic_top_7K_x_None_freq_300_0.6_0.7_3',
- 'common_words_lengths_diff_idf_magic_500_0.7_0.7_5',
- 'new_top_uppers_magic_300_0.6_0.7_5',
- 'diff_idf_500_0.7_0.7_5',
- 'diff_idf_magic_max_k_cores_top_7K_x_None_freq_500_0.6_0.7_3',
- 'glove_metrics_lstm_magic_500_0.6_0.7_5',
- 'top_7K_pair_freq_top_7K_x_None_freq_pair_freq_pronoun_pairs_50_glove_metrics_400_0.6_0.7_4',
- 'new_top_uppers_pair_freq_lex_metrics_500_0.6_0.7_5']+[
-    'stacking_all3'
-]
+               ]
 
 
 
@@ -410,6 +389,6 @@ def write_results(name, estimator, losses, train_arr):
 # perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 # stacking_lstm_glove_nouns_re_stops_no
 # apply_stacking('stacking_all3_1200_5_0.8_0.8_0.02')
-# perform_xgb_cv('all3_no_deep', 5, 0.02, 0.8, 0.8)
+perform_xgb_cv('no_lstm', 5, 0.02, 0.8, 0.8)
 
-blja()
+# blja()

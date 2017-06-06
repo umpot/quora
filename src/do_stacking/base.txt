@@ -1,0 +1,20 @@
+stacking_lstm_glove_nouns_re_stops_no
+one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5
+/usr/local/lib/python2.7/dist-packages/numpy/lib/arraysetops.py:395: FutureWarning: elementwise comparison failed; returning sc
+alar instead, but in the future will perform elementwise comparison
+  mask |= (ar1 == a)
+stacking_lstm_glove_lemmas_re_stops_yes
+glove_metrics_lex_metrics_word2vec_metrics_500_0.8_0.8_5
+stacking_all1_deep
+stacking_no_top_tokens_light
+stacking_only_word2vec_emb_light
+topNs_avg_tok_freq_magic_500_0.8_0.8_5
+stacking_no_metrics_only_glove_emb
+lengths_common_words_500_0.8_0.8_5
+stacking_no_metrics_light
+stacking_lstm_word2vec_lemmas_re_stops_yes
+tfidf_new_magic_word2vec_metrics_500_0.6_0.6_5
+stacking_random_forest_light
+stacking_no_emb_simpl_idf_light
+stacking_lstm_lex_question_re_stops_yes
+stacking_lstm_glove_verbs_re_stops_no
