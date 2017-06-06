@@ -582,6 +582,90 @@ def load_metrics_on_pos_test():
 ############################################################3
 ############################################################3
 
+######################################################################################
+######################################################################################
+######################################################################################
+pronoun_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'pronoun_pairs_50_train.csv')
+pronoun_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'pronoun_pairs_50_test.csv')
+pronoun_pair_target_freq = 'pronoun_pair_target_freq'
+def load_pronoun_pairs_50_train():
+    return pd.read_csv(pronoun_pairs_50_train_fp, index_col='id')[[pronoun_pair_target_freq]]
+
+def load_pronoun_pairs_50_test():
+    return pd.read_csv(pronoun_pairs_50_test_fp, index_col='test_id')[[pronoun_pair_target_freq]]
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+pair_freq_train_fp = os.path.join(data_folder, 'pair_freq', 'pair_freq_train_v1.csv')
+pair_freq_test_fp = os.path.join(data_folder, 'pair_freq', 'pair_freq_test_v1.csv')
+
+def load_pair_freq_train():
+    return pd.read_csv(pair_freq_train_fp, index_col='id')
+
+def load_pair_freq_test():
+    return pd.read_csv(pair_freq_test_fp, index_col='test_id')
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+
+lstm_train_fp = os.path.join(data_folder, 'lstm', 'lstm_train.csv')
+lsrm_test_fp = os.path.join(data_folder, 'lstm', 'lstm_test.csv')
+def load_lstm_train():
+    return pd.read_csv(lstm_train_fp, index_col='id')
+
+def load_lstm_test():
+    return pd.read_csv(lsrm_test_fp, index_col='test_id')
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+top_7K_x_None_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_train.csv')
+top_7K_x_None_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_test.csv')
+
+
+def load_top_7K_x_None_freq_train():
+    return pd.read_csv(top_7K_x_None_freq_train_fp, index_col='id')
+
+def load_top_7K_x_None_freq_test():
+    return pd.read_csv(top_7K_x_None_freq_test_fp, index_col='test_id')
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+top_7K_pair_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_train.csv')
+top_7K_pair_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_pair_freq_test.csv')
+
+def load_top_7K_pair_freq_train():
+    return pd.read_csv(top_7K_pair_freq_train_fp, index_col='id')
+
+def load_top_7K_pair_freq_test():
+    return pd.read_csv(top_7K_pair_freq_test_fp, index_col='test_id')
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+new_top_uppers_train_fp = os.path.join(data_folder, 'new_top_uppers', 'new_top_uppers_train.csv')
+new_top_uppers_test_fp = os.path.join(data_folder, 'new_top_uppers', 'new_top_uppers_test_fp.csv')
+
+
+def load_new_top_uppers_train():
+    return pd.read_csv(new_top_uppers_train_fp, index_col='id')
+
+def load_new_top_uppers_test():
+    return pd.read_csv(new_top_uppers_test_fp, index_col='test_id')
+
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
 aux_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_train.csv')
 aux_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'aux_pairs_50_test.csv')
 aux_pair_target_freq = 'aux_pair_target_freq'
@@ -594,6 +678,36 @@ def load_aux_pairs_50_test():
 ############################################################3
 ############################################################3
 ############################################################3
+diff_idf_train_fp = os.path.join(data_folder, 'new_idf', 'clear_toks_train.csv')
+diff_idf_test_fp = os.path.join(data_folder, 'new_idf', 'clear_toks_test.csv')
+
+def load_diff_idf_train():
+    df = pd.read_csv(diff_idf_train_fp, index_col='id')
+    return df
+
+
+def load_diff_idf_test():
+    df = pd.read_csv(diff_idf_test_fp, index_col='test_id')
+    return df
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+
+top_25_uppers_train_fp = os.path.join(data_folder, 'dummies', 'top_25_uppers_train.csv')
+top_25_uppers_test_fp = os.path.join(data_folder, 'dummies', 'top_25_uppers_test.csv')
+
+def load_top_25_uppers_train():
+    return pd.read_csv(top_25_uppers_train_fp, index_col='id')
+
+def load_top_25_uppers_test():
+    return pd.read_csv(top_25_uppers_test_fp, index_col='test_id')
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
 import xgboost as xgb
 from sklearn.metrics import log_loss
 import json
@@ -614,24 +728,41 @@ train_load_map = {
     'word2vec_metrics'        :          load_word2vec_metrics_train,
     'glove_metrics'           :          load_glove_metrics_train,
     'lex_metrics'             :          load_lex_metrics_train,
-    'aux_pairs_50'            :          load_aux_pairs_50_train
+    'aux_pairs_50'        :    load_aux_pairs_50_train,
+    'pronoun_pairs_50'    :    load_pronoun_pairs_50_train ,
+    'new_top_uppers'      :    load_new_top_uppers_train ,
+    'top_7K_pair_freq'    :    load_top_7K_pair_freq_train ,
+    'top_7K_x_None_freq'  :    load_top_7K_x_None_freq_train ,
+    'pair_freq'           :    load_pair_freq_train ,
+    'lstm'                :    load_lstm_train,
+    'top_25_uppers':load_top_25_uppers_train,
+    'diff_idf':load_diff_idf_train
 }
 
 test_load_map = {
-   'lengths'                 :          load_test_lengths,
-   'common_words'            :          load_test_common_words,
-   'metrics'                :           load__test_metrics,
-   'tfidf_new'               :          load_test_tfidf_new,
-   'magic'                   :          load_test_magic,
-   'wh'                      :          load_wh_test,
-   'one_upper'               :          load_one_upper_test,
-   'topNs_avg_tok_freq'      :          load_topNs_avg_tok_freq_test,
-   'abi'                     :          load_abi_test,
-   'max_k_cores'             :          load_max_k_cores_test,
-   'word2vec_metrics'        :          load_word2vec_metrics_test,
-   'glove_metrics'           :          load_glove_metrics_test,
-   'lex_metrics'             :          load_lex_metrics_test,
-   'aux_pairs_50'            :          load_aux_pairs_50_test
+    'lengths'                 :          load_test_lengths,
+    'common_words'            :          load_test_common_words,
+    'metrics'                :           load__test_metrics,
+    'tfidf_new'               :          load_test_tfidf_new,
+    'magic'                   :          load_test_magic,
+    'wh'                      :          load_wh_test,
+    'one_upper'               :          load_one_upper_test,
+    'topNs_avg_tok_freq'      :          load_topNs_avg_tok_freq_test,
+    'abi'                     :          load_abi_test,
+    'max_k_cores'             :          load_max_k_cores_test,
+    'word2vec_metrics'        :          load_word2vec_metrics_test,
+    'glove_metrics'           :          load_glove_metrics_test,
+    'lex_metrics'             :          load_lex_metrics_test,
+    'aux_pairs_50'        :    load_aux_pairs_50_test,
+    'pronoun_pairs_50'    :    load_pronoun_pairs_50_test ,
+    'new_top_uppers'      :    load_new_top_uppers_test ,
+    'top_7K_pair_freq'    :    load_top_7K_pair_freq_test ,
+    'top_7K_x_None_freq'  :    load_top_7K_x_None_freq_test ,
+    'pair_freq'           :    load_pair_freq_test ,
+    'lstm'                :    load_lstm_test,
+    'top_25_uppers':load_top_25_uppers_test,
+    'diff_idf':load_diff_idf_test
+
 }
 
 

@@ -628,7 +628,8 @@ def test_log_reg_on_bow():
                         binary=True,
                         stop_words='english',
                         max_features=50000,
-                        ngram_range=(1,2)
+                        ngram_range=(1,2),
+                        analyzer='char'
                         )
     print 'Fitting Vectorizer...'
     c.fit(questions)
