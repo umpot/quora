@@ -624,7 +624,12 @@ def test_log_reg_on_bow():
 
     questions = list(train[question1])+list(train[question2])
     print 'Creating Vectorizer...'
-    c = CountVectorizer(questions, binary=True, stop_words='english')
+    c = CountVectorizer(questions,
+                        binary=True,
+                        stop_words='english',
+                        max_features=50000,
+                        ngram_range=(1,2)
+                        )
     print 'Fitting Vectorizer...'
     c.fit(questions)
 
@@ -642,11 +647,14 @@ def test_log_reg_on_bow():
     test_arr[test_arr==2]=1
     test_arr[test_arr==1]=-1
 
-    model = LogisticRegression(verbose=10, n_jobs=-1, penalty='l1')
+    model = LogisticRegression(verbose=10, n_jobs=-1, penalty='l2')
     print 'Fitting model...'
     model.fit(train_arr, train[TARGET])
     proba = model.predict_proba(test_arr)
 
     loss = log_loss(test[TARGET], proba)
     print loss
+
+
+test_log_reg_on_bow()
 
