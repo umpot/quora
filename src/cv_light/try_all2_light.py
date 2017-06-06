@@ -579,8 +579,8 @@ def load_test_tfidf_new():
 ######################################################################################
 ######################################################################################
 ######################################################################################
-pronoun_pairs_50_train_fp = os.path.join(data_folder, 'pronoun_pron', 'pronoun_pairs_50_train.csv')
-pronoun_pairs_50_test_fp = os.path.join(data_folder, 'pronoun_pron', 'pronoun_pairs_50_test.csv')
+pronoun_pairs_50_train_fp = os.path.join(data_folder, 'aux_pron', 'pronoun_pairs_50_train.csv')
+pronoun_pairs_50_test_fp = os.path.join(data_folder, 'aux_pron', 'pronoun_pairs_50_test.csv')
 pronoun_pair_target_freq = 'pronoun_pair_target_freq'
 def load_pronoun_pairs_50_train():
     return pd.read_csv(pronoun_pairs_50_train_fp, index_col='id')[[pronoun_pair_target_freq]]
