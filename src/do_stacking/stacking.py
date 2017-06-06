@@ -181,13 +181,32 @@ experiments = ['stacking_lstm_glove_nouns_re_stops_no',
                'stacking_only_glove_emb_light',
                'stacking_lstm',
                'stacking_lstm_glove_verbs_re_stops_no',
-               'glove_metrics_tfidf_new_500_0.8_0.8_5']
+               'glove_metrics_tfidf_new_500_0.8_0.8_5'
+               ]+\
+['new_top_uppers_magic_300_0.7_0.7_5',
+ 'glove_metrics_500_0.6_0.7_5',
+ 'top_7K_pair_freq_top_7K_x_None_freq_lstm_500_0.6_0.7_5',
+ 'pronoun_pairs_50_aux_pairs_50_magic_top_7K_pair_freq_top_7K_x_None_freq_300_0.6_0.7_4',
+ 'new_top_uppers_500_0.7_0.7_5',
+ 'top_7K_pair_freq_top_7K_x_None_freq_500_0.6_0.7_3',
+ 'diff_idf_new_top_uppers_pair_freq_lex_metrics_lengths_common_words_400_0.6_0.7_4',
+ 'lstm_magic_max_k_cores_400_0.6_0.7_3',
+ 'lstm_diff_idf_magic_500_0.7_0.7_5',
+ 'pronoun_pairs_50_aux_pairs_50_magic_300_0.6_0.7_4',
+ 'diff_idf_magic_500_0.7_0.7_5',
+ 'top_7K_pair_freq_magic_top_7K_x_None_freq_300_0.6_0.7_3',
+ 'common_words_lengths_diff_idf_magic_500_0.7_0.7_5',
+ 'new_top_uppers_magic_300_0.6_0.7_5',
+ 'diff_idf_500_0.7_0.7_5',
+ 'diff_idf_magic_max_k_cores_top_7K_x_None_freq_500_0.6_0.7_3',
+ 'glove_metrics_lstm_magic_500_0.6_0.7_5',
+ 'top_7K_pair_freq_top_7K_x_None_freq_pair_freq_pronoun_pairs_50_glove_metrics_400_0.6_0.7_4',
+ 'new_top_uppers_pair_freq_lex_metrics_500_0.6_0.7_5']+[
+    'stacking_all3'
+]
 
-# experiments = ['stacking_lstm_glove_nouns_re_stops_no',
-#                'one_upper_magic_wh_common_words_lengths_500_0.6_0.6_5',
-#                'stacking_xgb_with_lstm_prob_deep',
-#                'stacking_lstm_glove_lemmas_re_stops_yes',
-#                ]
+
+
 
 
 def perform_xgb_cv(name, max_depth, learning_rate, subsample, colsample_bytree):
@@ -364,6 +383,7 @@ def write_results(name, estimator, losses, train_arr):
 
 # ['python', '-u', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
 #name, max_depth, learning_rate, subsample, colsample_bytree
-perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
+# perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
 # apply_stacking('stacking_with_many_weak_est_1130_5_0.5_0.9')
+perform_xgb_cv('all3_test', 5, 0.1, 0.8, 0.8)
