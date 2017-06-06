@@ -389,4 +389,4 @@ def write_results(name, estimator, losses, train_arr):
 # perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
 # apply_stacking('stacking_with_many_weak_est_1130_5_0.5_0.9')
-perform_xgb_cv('all3_test', 5, 0.1, 0.8, 0.8)
+perform_xgb_cv('all3_test', 5, 0.02, 0.8, 0.8)
