@@ -304,6 +304,16 @@ def load_submit_stacking(exp_list):
 
     return test_df
 
+def blja():
+    # test_df = load_test()
+    df = None
+    for e in experiments:
+        try:
+            df = pd.read_csv(os.path.join(stacking_submit_data_fp, 'submit_'+e, 'probs.csv'), index_col='test_id')
+        except:
+            print e
+
+
 def apply_stacking(name):
     random_state=42
 
@@ -398,6 +408,8 @@ def write_results(name, estimator, losses, train_arr):
 # ['python', '-u', name, str(max_depth), str(learning_rate), str(subsample), str(colsample_bytree)])
 #name, max_depth, learning_rate, subsample, colsample_bytree
 # perform_xgb_cv(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
-
-apply_stacking('stacking_all3_1200_5_0.8_0.8_0.02')
+# stacking_lstm_glove_nouns_re_stops_no
+# apply_stacking('stacking_all3_1200_5_0.8_0.8_0.02')
 # perform_xgb_cv('all3_no_deep', 5, 0.02, 0.8, 0.8)
+
+blja()
