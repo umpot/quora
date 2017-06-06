@@ -397,61 +397,7 @@ from scipy.stats import kurtosis, skew, skewnorm
 x_None= 'x_None'
 RATIO = 'RATIO'
 
-statistics={
-    'kurtosis':kurtosis,
-    'skew':skew,
-    # 'skewnorm':skewnorm,
-    'mean':np.mean,
-    'median':np.median,
-    'max':np.max,
-    'min':np.min,
-    'std':np.std,
-    '1_persentile':lambda s: np.percentile(s, 25),
-    '3_persentile':lambda s: np.percentile(s, 75),
-    'count':len
-}
-
-def wrap_func(fucnk):
-    return lambda s: None if (s is None or len(s)==0) else fucnk(s)
-
-statistics = {k: wrap_func(v) for k,v in statistics.iteritems()}
-
 counter = 0
-
-top_7K_x_None_freq_train_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_train.csv')
-top_7K_x_None_freq_test_fp = os.path.join(data_folder,'top_7K_pairs' ,'top_7K_x_None_freq_test.csv')
-
-def write_top_N_x_None_freq():
-    N=5000
-
-    train_df, test_df = load_train(), load_test()
-
-    # train_df, test_df = load_train().head(5000), load_test().head(5000)
-
-    folds = create_folds(train_df)
-    new_cols = None
-    for train, test in folds:
-        m = explore_top_pairs(train)[:N]
-        new_cols = process_top_N_x_None_toks(test, m, train_df)
-
-    train_df[new_cols].to_csv(top_7K_x_None_freq_train_fp, index_label='id')
-    print 'Done TRAIN!'
-    print '======================================='
-
-
-    m = explore_top_pairs(train_df)[:N]
-    new_cols = process_top_N_x_None_toks(test_df, m, None)
-
-
-
-
-
-    process_top_N_x_None_toks(test_df, m, None)
-    test_df[new_cols].to_csv(top_7K_x_None_freq_test_fp, index_label='test_id')
-
-
-
-
 
 
 def add_target_ratio_to_m(m):
@@ -478,14 +424,14 @@ def get_top_uppers_dict(df, top_N):
         y = set(str(y).split())
 
         in_q1_not_in_2 = x.difference(y).intersection(top_N_set)
-        in_q2_no_in_1 = y.difference(x).intersection(top_N_set)
+        in_q2_not_in_1 = y.difference(x).intersection(top_N_set)
         sym_diff=x.symmetric_difference(y).intersection(top_N_set)
         both = x.intersection(y).intersection(top_N_set)
         all_set = x.union(y).intersection(top_N_set)
 
         cols_map={
             'in_q1_not_in_2':in_q1_not_in_2,
-            'in_q2_no_in_1':in_q2_no_in_1,
+            'in_q2_not_in_1':in_q2_not_in_1,
             'sym_diff':sym_diff,
             'both':both,
             'all':all_set
@@ -528,110 +474,166 @@ def load_top_110_uppers():
     fp = os.path.join(data_folder, 'new_top_uppers', '1100_top_upper_tokens.json')
     return json.load(open(fp))
 
-    # upper_col='upper_col'
-    # def get_one_upper(row):
-    #     a = row[tokens_q1]
-    #     b = row[tokens_q2]
-    #     if a is None and b is None:
-    #         return None
-    #     if a is not None:
-    #         return a
-    #     return b
-    # df[upper_col] = df.apply(get_one_upper, axis = 1)
-
 def add_upper_cols(df):
     top = load_top_110_uppers()
     top = set(top)
     def filter_upper(s):
         up = filter(lambda x: x[0].isupper(), s.split())
         up=set(up)
-        return list(up.intersection(top))
-    def first_or_None(l):
-        if len(l)==0:
-            return None
-        return l[0]
+        return up.intersection(top)
+    # def first_or_None(l):
+    #     if len(l)==0:
+    #         return None
+    #     return l[0]
     for col in [tokens_q1, tokens_q2]:
-        df[col] = df[col].apply(filter_upper).apply(first_or_None)
+        df[col] = df[col].apply(filter_upper)#.apply(first_or_None)
+
+
+def get_count_map_from_freq_map(m):
+    return {k:v['all']['count'] for k,v in m.iteritems()}
+
+def get_most_frequent_upper(ss, count_m):
+
+
+    l = [(x, count_m.get(x, None)) for x in ss if x in count_m]
+    if len(l)==0:
+        return None
+    l.sort(key=lambda x:x[0], reverse=True)
+    return l[0][0]
 
 
 def process_top_N_uppers_plus_minus(df, m, update_df):
     global counter
     counter=0
 
-    m={x[0]:x[1] for x in m}
+    m_count = get_count_map_from_freq_map(m)
 
     upper_col='upper_col'
-    def get_one_upper(row):
+
+    add_upper_cols(df)
+
+    def get_ratio_safe(m, top, col):
+        x = m.get(top, None)
+        if x is None:
+            return None
+
+        x = x.get(col, None)
+        if x is None:
+            return None
+        return x[RATIO]
+
+
+    def get_stat(row):
         a = row[tokens_q1]
         b = row[tokens_q2]
-        if a is None and b is None:
-            return None
-        if a is not None:
-            return a
-        return b
-    df[upper_col] = df.apply(get_one_upper, axis = 1)
+        u = a.union(b)
+        if len(u)==0:
+            return {
+                'both':None,
+                'in_q1_not_in_2':None,
+                'in_q2_not_in_1':None,
+                'sym_diff':None,
 
-    def process_row(row, top_N_set):
-        global counter
-        counter+=1
-        if counter%1000==0:
-            print counter
+            }
+        top = get_most_frequent_upper(u, m_count)
+        if top is None:
+            return {
+                'both':None,
+                'in_q1_not_in_2':None,
+                'in_q2_not_in_1':None,
+                'sym_diff':None,
 
-        x = set(str(row[question1]).split())
-        y = set(str(row[question2]).split())
+            }
+        if top in a and top in b:
+            return {
+                'both':get_ratio_safe(m, top, 'both'),
+                'in_q1_not_in_2':None,
+                'in_q2_not_in_1':None,
+                'sym_diff':None,
 
-        in_q1_not_in_2 = x.difference(y).intersection(top_N_set)
-        in_q2_no_in_1 = y.difference(x).intersection(top_N_set)
-        sym_diff=x.symmetric_difference(y).intersection(top_N_set)
-        both = x.intersection(y).intersection(top_N_set)
+            }
+        elif top in a:
+            return {
+                'both':None,
+                'in_q1_not_in_2':get_ratio_safe(m, top, 'in_q1_not_in_2'),
+                'in_q2_not_in_1':None,
+                'sym_diff':get_ratio_safe(m, top, 'sym_diff'),
 
-        if len(in_q1_not_in_2)!=0:
-            in_q1_not_in_2 = list(in_q1_not_in_2)[0]
+            }
+        elif top in b:
+            return {
+                'both':None,
+                'in_q1_not_in_2':None,
+                'in_q2_not_in_1':get_ratio_safe(m, top,'in_q2_not_in_1'),
+                'sym_diff':get_ratio_safe(m, top,'sym_diff'),
+
+            }
         else:
-            in_q1_not_in_2 = None
+            return {
+                'both':None,
+                'in_q1_not_in_2':None,
+                'in_q2_not_in_1':None,
+                'sym_diff':None,
 
-        if len(in_q2_no_in_1)!=0:
-            in_q2_no_in_1 = list(in_q2_no_in_1)[0]
-        else:
-            in_q2_no_in_1 = None
+            }
 
-        if len(sym_diff)!=0:
-            sym_diff = list(sym_diff)[0]
-        else:
-            sym_diff = None
 
-        if len(both)!=0:
-            both = list(both)[0]
-        else:
-            both = None
 
-        res={
-            'in_q1_not_in_2':in_q1_not_in_2,
-            'in_q2_no_in_1':in_q2_no_in_1,
-            'sym_diff':sym_diff,
-            'both':both
-        }
+    df[upper_col] = df.apply(get_stat, axis = 1)
 
-        return res
 
-    m_set = set(m.keys())
-    df['tmp'] = df.apply(lambda row: process_row(row, m_set), axis=1)
 
     cols=[
         'in_q1_not_in_2',
-        'in_q2_no_in_1',
+        'in_q2_not_in_1',
         'sym_diff',
         'both'
     ]
 
     new_cols =[]
-    for name, func in statistics.iteritems():
-        col = 'top_7K_x_None_freq_{}'.format(name)
-        print col
-        new_cols.append(col)
-        df[col]=df[x_None].apply(func)
+    for col in cols:
+        new_col = 'top_1.1K_upper_{}'.format(col)
+        new_cols.append(new_col)
+        df[new_col] = df[upper_col].apply(lambda s: s[col])
+
+    for col in new_cols:
         if update_df is not None:
             update_df.loc[df.index, col]=df.loc[df.index, col]
 
     return new_cols
 
+
+new_top_uppers_train_fp = os.path.join(data_folder, 'new_top_uppers', 'new_top_uppers_train.csv')
+new_top_uppers_test_fp = os.path.join(data_folder, 'new_top_uppers', 'new_top_uppers_test_fp.csv')
+
+
+def write_top_1_1_uppers_plus_minus():
+    train_df, test_df = load_train_nlp(), load_test_nlp()
+    folds = create_folds(train_df)
+
+    # train_df, test_df = load_train_nlp().head(5000), load_test_nlp().head(5000)
+    # folds = split_into_folds(train_df, 7)
+
+    topN=load_top_110_uppers()
+
+
+
+    new_cols = None
+    for train, test in folds:
+        m = get_top_uppers_dict(train, topN)
+        new_cols = process_top_N_uppers_plus_minus(test, m, train_df)
+
+    train_df[new_cols].to_csv(new_top_uppers_train_fp, index_label='id')
+    print 'Done TRAIN!'
+    print '======================================='
+
+
+    m = get_top_uppers_dict(train_df, topN)
+    new_cols = process_top_N_uppers_plus_minus(test_df, m, None)
+    test_df[new_cols].to_csv(new_top_uppers_test_fp, index_label='test_id')
+    print 'Done TEST!'
+    print '======================================='
+
+
+
+write_top_1_1_uppers_plus_minus()
