@@ -872,7 +872,7 @@ descr= \
     """
 
 
-name='stacking_all2'
+name='stacking_all3'
 old_name = name
 
 f_num = int(sys.argv[1])
