@@ -794,7 +794,7 @@ def write_results(name,mongo_host, per_tree_res, losses, imp, features):
 def perform_xgb_cv(name, mongo_host):
     df = load_train_all_xgb()
     del_trash_cols(df)
-    add_kur_combinations(df)
+    # add_kur_combinations(df)
     folds =5
     seed = 42
 
