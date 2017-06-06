@@ -371,6 +371,7 @@ def write_results(name, estimator, losses, train_arr):
         collection.insert_one({
             'results': per_tree_res,
             'losses': losses,
+            'AVG':np.mean(losses),
             'importance':imp,
             'features':features,
             'best_iteration':estimator.best_iteration,
