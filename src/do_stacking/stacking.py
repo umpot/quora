@@ -390,5 +390,5 @@ def write_results(name, estimator, losses, train_arr):
 # stacking_lstm_glove_nouns_re_stops_no
 apply_stacking('no_lstm_5_0.8_0.8_0.02')
 # perform_xgb_cv('only_lstm', 5, 0.02, 0.8, 0.8)
-
+print 'DONE!!!'
 # blja()
