@@ -526,6 +526,8 @@ def write_new_idf():
 
     new_cols=perform_new_idf_df(train_df, col1, col2,c, prefix, IDFS)
     train_df[new_cols].to_csv(diff_idf_train_fp, index_label='id')
+    print 'DONE TRAIN!'
+
 
     perform_new_idf_df(test_df, col1, col2,c, prefix, IDFS)
     train_df[new_cols].to_csv(diff_idf_test_fp, index_label='test_id')
