@@ -84,7 +84,7 @@ def get_losses(name, fold=4):
     return losses
 
 def get_avg_loss(name, end=None):
-    db = client['xgb_cv']
+    db = client['stacking_exp']
     results = db[name]
     losses = [x['losses'] for x in results.find()]
     if end is None:

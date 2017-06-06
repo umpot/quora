@@ -372,7 +372,10 @@ def write_results(name, estimator, losses, train_arr):
             'results': per_tree_res,
             'losses': losses,
             'importance':imp,
-            'features':features
+            'features':features,
+            'best_iteration':estimator.best_iteration,
+            'best_score':estimator.best_score
+
         })
     except:
         print 'error in mongo'
