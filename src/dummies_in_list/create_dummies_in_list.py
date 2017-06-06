@@ -436,7 +436,7 @@ def write_top_25_uppers_dummies():
     write_dummies(train_df, uppers, top_25_uppers_train_fp, 'id')
     print 'Done Train!'
 
-    write_dummies(test_df, uppers, top_25_uppers_train_fp, 'test_id')
+    write_dummies(test_df, uppers, top_25_uppers_test_fp, 'test_id')
     print 'Done Test!'
 
 
