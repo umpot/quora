@@ -60,6 +60,21 @@ def explore_importance(name, fold=0):
     sns.barplot(xs, ys, orient='v')
     sns.plt.show()
 
+def explore_sktacing_imp(name, fold=0):
+    db = client['stacking_exp']
+    results = db[name]
+    features = [x['features'] for x in results.find()][fold]
+
+    importance = [x['importance'] for x in results.find()][fold]
+    res = zip(features, importance)
+    res.sort(key=lambda s:s[1], reverse=True)
+    print res
+    # res=res[:N]
+    xs = [x[0] for x in res]
+    ys=[x[1] for x in res]
+    sns.barplot(xs, ys, orient='v')
+    sns.plt.show()
+
 
 def get_losses(name, fold=4):
     db = client['xgb_cv']
