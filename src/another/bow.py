@@ -614,6 +614,33 @@ def test_fastfmon_bow():
     print loss
 
 
+
+def create_vectorizer(df, stops, max_features, ngram_range,analyzer):
+    questions = list(df[question1])+list(df[question2])
+    stops = 'english' if stops else None
+    c = CountVectorizer(questions,
+                        binary=True,
+                        stop_words=stops,
+                        max_features=max_features,
+                        ngram_range=ngram_range,
+                        analyzer=analyzer
+                        )
+
+    c.fit(questions)
+
+    return c
+
+def create_arr(df, c):
+    train_arr_q1 = c.transform(df[question1])
+    train_arr_q2 = c.transform(df[question2])
+
+    train_arr = train_arr_q1+train_arr_q2
+    train_arr[train_arr==2]=1
+    train_arr[train_arr==1]=-1
+
+    return train_arr
+
+
 def test_log_reg_on_bow():
     df = load_train()
 
