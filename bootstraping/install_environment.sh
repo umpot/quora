@@ -63,7 +63,9 @@ python -m spacy download en
 pip install textacy
 pip install cython
 pip install fastFM
-
+pip install image
+pip install bcolz
+pip install kaggle-cli
 
 
 git clone http://github.com/dmlc/xgboost
